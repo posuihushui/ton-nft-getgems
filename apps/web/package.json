@@ -1,0 +1,28 @@
+{
+  "name": "@ton-getgems/web",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc --noEmit && vite build"
+  },
+  "dependencies": {
+    "react": "^19.2.5",
+    "react-dom": "^19.2.5",
+    "react-router-dom": "^7.14.0"
+  },
+  "devDependencies": {
+    "@types/react": "^19.2.14",
+    "@types/react-dom": "^19.2.3",
+    "@vitejs/plugin-react": "^6.0.1",
+    "typescript": "^6.0.2",
+    "vite": "^8.0.8"
+  },
+  "main": "vite.config.js",
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "types": "./vite.config.d.ts",
+  "description": ""
+}

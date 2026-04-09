@@ -1,0 +1,17 @@
+{
+  "name": "ton-nft-getgems-workspace",
+  "private": true,
+  "version": "0.1.0",
+  "workspaces": [
+    "apps/api",
+    "apps/web"
+  ],
+  "scripts": {
+    "dev": "concurrently -n api,web -c cyan,magenta \"npm run start:dev --workspace @ton-getgems/api\" \"npm run dev --workspace @ton-getgems/web\"",
+    "build": "npm run build --workspace @ton-getgems/api && npm run build --workspace @ton-getgems/web"
+  },
+  "devDependencies": {
+    "concurrently": "^9.2.1"
+  }
+}
+

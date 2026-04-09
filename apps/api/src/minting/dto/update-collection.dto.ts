@@ -1,0 +1,67 @@
+import { Type } from 'class-transformer';
+import {
+  ArrayMaxSize,
+  IsArray,
+  IsNumber,
+  IsOptional,
+  IsString,
+  IsUrl,
+  Length,
+  Max,
+  Min,
+  ValidateNested,
+} from 'class-validator';
+
+class UpdateCollectionMetadataDto {
+  @IsOptional()
+  @IsString()
+  @Length(1, 120)
+  name?: string;
+
+  @IsOptional()
+  @IsString()
+  @Length(1, 1000)
+  description?: string;
+
+  @IsOptional()
+  @IsUrl()
+  image?: string;
+
+  @IsOptional()
+  @IsUrl()
+  external_link?: string;
+
+  @IsOptional()
+  @IsArray()
+  @ArrayMaxSize(10)
+  @IsUrl({}, { each: true })
+  social_links?: string[];
+
+  @IsOptional()
+  @IsUrl()
+  cover_image?: string;
+}
+
+export class UpdateCollectionDto {
+  @IsOptional()
+  @IsString()
+  @Length(1, 100)
+  requestId?: string;
+
+  @IsOptional()
+  @ValidateNested()
+  @Type(() => UpdateCollectionMetadataDto)
+  metadata?: UpdateCollectionMetadataDto;
+
+  @IsOptional()
+  @IsNumber()
+  @Min(0)
+  @Max(49)
+  royaltyPercent?: number;
+
+  @IsOptional()
+  @IsString()
+  @Length(10, 128)
+  royaltyAddress?: string;
+}
+
