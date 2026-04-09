@@ -1,4 +1,4 @@
-import { useState, type FormEvent, type ChangeEvent } from 'react';
+import { useEffect, useState, type FormEvent, type ChangeEvent } from 'react';
 
 import { FormField, PageHero, ResultPanel, SurfaceCard, type OperationState } from '../components/ui';
 import {
@@ -83,14 +83,25 @@ export function MintPage({ network, health }: MintPageProps) {
   const [batchRawJson, setBatchRawJson] = useState('[\n  \n]');
   const [csvParseError, setCsvParseError] = useState<string | null>(null);
 
-  // Sync defaults
-  if (defaultCollectionAddress && !singleMintForm.collectionAddress) {
-    setSingleMintForm((c) => ({ ...c, collectionAddress: defaultCollectionAddress }));
-    setStatusForm((c) => ({ ...c, collectionAddress: defaultCollectionAddress }));
-    setTasksForm((c) => ({ ...c, collectionAddress: defaultCollectionAddress }));
-    setUpdateNftForm((c) => ({ ...c, collectionAddress: defaultCollectionAddress }));
-    setBatchCollectionAddress(defaultCollectionAddress);
-  }
+  useEffect(() => {
+    if (!defaultCollectionAddress) {
+      return;
+    }
+
+    setSingleMintForm((current) =>
+      current.collectionAddress ? current : { ...current, collectionAddress: defaultCollectionAddress },
+    );
+    setStatusForm((current) =>
+      current.collectionAddress ? current : { ...current, collectionAddress: defaultCollectionAddress },
+    );
+    setTasksForm((current) =>
+      current.collectionAddress ? current : { ...current, collectionAddress: defaultCollectionAddress },
+    );
+    setUpdateNftForm((current) =>
+      current.collectionAddress ? current : { ...current, collectionAddress: defaultCollectionAddress },
+    );
+    setBatchCollectionAddress((current) => current || defaultCollectionAddress);
+  }, [defaultCollectionAddress]);
 
   // ── Single Mint ──
 

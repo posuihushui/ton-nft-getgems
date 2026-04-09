@@ -1,6 +1,7 @@
 import { HttpService } from '@nestjs/axios';
 import {
   HttpException,
+  Inject,
   Injectable,
   InternalServerErrorException,
   ServiceUnavailableException,

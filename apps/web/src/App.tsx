@@ -1,4 +1,4 @@
-import { startTransition, useEffect, useEffectEvent, useState } from 'react';
+import { startTransition, useEffect, useState } from 'react';
 import { BrowserRouter, NavLink, Outlet, Route, Routes, useOutletContext } from 'react-router-dom';
 
 import {
@@ -39,13 +39,13 @@ function Layout() {
     error: null,
   });
 
-  const refreshHealth = useEffectEvent(async () => {
+  const refreshHealth = async (selectedNetwork: GetgemsNetwork = network) => {
     startTransition(() => {
       setHealth((current) => ({ ...current, loading: true }));
     });
 
     try {
-      const payload = await getHealth(network);
+      const payload = await getHealth(selectedNetwork);
       startTransition(() => {
         setHealth({ loading: false, data: payload, error: null });
       });
@@ -55,15 +55,15 @@ function Layout() {
         setHealth({ loading: false, data: null, error: message });
       });
     }
-  });
+  };
 
   useEffect(() => {
-    void refreshHealth();
+    void refreshHealth(network);
     const timer = window.setInterval(() => {
-      void refreshHealth();
+      void refreshHealth(network);
     }, 30000);
     return () => window.clearInterval(timer);
-  }, [network, refreshHealth]);
+  }, [network]);
 
   const contextValue: NetworkContextType = { network, health, refreshHealth };
 

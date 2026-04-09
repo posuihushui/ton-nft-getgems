@@ -1,4 +1,4 @@
-import { useState, type FormEvent } from 'react';
+import { useEffect, useState, type FormEvent } from 'react';
 
 import { FormField, PageHero, ResultPanel, SectionIntro, SurfaceCard, type OperationState } from '../components/ui';
 import { deactivateApi, getWalletBalance, refundWallet, type GetgemsNetwork } from '../lib/api';
@@ -36,12 +36,15 @@ export function WalletPage({ network, health }: WalletPageProps) {
     confirmText: '',
   });
 
-  // Sync default when health payload arrives
-  if (collectionAddress && !balanceForm.collectionAddress) {
-    setBalanceForm((c) => ({ ...c, collectionAddress }));
-    setRefundForm((c) => ({ ...c, collectionAddress }));
-    setDeactivateForm((c) => ({ ...c, collectionAddress }));
-  }
+  useEffect(() => {
+    if (!collectionAddress) {
+      return;
+    }
+
+    setBalanceForm((current) => (current.collectionAddress ? current : { ...current, collectionAddress }));
+    setRefundForm((current) => (current.collectionAddress ? current : { ...current, collectionAddress }));
+    setDeactivateForm((current) => (current.collectionAddress ? current : { ...current, collectionAddress }));
+  }, [collectionAddress]);
 
   async function handleGetBalance(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();

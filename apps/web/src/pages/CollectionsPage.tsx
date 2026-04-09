@@ -1,4 +1,4 @@
-import { useState, type FormEvent } from 'react';
+import { useEffect, useState, type FormEvent } from 'react';
 
 import { FormField, PageHero, ResultPanel, SectionIntro, SurfaceCard, type OperationState } from '../components/ui';
 import {
@@ -67,13 +67,24 @@ export function CollectionsPage({ network, health }: CollectionsPageProps) {
     royaltyAddress: '',
   });
 
-  // Sync default address when it arrives from health payload
-  if (defaultCollectionAddress && !createForm.templateCollectionAddress) {
-    setCreateForm((c) => ({ ...c, templateCollectionAddress: defaultCollectionAddress }));
-    setStatusForm((c) => ({ ...c, templateCollectionAddress: defaultCollectionAddress }));
-    setUploadForm((c) => ({ ...c, collectionAddress: defaultCollectionAddress }));
-    setUpdateForm((c) => ({ ...c, collectionAddress: defaultCollectionAddress }));
-  }
+  useEffect(() => {
+    if (!defaultCollectionAddress) {
+      return;
+    }
+
+    setCreateForm((current) =>
+      current.templateCollectionAddress ? current : { ...current, templateCollectionAddress: defaultCollectionAddress },
+    );
+    setStatusForm((current) =>
+      current.templateCollectionAddress ? current : { ...current, templateCollectionAddress: defaultCollectionAddress },
+    );
+    setUploadForm((current) =>
+      current.collectionAddress ? current : { ...current, collectionAddress: defaultCollectionAddress },
+    );
+    setUpdateForm((current) =>
+      current.collectionAddress ? current : { ...current, collectionAddress: defaultCollectionAddress },
+    );
+  }, [defaultCollectionAddress]);
 
   async function handleCreateCollection(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
