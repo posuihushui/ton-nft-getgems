@@ -5,3 +5,5 @@ dist/
 coverage/
 npm-debug.log*
 
+.vite-web.log
+.vite-web.err.log
