@@ -1,0 +1,744 @@
+// automatically generated from `/stdlib/std/stdlib.fc` `D:/tbook/ton-nft-getgems/apps/contracts/build/NftCollection/tact_NftCollection.fc` 
+PROGRAM{
+  DECLPROC __tact_context_get
+  DECLPROC __tact_context_get_sender
+  DECLPROC __tact_dict_min_int_cell
+  DECLPROC __tact_dict_next_int_cell
+  DECLPROC $DeployOk$_store
+  DECLPROC $DeployOk$_store_cell
+  DECLPROC $Initialize$_store
+  DECLPROC $Initialize$_store_cell
+  DECLPROC $SetLocked$_store
+  DECLPROC $SetLocked$_store_cell
+  DECLPROC $Mint$_load
+  DECLPROC $Mint$_as_optional
+  DECLPROC $Mint$_load_opt
+  DECLPROC $NftCollection$_store
+  DECLPROC $NftCollection$_load
+  DECLPROC $Context$_get_value
+  DECLPROC $Mint$_not_null
+  DECLPROC $CollectionData$_to_external
+  DECLPROC $NftItem$init$_store
+  DECLPROC $NftCollection$init$_load
+  DECLPROC $NftCollection$_contract_init
+  DECLPROC $NftCollection$_contract_load
+  DECLPROC $NftCollection$_contract_store
+  DECLPROC $Cell$_fun_asSlice
+  DECLPROC $global_newAddress
+  DECLPROC $global_contractAddressExt
+  DECLPROC $global_contractAddress
+  DECLPROC $NftItem$_init_child
+  DECLPROC $MessageParameters$_constructor_bounce_to_value_mode_body
+  DECLPROC $SendParameters$_constructor_to_value_mode_bounce_body_code_data
+  DECLPROC $Initialize$_constructor_owner_content_locked
+  DECLPROC $NftCollection$_fun_get_nft_item_state_init
+  DECLPROC $NftCollection$_fun__mint
+  DECLPROC $CollectionData$_constructor_next_item_index_content_owner_address
+  DECLPROC $NftCollection$_fun_get_collection_data
+  DECLPROC $NftCollection$_fun_get_nft_address_by_index
+  DECLPROC $NftCollection$_fun_is_trading_enabled
+  DECLPROC $NftCollection$_fun_notify
+  DECLPROC $SendParameters$_constructor_to_value_mode_body
+  DECLPROC $SetLocked$_constructor_locked
+  DECLPROC $DeployOk$_constructor_queryId
+  102491 DECLMETHOD %get_collection_data
+  92067 DECLMETHOD %get_nft_address_by_index
+  82925 DECLMETHOD %is_trading_enabled
+  DECLPROC recv_internal
+  65535 DECLMETHOD __tact_selector_hack
+  DECLGLOBVAR __tact_context
+  DECLGLOBVAR __tact_context_sender
+  DECLGLOBVAR __tact_child_contract_codes
+  DECLGLOBVAR __tact_randomized
+  __tact_context_get PROCINLINE:<{
+    __tact_context GETGLOB
+    4 UNTUPLE
+  }>
+  __tact_context_get_sender PROCINLINE:<{
+    __tact_context_sender GETGLOB
+  }>
+  __tact_dict_min_int_cell PROCINLINE:<{
+    DICTIMINREF
+    NULLSWAPIFNOT2
+    DUP
+    IF:<{
+      s1 s2 XCHG
+    }>ELSE<{
+      NIP
+      PUSHNULL
+      s2 POP
+      PUSHNULL
+      SWAP
+    }>
+  }>
+  __tact_dict_next_int_cell PROCINLINE:<{
+    -ROT
+    DICTIGETNEXT
+    NULLSWAPIFNOT2
+    DUP
+    IF:<{
+      s0 s2 XCHG
+      LDREF
+      DROP
+      ROT
+    }>ELSE<{
+      NIP
+      PUSHNULL
+      s2 POP
+      PUSHNULL
+      SWAP
+    }>
+  }>
+  $DeployOk$_store PROCINLINE:<{
+    2952335191 PUSHINT
+    ROT
+    32 STU
+    64 STU
+  }>
+  $DeployOk$_store_cell PROCINLINE:<{
+    SWAP
+    $DeployOk$_store INLINECALLDICT
+    ENDC
+  }>
+  $Initialize$_store PROCINLINE:<{
+    1797275581 PUSHINT
+    s0 s4 XCHG2
+    32 STU
+    s1 s2 XCHG
+    STSLICE
+    STOPTREF
+    1 STI
+  }>
+  $Initialize$_store_cell PROCINLINE:<{
+    3 -ROLL
+    $Initialize$_store INLINECALLDICT
+    ENDC
+  }>
+  $SetLocked$_store PROCINLINE:<{
+    3145694553 PUSHINT
+    ROT
+    32 STU
+    1 STI
+  }>
+  $SetLocked$_store_cell PROCINLINE:<{
+    SWAP
+    $SetLocked$_store INLINECALLDICT
+    ENDC
+  }>
+  $Mint$_load PROCINLINE:<{
+    32 LDU
+    SWAP
+    4118766477 PUSHINT
+    EQUAL
+    129 THROWIFNOT
+    LDMSGADDR
+    LDOPTREF
+    -ROT
+  }>
+  $Mint$_as_optional PROCINLINE:<{
+        2 TUPLE
+  }>
+  $Mint$_load_opt PROCINLINE:<{
+    DUP
+    ISNULL
+    IF:<{
+      DROP
+      PUSHNULL
+    }>ELSE<{
+      CTOS
+      $Mint$_load INLINECALLDICT
+      1 2 BLKDROP2
+      $Mint$_as_optional INLINECALLDICT
+    }>
+  }>
+  $NftCollection$_store PROCINLINE:<{
+    s3 s4 XCHG2
+    64 STU
+    STSLICE
+    STREF
+    1 STI
+  }>
+  $NftCollection$_load PROCINLINE:<{
+    64 LDU
+    LDMSGADDR
+    LDREF
+    1 LDI
+    4 -ROLL
+  }>
+  $Context$_get_value PROCINLINE:<{
+    s1 s3 XCHG
+    3 BLKDROP
+  }>
+  $Mint$_not_null PROCINLINE:<{
+    DUP
+    ISNULL
+    128 THROWIF
+        2 UNTUPLE
+  }>
+  $CollectionData$_to_external PROCINLINE:<{
+  }>
+  $NftItem$init$_store PROCINLINE:<{
+    s0 s2 XCHG
+    STSLICE
+    257 PUSHINT
+    STIX
+  }>
+  $NftCollection$init$_load PROCINLINE:<{
+    LDMSGADDR
+    LDREF
+    -ROT
+  }>
+  $NftCollection$_contract_init PROCINLINE:<{
+    0 PUSHINT
+    -ROT
+    FALSE
+  }>
+  $NftCollection$_contract_load PROCINLINE:<{
+    c4 PUSH
+    CTOS
+    1 LDI
+    SWAP
+    IF:<{
+      $NftCollection$_load INLINECALLDICT
+      1 4 BLKDROP2
+    }>ELSE<{
+      $NftCollection$init$_load INLINECALLDICT
+      s0 s2 XCHG
+      ENDS
+      SWAP
+      $NftCollection$_contract_init INLINECALLDICT
+    }>
+  }>
+  $NftCollection$_contract_store PROCINLINE:<{
+    NEWC
+    TRUE
+    SWAP
+    1 STI
+    4 -ROLL
+    $NftCollection$_store INLINECALLDICT
+    ENDC
+    c4 POP
+  }>
+  $Cell$_fun_asSlice PROCINLINE:<{
+        CTOS
+  }>
+  $global_newAddress PROCINLINE:<{
+        NEWC
+    4 PUSHINT
+    SWAP
+    3 STU
+    s1 s2 XCHG
+    8 STI
+    256 STU
+        ENDC
+    $Cell$_fun_asSlice INLINECALLDICT
+  }>
+  $global_contractAddressExt PROCINLINE:<{
+        s0 PUSH HASHCU // `data` hash
+        s2 PUSH HASHCU // `code` hash
+        SWAP2
+        CDEPTH         // `data` depth
+        SWAP
+        CDEPTH         // `code` depth
+        131380 INT     // (2 << 16) | (1 << 8) | 0x34
+        // Group 2: Composition of the Builder
+        NEWC
+        24 STU  // store refs_descriptor | bits_descriptor | data
+        16 STU  // store depth_descriptor for `code`
+        16 STU  // store depth_descriptor for `data`
+        256 STU // store `code` hash
+        256 STU // store `data` hash
+        // Group 3: SHA256 hash of the resulting Builder
+        ONE HASHEXT_SHA256
+    $global_newAddress INLINECALLDICT
+  }>
+  $global_contractAddress PROCINLINE:<{
+    0 PUSHINT
+    -ROT
+    $global_contractAddressExt INLINECALLDICT
+  }>
+  $NftItem$_init_child PROCREF:<{
+        B{b5ee9c7201020f0100040200022cff008e88f4a413f4bcf2c80bed53208e8130e1ed43d90102020271030404ee01d072d721d200d200fa4021103450666f04f86102f862ed44d0d200018e1cfa40810101d700d72c01916d93fa4001e201f404d200d20055506c169ffa40810101d7005902d1016d6d7f70e207925f07e005d70d1ff2e0822182106b203fbdbae3022182105fcc3d14bae302218210bb7f7d59bae302210708090a0177bfda4f6a268690000c70e7d20408080eb806b9600c8b6c9fd2000f100fa02690069002aa8360b4ffd20408080eb802c816880b6b6bfb8716d9e3630c050177bc7e7f6a268690000c70e7d20408080eb806b9600c8b6c9fd2000f100fa02690069002aa8360b4ffd20408080eb802c816880b6b6bfb8716d9e3632c06000221001823206ef2d08054616054686101fa365f0302fa40f404d20030f8416f2430328130145316c705f2f4810ba108b318f2f47f018208989680bc8e4a70804021c8018210d53276db58cb1fcb3fc910395a6d6d40037fc8cf8580ca00cf8440ce01fa028069cf40025c6e016eb0935bcf819d58cf8680cf8480f400f400cf81e2f400c901fb009136e2103555020d02e431d33ffa40fa40f40431fa00f8416f2410235f03811de92cf2f48200905808206ef2d0805210c70518f2f4816d4f2ab3f2f45331c2009410376c41e30df8285240c705b3923330e30d10355512c87f01ca0055505056ce13810101cf0001206e9430cf84809201cee2f400ca00ca00c9ed540b0c0074313504d200308200b7faf84225c705f2f410354403c87f01ca0055505056ce13810101cf0001206e9430cf84809201cee2f400ca00ca00c9ed5402ea82102fcb26a2ba8edc31d33f30f842708040543367c8552082108b7713455004cb1f12cb3fcbffcec941305a6d6d40037fc8cf8580ca00cf8440ce01fa028069cf40025c6e016eb0935bcf819d58cf8680cf8480f400f400cf81e2f400c901fb0010355512e0018210946a98b6bae3025f07f2c0820d0e00a672705447a4c85520821005138d915004cb1f12cb3fcecec910451810246d50436d03c8cf8580ca00cf8440ce01fa028069cf40025c6e016eb0935bcf819d58cf8680cf8480f400f400cf81e2f400c901fb0003009870804003c8018210d53276db58cb1fcb3fc9103541505a6d6d40037fc8cf8580ca00cf8440ce01fa028069cf40025c6e016eb0935bcf819d58cf8680cf8480f400f400cf81e2f400c901fb00004ac87f01ca0055505056ce13810101cf0001206e9430cf84809201cee2f400ca00ca00c9ed5400c0d33f30c8018210aff90f5758cb1fcb3fc910461035443012f84270705003804201503304c8cf8580ca00cf8440ce01fa02806acf40f400c901fb00c87f01ca0055505056ce13810101cf0001206e9430cf84809201cee2f400ca00ca00c9ed54} B>boc PUSHREF
+    NEWC
+    FALSE
+    SWAP
+    1 STI
+    2SWAP
+    $NftItem$init$_store INLINECALLDICT
+    ENDC
+  }>
+  $MessageParameters$_constructor_bounce_to_value_mode_body PROCINLINE:<{
+    s3 s3 XCHG2
+    s0 s4 XCHG
+  }>
+  $SendParameters$_constructor_to_value_mode_bounce_body_code_data PROCINLINE:<{
+    s4 s6 XCHG
+    3 3 BLKSWAP
+  }>
+  $Initialize$_constructor_owner_content_locked PROCINLINE:<{
+  }>
+  $NftCollection$_fun_get_nft_item_state_init PROCREF:<{
+        MYADDR
+    SWAP
+    $NftItem$_init_child INLINECALLDICT
+  }>
+  $NftCollection$_fun__mint PROCREF:<{
+    s5 PUSH
+    s0 s4 XCHG
+    s3 s5 XCHG
+    s0 s5 s6 XCHG3
+    $NftCollection$_fun_get_nft_item_state_init INLINECALLDICT
+    2DUP
+    $global_contractAddress INLINECALLDICT
+    50000000 PUSHINT
+    2 PUSHINT
+    FALSE
+    s6 PUSH
+    NOT
+    s12 s11 s0 XCHG3
+    $Initialize$_constructor_owner_content_locked INLINECALLDICT
+    NEWC
+    $Initialize$_store_cell INLINECALLDICT
+    s6 s5 s0 XCHG3
+    s4 s10 XCHG
+    s3 s9 XCHG
+    s0 s10 s9 XCHG3
+    $SendParameters$_constructor_to_value_mode_bounce_body_code_data INLINECALLDICT
+        NEWC
+        b{01} STSLICECONST  // store tag = $0 and ihr_disabled = true
+        1 STI               // store `bounce`
+        b{000} STSLICECONST // store bounced = false and src = addr_none
+        STSLICE             // store `to`
+        SWAP
+        STGRAMS             // store `value`
+        105 PUSHINT         // 1 + 4 + 4 + 64 + 32
+        STZEROES            // store currency_collection, ihr_fee, fwd_fee, created_lt and created_at
+        // → Stack state
+        // s0: Builder
+        // s1: `data`
+        // s2: `code`
+        // s3: `body`
+        // s4: `mode`
+        // Group 2: Placing the Builder after code and data, then checking those for nullability
+        s2 XCHG0
+        DUP2
+        ISNULL
+        SWAP
+        ISNULL
+        AND
+        // → Stack state
+        // s0: -1 (true) if `data` and `code` are both null, 0 (false) otherwise
+        // s1: `code`
+        // s2: `data`
+        // s3: Builder
+        // s4: `body`
+        // s5: `mode`
+        // Group 3: Left branch of the IFELSE, executed if s0 is -1 (true)
+        <{
+            DROP2 // drop `data` and `code`, since either of those is null
+            b{0} STSLICECONST
+        }> PUSHCONT
+        // Group 3: Right branch of the IFELSE, executed if s0 is 0 (false)
+        <{
+            // _ split_depth:(Maybe (## 5))
+            //   special:(Maybe TickTock)
+            //   code:(Maybe ^Cell)
+            //   data:(Maybe ^Cell)
+            //   library:(Maybe ^Cell)
+            // = StateInit;
+            ROT                // place message Builder on top
+            b{10} STSLICECONST // store Maybe = true, Either = false
+            // Start composing inlined StateInit
+            b{00} STSLICECONST // store split_depth and special first
+            STDICT             // store code
+            STDICT             // store data
+            b{0} STSLICECONST  // store library
+        }> PUSHCONT
+        // Group 3: IFELSE that does the branching shown above
+        IFELSE
+        // → Stack state
+        // s0: Builder
+        // s1: null or StateInit
+        // s2: `body`
+        // s3: `mode`
+        // Group 4: Finalizing the message
+        STDICT // store `body` as ref with an extra Maybe bit, since `body` might be null
+        ENDC
+        // → Stack state
+        // s0: Cell
+        // s1: `mode`
+        // Group 5: Sending the message, with `mode` on top
+        SWAP
+        SENDRAWMSG // https://github.com/tact-lang/tact/issues/1558
+    SWAP
+    INC
+    s2 s3 XCHG2
+  }>
+  $CollectionData$_constructor_next_item_index_content_owner_address PROCINLINE:<{
+  }>
+  $NftCollection$_fun_get_collection_data PROCREF:<{
+    s3 s1 s2 PUSH3
+    $CollectionData$_constructor_next_item_index_content_owner_address INLINECALLDICT
+  }>
+  $NftCollection$_fun_get_nft_address_by_index PROCREF:<{
+    $NftCollection$_fun_get_nft_item_state_init INLINECALLDICT
+    $global_contractAddress INLINECALLDICT
+  }>
+  $NftCollection$_fun_is_trading_enabled PROCREF:<{
+    DUP
+  }>
+  $NftCollection$_fun_notify PROCINLINE:<{
+    __tact_context_get_sender INLINECALLDICT
+    FALSE
+    0 PUSHINT
+    s0 s3 XCHG2
+    66 PUSHINT
+    SWAP
+    $MessageParameters$_constructor_bounce_to_value_mode_body INLINECALLDICT
+        NEWC
+        b{01} STSLICECONST  // store tag = $0 and ihr_disabled = true
+        1 STI               // store `bounce`
+        b{000} STSLICECONST // store bounced = false and src = addr_none
+        STSLICE             // store `to`
+        SWAP
+        STGRAMS             // store `value`
+        106 PUSHINT         // 1 + 4 + 4 + 64 + 32 + 1
+        STZEROES
+        // → Stack state
+        // s0: Builder
+        // s1: `body`
+        // s2: `mode`
+        STDICT
+        ENDC
+        SWAP
+        SENDRAWMSG
+  }>
+  $SendParameters$_constructor_to_value_mode_body PROCINLINE:<{
+    2SWAP
+    PUSHNULL
+    PUSHNULL
+    s0 s0 s3 XCHG3
+    TRUE
+  }>
+  $SetLocked$_constructor_locked PROCINLINE:<{
+  }>
+  $DeployOk$_constructor_queryId PROCINLINE:<{
+  }>
+  %get_collection_data PROC:<{
+    $NftCollection$_contract_load INLINECALLDICT
+    $NftCollection$_fun_get_collection_data INLINECALLDICT
+    4 3 BLKDROP2
+    $CollectionData$_to_external INLINECALLDICT
+  }>
+  %get_nft_address_by_index PROC:<{
+    $NftCollection$_contract_load INLINECALLDICT
+    4 ROLL
+    $NftCollection$_fun_get_nft_address_by_index INLINECALLDICT
+    4 1 BLKDROP2
+  }>
+  %is_trading_enabled PROC:<{
+    $NftCollection$_contract_load INLINECALLDICT
+    $NftCollection$_fun_is_trading_enabled INLINECALLDICT
+    4 1 BLKDROP2
+  }>
+  recv_internal PROC:<{
+    SWAP
+    CTOS
+    2 PUSHINT
+    SDSKIPFIRST
+    1 LDI
+    1 LDI
+    LDMSGADDR
+    OVER
+    s3 s4 XCHG
+    s6 s6 XCHG2
+    4 TUPLE
+    __tact_context SETGLOB
+    s0 s2 XCHG
+    __tact_context_sender SETGLOB
+    $NftCollection$_contract_load INLINECALLDICT
+    s0 s5 XCHG
+    IFJMP:<{
+      5 BLKDROP
+    }>
+    s0 s3 XCHG
+    32 LDUQ 130 THROWIFNOT
+    OVER
+    4118766477 PUSHINT
+    EQUAL
+    IFJMP:<{
+      NIP
+      LDMSGADDR
+      LDOPTREF
+      DROP
+      57579 PUSHINT
+      __tact_context_get_sender INLINECALLDICT
+      s4 PUSH
+      SDEQ
+      THROWANYIFNOT
+      s3 s5 XCHG
+      s2 s4 XCHG
+      s2 s3 XCHG
+      $NftCollection$_fun__mint INLINECALLDICT
+      $NftCollection$_contract_store INLINECALLDICT
+    }>
+    OVER
+    3968886334 PUSHINT
+    EQUAL
+    IFJMP:<{
+      NIP
+      LDDICT
+      DROP
+      57579 PUSHINT
+      __tact_context_get_sender INLINECALLDICT
+      s3 PUSH
+      SDEQ
+      THROWANYIFNOT
+      0 PUSHINT
+      OVER
+      257 PUSHINT
+      __tact_dict_min_int_cell INLINECALLDICT
+      WHILE:<{
+      }>DO<{
+        $Mint$_load_opt INLINECALLDICT
+        $Mint$_not_null INLINECALLDICT
+        s3 PUSH
+        50 LESSINT
+        IF:<{
+          s5 s6 XCHG
+          7 2 REVERSE
+          $NftCollection$_fun__mint INLINECALLDICT
+          s0 s5 XCHG
+          INC
+          s1 s5 XCHG
+          s1 s6 XCHG
+          s3 s4 XCHG
+          s3 s0 s0 XCHG3
+        }>ELSE<{
+          2DROP
+        }>
+        257 PUSHINT
+        s3 PUSH
+        s0 s2 XCHG
+        __tact_dict_next_int_cell INLINECALLDICT
+      }>
+      4 BLKDROP
+      s0 s0 s3 XCHG3
+      $NftCollection$_contract_store INLINECALLDICT
+    }>
+    OVER
+    4051840417 PUSHINT
+    EQUAL
+    IFJMP:<{
+      NIP
+      s4 POP
+      s0 s3 XCHG
+      1 LDI
+      DROP
+      5340 PUSHINT
+      __tact_context_get_sender INLINECALLDICT
+      s5 PUSH
+      SDEQ
+      THROWANYIFNOT
+      s3 s3 s0 XCHG3
+      $NftCollection$_contract_store INLINECALLDICT
+    }>
+    OVER
+    4229725070 PUSHINT
+    EQUAL
+    IFJMP:<{
+      NIP
+      1 LDI
+      64 LDU
+      64 LDU
+      DROP
+      54045 PUSHINT
+      __tact_context_get_sender INLINECALLDICT
+      s5 PUSH
+      SDEQ
+      THROWANYIFNOT
+      s0 s4 PUSH2
+      GREATER
+      IF:<{
+        DROP
+        s3 PUSH
+      }>
+      WHILE:<{
+        2DUP
+        LESS
+      }>DO<{
+        s3 s4 XCHG
+        7 0 REVERSE
+        s5 PUSH
+        $NftCollection$_fun_get_nft_address_by_index INLINECALLDICT
+        20000000 PUSHINT
+        2 PUSHINT
+        s7 PUSH
+        $SetLocked$_constructor_locked INLINECALLDICT
+        NEWC
+        $SetLocked$_store_cell INLINECALLDICT
+        $SendParameters$_constructor_to_value_mode_body INLINECALLDICT
+            NEWC
+            b{01} STSLICECONST  // store tag = $0 and ihr_disabled = true
+            1 STI               // store `bounce`
+            b{000} STSLICECONST // store bounced = false and src = addr_none
+            STSLICE             // store `to`
+            SWAP
+            STGRAMS             // store `value`
+            105 PUSHINT         // 1 + 4 + 4 + 64 + 32
+            STZEROES            // store currency_collection, ihr_fee, fwd_fee, created_lt and created_at
+            // → Stack state
+            // s0: Builder
+            // s1: `data`
+            // s2: `code`
+            // s3: `body`
+            // s4: `mode`
+            // Group 2: Placing the Builder after code and data, then checking those for nullability
+            s2 XCHG0
+            DUP2
+            ISNULL
+            SWAP
+            ISNULL
+            AND
+            // → Stack state
+            // s0: -1 (true) if `data` and `code` are both null, 0 (false) otherwise
+            // s1: `code`
+            // s2: `data`
+            // s3: Builder
+            // s4: `body`
+            // s5: `mode`
+            // Group 3: Left branch of the IFELSE, executed if s0 is -1 (true)
+            <{
+                DROP2 // drop `data` and `code`, since either of those is null
+                b{0} STSLICECONST
+            }> PUSHCONT
+            // Group 3: Right branch of the IFELSE, executed if s0 is 0 (false)
+            <{
+                // _ split_depth:(Maybe (## 5))
+                //   special:(Maybe TickTock)
+                //   code:(Maybe ^Cell)
+                //   data:(Maybe ^Cell)
+                //   library:(Maybe ^Cell)
+                // = StateInit;
+                ROT                // place message Builder on top
+                b{10} STSLICECONST // store Maybe = true, Either = false
+                // Start composing inlined StateInit
+                b{00} STSLICECONST // store split_depth and special first
+                STDICT             // store code
+                STDICT             // store data
+                b{0} STSLICECONST  // store library
+            }> PUSHCONT
+            // Group 3: IFELSE that does the branching shown above
+            IFELSE
+            // → Stack state
+            // s0: Builder
+            // s1: null or StateInit
+            // s2: `body`
+            // s3: `mode`
+            // Group 4: Finalizing the message
+            STDICT // store `body` as ref with an extra Maybe bit, since `body` might be null
+            ENDC
+            // → Stack state
+            // s0: Cell
+            // s1: `mode`
+            // Group 5: Sending the message, with `mode` on top
+            SWAP
+            SENDRAWMSG // https://github.com/tact-lang/tact/issues/1558
+        s0 s5 XCHG
+        INC
+        s1 s5 XCHG
+        s1 s6 XCHG
+        s3 s4 XCHG
+        s3 s0 s0 XCHG3
+      }>
+      3 BLKDROP
+      s0 s0 s3 XCHG3
+      $NftCollection$_contract_store INLINECALLDICT
+    }>
+    SWAP
+    2490013878 PUSHINT
+    EQUAL
+    IFJMP:<{
+      64 LDU
+      DROP
+      $DeployOk$_constructor_queryId INLINECALLDICT
+      NEWC
+      $DeployOk$_store_cell INLINECALLDICT
+      s4 s3 s0 XCHG3
+      s1 s2 XCHG
+      $NftCollection$_fun_notify INLINECALLDICT
+      $NftCollection$_contract_store INLINECALLDICT
+    }>
+    5 BLKDROP
+    130 THROW
+  }>
+  __tact_selector_hack PROC:<{
+    @atend @ 1 {
+            execute current@ context@ current!
+            {
+                // The core idea of this function is to save gas by avoiding unnecessary dict jump, when recv_internal/recv_external is called
+                // We want to extract recv_internal/recv_external from the dict and select needed function
+                // not by jumping to the needed function by it's index, but by using usual IF statements.
+                }END> b> // Close previous builder, now we have a cell of previous code on top of the stack
+                <{ // Start of the new code builder
+                    SETCP0
+                    // Swap the new code builder with the previous code, now we have previous code on top of the stack
+                    swap
+                    // Transform cell to slice and load first ref from the previous code, now we have the dict on top of the stack
+                    <s ref@
+                    // Extract the recv_internal from the dict
+                    dup 0 swap @procdictkeylen idict@ { "internal shortcut error" abort } ifnot
+                    swap
+                    // Delete the recv_internal from the dict
+                    0 swap @procdictkeylen idict- drop
+                    // Delete the recv_external from the dict (it's okay if it's not there)
+                    -1 swap @procdictkeylen idict- drop
+                    // Delete the __tact_selector_hack from the dict
+                    65535 swap @procdictkeylen idict- drop
+                    // Bring the code builder from the bottom of the stack
+                    // because if recv_external extraction is optional, and the number of elements on the stack is not fixed
+                    depth 1- roll
+                    // Swap with the dict from which we extracted recv_internal and (maybe) recv_external
+                    swap
+                    // Check if the dict is empty
+                    dup null?
+                    // Store a copy of this flag in the bottom of the stack
+                    dup depth 1- -roll
+                    {
+                        // If the dict is empty, just drop it (it will be null if it's empty)
+                        drop
+                    }
+                    {
+                        // If the dict is not empty, prepare continuation to be stored in c3
+                        <{
+                            // Save this dict as first ref in this continuation, it will be pushed in runtime by DICTPUSHCONST
+                            swap @procdictkeylen DICTPUSHCONST
+                            // Jump to the needed function by it's index
+                            DICTIGETJMPZ
+                            // If such key is not found, throw 11 along with the key as an argument
+                            11 THROWARG
+                        }> PUSHCONT
+                        // Store the continuation in c3
+                        c3 POP
+                    } cond
+                    // Function id is on top of the (runtime) stack
+                    DUP IFNOTJMP:<{
+                        // place recv_internal here
+                        DROP swap @addop
+                    }>
+                    // Bring back the flag, indicating if the dict is empty or not from the bottom of the stack
+                    depth 1- roll
+                    {
+                        // If the dict is empty, throw 11
+                        11 THROWARG
+                    }
+                    {
+                        // If the dict is not empty, jump to continuation from c3
+                        c3 PUSH JMPX
+                    } cond
+                }> b>
+            } : }END>c
+            current@ context! current!
+        } does @atend !
+  }>
+}END>c

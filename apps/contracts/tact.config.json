@@ -1,0 +1,9 @@
+{
+    "projects": [
+        {
+            "name": "nft_collection",
+            "path": "./contracts/nft_collection.tact",
+            "output": "./output"
+        }
+    ]
+}
