@@ -336,10 +336,11 @@ export async function getCollectionNfts(
 }
 
 export async function getNftItem(
+  collectionAddress: string,
   nftAddress: string,
   network: GetgemsNetwork,
 ): Promise<{ success: boolean; response: NftItem }> {
-  return request(`/nfts/item/${encodeURIComponent(nftAddress)}`, {
+  return request(`/nfts/item/${encodeURIComponent(collectionAddress)}/${encodeURIComponent(nftAddress)}`, {
     method: 'GET',
     network,
   });

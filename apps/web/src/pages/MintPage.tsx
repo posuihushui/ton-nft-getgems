@@ -13,6 +13,7 @@ import {
   type GetgemsNetwork,
 } from '@/lib/api';
 import type { AsyncState } from '@/App';
+import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 import { downloadCsv, generateCsvTemplate, parseCsvFile, type BatchMintItem } from '@/lib/csv';
 
 type MintPageProps = {
@@ -307,23 +308,23 @@ export function MintPage({ network, health }: MintPageProps) {
   }
 
   return (
-    <div className="flex flex-col gap-10 py-8 pb-16">
+    <div className="flex flex-col gap-12 pb-8">
       <PageHero
         eyebrow="Mint execution"
         title="Operate single mint, batch mint, and monitoring workflows from one page."
         description="Submit mints to designated owner addresses, inspect request state, and patch NFT metadata on the active network."
       />
 
-      <div className="flex flex-wrap gap-2">
+      <div className="flex w-fit flex-wrap gap-1 rounded-full bg-white/80 p-1 shadow-apple">
         {mintTabs.map((tab) => (
           <button
             key={tab.id}
             type="button"
             onClick={() => setActiveTab(tab.id)}
-            className={`rounded-lg border px-4 py-2 text-sm font-semibold transition-colors ${
+            className={`rounded-full px-4 py-2 text-[12px] font-semibold uppercase tracking-[0.08em] transition-colors ${
               activeTab === tab.id
-                ? 'border-blue-600 bg-blue-600 text-white'
-                : 'border-border bg-background text-foreground hover:bg-muted'
+                ? 'bg-primary text-white shadow-[0_1px_2px_rgba(0,0,0,0.08)]'
+                : 'text-black/62 hover:bg-black/5 hover:text-foreground'
             }`}
           >
             {tab.label}
@@ -346,16 +347,16 @@ export function MintPage({ network, health }: MintPageProps) {
               </FormField>
             </div>
 
-            <div className="flex flex-wrap gap-2">
+            <div className="flex w-fit flex-wrap gap-1 rounded-full bg-accent p-1">
               {batchModes.map((mode) => (
                 <button
                   key={mode.id}
                   type="button"
                   onClick={() => handleBatchModeChange(mode.id)}
-                  className={`rounded-lg border px-3 py-2 text-sm font-medium transition-colors ${
+                  className={`rounded-full px-4 py-2 text-[12px] font-medium uppercase tracking-[0.08em] transition-colors ${
                     batchMode === mode.id
-                      ? 'border-blue-600 bg-blue-50 text-blue-700'
-                      : 'border-border bg-background text-foreground hover:bg-muted'
+                      ? 'bg-secondary text-white'
+                      : 'text-black/58 hover:bg-white hover:text-foreground'
                   }`}
                 >
                   {mode.label}
@@ -369,7 +370,7 @@ export function MintPage({ network, health }: MintPageProps) {
                   <Button type="button" variant="outline" size="sm" onClick={handleDownloadTemplate}>
                     Download CSV Template
                   </Button>
-                  <label className="inline-flex cursor-pointer items-center rounded-lg border border-dashed px-4 py-2 text-sm font-medium hover:bg-muted">
+                  <label className="inline-flex cursor-pointer items-center rounded-[11px] bg-white px-4 py-2.5 text-sm font-medium tracking-[-0.016em] text-foreground shadow-[inset_0_0_0_1px_rgba(29,29,31,0.08)] transition-colors hover:bg-accent">
                     <input type="file" accept=".csv" onChange={handleCsvUpload} className="hidden" />
                     Upload CSV
                   </label>
@@ -382,9 +383,9 @@ export function MintPage({ network, health }: MintPageProps) {
                 ) : null}
 
                 {batchItems.length > 0 ? (
-                  <div className="overflow-hidden rounded-xl border border-border">
+                  <div className="apple-shadow overflow-hidden rounded-xl bg-card">
                     <table className="w-full text-left text-sm">
-                      <thead className="bg-muted/50">
+                      <thead className="bg-black/[0.03]">
                         <tr>
                           <th className="px-4 py-3 font-semibold">#</th>
                           <th className="px-4 py-3 font-semibold">Owner Address</th>
@@ -396,13 +397,40 @@ export function MintPage({ network, health }: MintPageProps) {
                       </thead>
                       <tbody>
                         {batchItems.map((item, index) => (
-                          <tr key={`${item.ownerAddress}-${index}`} className="border-t">
+                          <tr key={`${item.ownerAddress}-${index}`} className="border-t border-black/6">
                             <td className="px-4 py-3">{index + 1}</td>
                             <td className="px-4 py-3">{item.ownerAddress || 'N/A'}</td>
                             <td className="px-4 py-3">{item.name || 'N/A'}</td>
                             <td className="px-4 py-3">{item.image ? 'Yes' : 'No'}</td>
                             <td className="px-4 py-3">{Array.isArray(item.attributes) ? item.attributes.length : 0}</td>
-                            <td className="px-4 py-3">{item._error ?? 'Ready'}</td>
+                            <td className="px-4 py-3">
+                              {item._error ? (
+                                <Tooltip>
+                                  <TooltipTrigger asChild>
+                                    <span className="flex cursor-help items-center gap-1.5 font-medium text-destructive">
+                                      <svg
+                                        xmlns="http://www.w3.org/2000/svg"
+                                        viewBox="0 0 20 20"
+                                        fill="currentColor"
+                                        className="size-4"
+                                      >
+                                        <path
+                                          fillRule="evenodd"
+                                          d="M18 10a8 8 0 1 1-16 0 8 8 0 0 1 16 0Zm-8-5a.75.75 0 0 1 .75.75v4.5a.75.75 0 0 1-1.5 0v-4.5A.75.75 0 0 1 10 5Zm0 10a1 1 0 1 0 0-2 1 1 0 0 0 0 2Z"
+                                          clipRule="evenodd"
+                                        />
+                                      </svg>
+                                      Error
+                                    </span>
+                                  </TooltipTrigger>
+                                  <TooltipContent side="right" className="max-w-[300px] bg-destructive text-destructive-foreground">
+                                    <p>{item._error}</p>
+                                  </TooltipContent>
+                                </Tooltip>
+                              ) : (
+                                <span className="font-medium text-primary">Ready</span>
+                              )}
+                            </td>
                           </tr>
                         ))}
                       </tbody>
@@ -415,7 +443,7 @@ export function MintPage({ network, health }: MintPageProps) {
             {batchMode === 'manual' ? (
               <div className="space-y-4">
                 {batchItems.map((item, index) => (
-                  <div key={`manual-item-${index}`} className="space-y-4 rounded-xl border border-border p-4">
+                  <div key={`manual-item-${index}`} className="space-y-4 rounded-xl bg-accent p-4">
                     <div className="flex items-center justify-between">
                       <strong className="text-sm">Item {index + 1}</strong>
                       <Button type="button" variant="ghost" size="sm" onClick={() => handleRemoveItem(index)}>
@@ -464,8 +492,8 @@ export function MintPage({ network, health }: MintPageProps) {
               </FormField>
             ) : null}
 
-            <div className="flex flex-col gap-4 border-t pt-4 sm:flex-row sm:items-center sm:justify-between">
-              <span className="text-sm text-muted-foreground">
+            <div className="flex flex-col gap-4 border-t border-black/6 pt-4 sm:flex-row sm:items-center sm:justify-between">
+              <span className="text-sm text-black/56">
                 Total items:{' '}
                 <strong className="text-foreground">{batchMode === 'json' ? 'Parsed on submit' : batchItems.length}</strong>
               </span>
@@ -565,7 +593,7 @@ export function MintPage({ network, health }: MintPageProps) {
               </FormField>
             </div>
 
-            <div className="flex justify-end border-t pt-4">
+            <div className="flex justify-end border-t border-black/6 pt-4">
               <Button type="submit" disabled={singleMintState.loading}>
                 {singleMintState.loading ? 'Submitting...' : 'Create Single Mint'}
               </Button>
@@ -645,7 +673,7 @@ export function MintPage({ network, health }: MintPageProps) {
               </div>
             </div>
 
-            <div className="flex justify-end border-t pt-4">
+            <div className="flex justify-end border-t border-black/6 pt-4">
               <Button type="submit" disabled={updateNftState.loading}>
                 {updateNftState.loading ? 'Updating...' : 'Update NFT'}
               </Button>
@@ -674,7 +702,7 @@ export function MintPage({ network, health }: MintPageProps) {
                   required
                 />
               </FormField>
-              <div className="flex justify-end border-t pt-4">
+              <div className="flex justify-end border-t border-black/6 pt-4">
                 <Button type="submit" variant="secondary" disabled={statusState.loading}>
                   {statusState.loading ? 'Checking...' : 'Check Status'}
                 </Button>
@@ -709,7 +737,7 @@ export function MintPage({ network, health }: MintPageProps) {
                 </FormField>
                 <FormField label="Sort order">
                   <select
-                    className="flex h-9 w-full rounded-lg border border-input bg-background px-3 text-sm"
+                    className="flex h-11 w-full rounded-[11px] border border-black/5 bg-white/90 px-4 text-[15px] tracking-[-0.016em] text-foreground shadow-[inset_0_0_0_1px_rgba(255,255,255,0.6)] outline-none transition-all focus:border-primary focus:ring-4 focus:ring-primary/15"
                     value={tasksForm.reverse ? 'true' : 'false'}
                     onChange={(e) => setTasksForm((current) => ({ ...current, reverse: e.target.value === 'true' }))}
                   >
@@ -718,7 +746,7 @@ export function MintPage({ network, health }: MintPageProps) {
                   </select>
                 </FormField>
               </div>
-              <div className="flex justify-end border-t pt-4">
+              <div className="flex justify-end border-t border-black/6 pt-4">
                 <Button type="submit" variant="secondary" disabled={tasksState.loading}>
                   {tasksState.loading ? 'Loading...' : 'Load Tasks'}
                 </Button>

@@ -72,14 +72,14 @@ function Layout() {
 
   return (
     <TooltipProvider>
-      <div className="min-h-screen bg-background text-foreground selection:bg-blue-100">
-        <header className="sticky top-0 z-50 w-full border-b bg-background/80 backdrop-blur-md">
-          <div className="container mx-auto max-w-5xl h-14 flex items-center justify-between px-4">
-            <NavLink className="text-sm font-bold tracking-tight hover:opacity-80 transition-opacity" to="/">
+      <div className="min-h-screen bg-background text-foreground">
+        <header className="apple-glass-nav sticky top-0 z-50 w-full border-b border-white/10">
+          <div className="mx-auto flex h-12 w-full max-w-[1120px] items-center justify-between gap-4 px-4 md:px-6">
+            <NavLink className="no-underline text-[12px] font-medium tracking-[-0.01em] text-white transition-opacity hover:opacity-80" to="/">
               TON GetGems Issuer
             </NavLink>
 
-            <nav className="hidden md:flex items-center gap-6 ml-6" aria-label="Primary">
+            <nav className="hidden items-center gap-1 md:flex" aria-label="Primary">
               {[
                 { to: '/', label: 'Dashboard' },
                 { to: '/nfts', label: 'NFTs' },
@@ -91,8 +91,9 @@ function Layout() {
                   to={link.to}
                   className={({ isActive }) =>
                     cn(
-                      "text-xs font-medium transition-colors hover:text-blue-600",
-                      isActive ? "text-blue-600 font-semibold" : "text-muted-foreground"
+                      "relative no-underline px-3 py-2 text-[12px] font-normal tracking-[-0.01em] text-white/72 transition-colors hover:text-white",
+                      isActive &&
+                        "text-white after:absolute after:bottom-1 after:left-3 after:right-3 after:h-px after:bg-white/90 after:content-['']"
                     )
                   }
                 >
@@ -101,13 +102,18 @@ function Layout() {
               ))}
             </nav>
 
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-1 rounded-full bg-white/6 p-1 ring-1 ring-white/10">
               {enabledNetworks.map((candidate) => (
                 <Button
                   key={candidate}
-                  variant={candidate === network ? "default" : "outline"}
+                  variant={candidate === network ? "default" : "ghost"}
                   size="sm"
-                  className="h-8 px-3 text-[11px] font-bold uppercase tracking-wider transition-all"
+                  className={cn(
+                    "h-7 px-3 text-[11px] font-semibold uppercase tracking-[0.08em]",
+                    candidate === network
+                      ? "bg-primary text-white hover:bg-[#0077ed]"
+                      : "text-white/68 hover:bg-white/10 hover:text-white"
+                  )}
                   onClick={() => setNetwork(candidate)}
                 >
                   {candidate}
@@ -117,7 +123,7 @@ function Layout() {
           </div>
         </header>
 
-        <main className="container mx-auto max-w-5xl px-4">
+        <main className="mx-auto w-full max-w-[1120px] px-4 pb-24 pt-8 md:px-6 md:pt-10">
           <Outlet context={contextValue} />
         </main>
       </div>
@@ -163,4 +169,3 @@ export default function App() {
     </BrowserRouter>
   );
 }
-

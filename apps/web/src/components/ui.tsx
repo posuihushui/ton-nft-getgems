@@ -35,38 +35,44 @@ type ResultPanelProps = {
 
 export function PageHero({ eyebrow, title, description, actions }: PageHeroProps) {
   return (
-    <section className="py-12 md:py-16 text-left space-y-4">
-      <p className="text-sm font-semibold text-blue-600 uppercase tracking-wider">{eyebrow}</p>
-      <h1 className="text-4xl md:text-6xl font-bold tracking-tight text-foreground">{title}</h1>
-      <p className="text-xl text-muted-foreground max-w-2xl">{description}</p>
-      {actions ? <div className="flex gap-4 mt-6">{actions}</div> : null}
+    <section className="apple-section-dark overflow-hidden rounded-xl px-6 py-14 text-left md:px-10 md:py-20">
+      <div className="max-w-3xl space-y-5">
+        <p className="text-[11px] font-semibold uppercase tracking-[0.08em] text-white/68">{eyebrow}</p>
+        <h1 className="font-heading text-4xl font-semibold leading-[1.07] tracking-[-0.032em] text-white md:text-[56px]">
+          {title}
+        </h1>
+        <p className="max-w-2xl text-[17px] leading-[1.47] tracking-[-0.022em] text-white/78 md:text-[21px] md:leading-[1.19] md:tracking-[0.011em]">
+          {description}
+        </p>
+        {actions ? <div className="flex flex-wrap gap-3 pt-2">{actions}</div> : null}
+      </div>
     </section>
   );
 }
 
 export function SectionIntro({ eyebrow, title, description }: SectionIntroProps) {
   return (
-    <div className="mb-0 space-y-4">
-      <p className="text-sm font-semibold text-blue-600 uppercase tracking-wider">{eyebrow}</p>
-      <h2 className="text-3xl md:text-4xl font-bold tracking-tight text-foreground">{title}</h2>
-      <p className="text-lg text-muted-foreground max-w-2xl">{description}</p>
+    <div className="max-w-3xl space-y-3">
+      <p className="text-[11px] font-semibold uppercase tracking-[0.08em] text-black/52">{eyebrow}</p>
+      <h2 className="font-heading text-[32px] font-semibold leading-[1.1] tracking-[-0.03em] text-foreground md:text-[40px]">
+        {title}
+      </h2>
+      <p className="max-w-2xl text-[17px] leading-[1.47] tracking-[-0.022em] text-black/70">{description}</p>
     </div>
   );
 }
 
 export function SurfaceCard({ title, description, headerAction, children }: SurfaceCardProps) {
   return (
-    <Card className="overflow-hidden border-none shadow-md">
-      <CardHeader className="flex flex-row items-center justify-between border-b px-6 py-5">
+    <Card className="overflow-hidden border-none">
+      <CardHeader className="flex flex-row items-start justify-between gap-4 px-6 py-6">
         <div className="space-y-1">
-          <CardTitle className="text-xl font-semibold">{title}</CardTitle>
-          {description ? <CardDescription className="text-sm">{description}</CardDescription> : null}
+          <CardTitle>{title}</CardTitle>
+          {description ? <CardDescription>{description}</CardDescription> : null}
         </div>
-        {headerAction}
+        {headerAction ? <div className="shrink-0">{headerAction}</div> : null}
       </CardHeader>
-      <CardContent className="p-6 space-y-8">
-        {children}
-      </CardContent>
+      <CardContent className="space-y-8 p-6">{children}</CardContent>
     </Card>
   );
 }
@@ -82,8 +88,8 @@ export function FormField({
   return (
     <div className="flex flex-col gap-2">
       <div className="flex items-center justify-between">
-        <span className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">{label}</span>
-        {hint ? <span className="text-xs text-muted-foreground">{hint}</span> : null}
+        <span className="text-[14px] font-semibold leading-none tracking-[-0.016em] text-foreground">{label}</span>
+        {hint ? <span className="text-[12px] tracking-[-0.01em] text-black/48">{hint}</span> : null}
       </div>
       {children}
     </div>
@@ -92,19 +98,19 @@ export function FormField({
 
 export function ResultPanel({ title, state, emptyMessage }: ResultPanelProps) {
   return (
-    <div className="bg-muted/50 rounded-xl p-6 border border-border">
+    <div className="apple-shadow rounded-xl bg-page-dark p-6 text-white">
       <div className="flex items-center gap-3 mb-4">
-        <h4 className="text-sm font-semibold uppercase tracking-wider text-muted-foreground">{title}</h4>
-        {state.loading ? <Badge variant="secondary" className="animate-pulse">Running</Badge> : null}
+        <h4 className="text-[11px] font-semibold uppercase tracking-[0.08em] text-white/56">{title}</h4>
+        {state.loading ? <Badge variant="secondary" className="animate-pulse bg-white/12 text-white/80">Running</Badge> : null}
       </div>
-      {state.error ? <p className="text-sm text-destructive bg-destructive/10 p-3 rounded-md font-medium">{state.error}</p> : null}
+      {state.error ? <p className="rounded-lg bg-destructive/12 p-3 text-sm font-medium text-[#ff8f87]">{state.error}</p> : null}
       {!state.error && state.result ? (
-        <pre className="text-xs font-mono bg-background p-4 rounded-lg overflow-auto border border-border mt-2 shadow-inner">
+        <pre className="mt-2 overflow-auto rounded-lg bg-white/6 p-4 font-mono text-[11px] leading-6 text-white/88">
           {JSON.stringify(state.result, null, 2)}
         </pre>
       ) : null}
       {!state.loading && !state.error && !state.result ? (
-        <p className="text-sm text-muted-foreground italic py-2">{emptyMessage}</p>
+        <p className="py-2 text-sm italic text-white/52">{emptyMessage}</p>
       ) : null}
     </div>
   );
@@ -119,11 +125,13 @@ export function StatGrid({
   }>;
 }) {
   return (
-    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+    <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
       {items.map((item) => (
-        <div className="bg-card p-5 rounded-lg border border-border flex flex-col gap-1 shadow-sm" key={item.label}>
-          <span className="text-xs text-muted-foreground uppercase tracking-wider font-medium">{item.label}</span>
-          <strong className="text-lg font-bold truncate text-foreground">{item.value}</strong>
+        <div className="apple-shadow flex flex-col gap-2 rounded-xl bg-card px-5 py-5" key={item.label}>
+          <span className="text-[11px] font-semibold uppercase tracking-[0.08em] text-black/52">{item.label}</span>
+          <strong className="font-heading text-[21px] font-semibold leading-[1.19] tracking-[-0.022em] text-foreground">
+            {item.value}
+          </strong>
         </div>
       ))}
     </div>

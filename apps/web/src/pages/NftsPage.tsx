@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { Link } from 'react-router-dom';
 
 import { PageHero, SurfaceCard } from '@/components/ui';
 import { Button } from '@/components/ui/button';
@@ -81,7 +82,7 @@ export function NftsPage({ network, health }: NftsPageProps) {
     : null;
 
   return (
-    <div className="flex flex-col gap-10 py-8 pb-16">
+    <div className="flex flex-col gap-12 pb-8">
       <PageHero
         eyebrow="NFT Collection"
         title="Browse minted NFTs in your collection."
@@ -93,19 +94,22 @@ export function NftsPage({ network, health }: NftsPageProps) {
               : 'Collection address not configured. Set GETGEMS_COLLECTION_ADDRESS in your .env file.'
         }
         actions={
-          <div className="flex flex-wrap gap-4">
+          <div className="flex flex-wrap gap-3">
             {getgemsCollectionUrl ? (
-              <a
-                className="inline-flex h-10 items-center rounded-lg bg-blue-600 px-4 text-sm font-semibold text-white transition-colors hover:bg-blue-700"
-                href={getgemsCollectionUrl}
-                target="_blank"
-                rel="noreferrer"
-              >
-                View on GetGems
-              </a>
+              <Button asChild size="lg">
+                <a href={getgemsCollectionUrl} target="_blank" rel="noreferrer">
+                  View on GetGems
+                </a>
+              </Button>
             ) : null}
             {collectionAddress ? (
-              <Button variant="outline" onClick={handleRefresh} disabled={loadState.loading}>
+              <Button
+                variant="outline"
+                size="lg"
+                className="border-white/28 text-white hover:bg-white/10 hover:text-white"
+                onClick={handleRefresh}
+                disabled={loadState.loading}
+              >
                 {loadState.loading ? 'Loading...' : 'Refresh'}
               </Button>
             ) : null}
@@ -114,14 +118,14 @@ export function NftsPage({ network, health }: NftsPageProps) {
       />
 
       {!collectionAddress && !health.loading ? (
-        <div className="rounded-xl border border-destructive/20 bg-destructive/10 p-6 font-medium text-destructive">
+        <div className="rounded-xl bg-destructive/10 p-6 font-medium text-destructive shadow-apple">
           No collection address is configured. Set <code className="rounded bg-destructive/10 px-1">GETGEMS_COLLECTION_ADDRESS</code> in{' '}
           <code>apps/api/.env</code> and restart the backend.
         </div>
       ) : null}
 
       {loadState.error ? (
-        <div className="rounded-xl border border-destructive/20 bg-destructive/10 p-4 font-medium text-destructive">
+        <div className="rounded-xl bg-destructive/10 p-4 font-medium text-destructive shadow-apple">
           {loadState.error}
         </div>
       ) : null}
@@ -129,7 +133,7 @@ export function NftsPage({ network, health }: NftsPageProps) {
       {selectedNft ? (
         <SurfaceCard title={selectedNft.name || 'Selected NFT'} description="Details for the currently selected item.">
           <div className="grid grid-cols-1 gap-6 lg:grid-cols-[280px_1fr]">
-            <div className="overflow-hidden rounded-xl border border-border bg-muted">
+            <div className="overflow-hidden rounded-xl bg-accent">
               {selectedNft.image ? (
                 <img src={selectedNft.image} alt={selectedNft.name} className="h-full w-full object-cover" />
               ) : (
@@ -163,12 +167,12 @@ export function NftsPage({ network, health }: NftsPageProps) {
               </div>
 
               {selectedNft.attributes?.length ? (
-                <div className="space-y-3 border-t pt-4">
-                  <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Attributes</p>
+                <div className="space-y-3 border-t border-black/6 pt-4">
+                  <p className="text-[11px] font-semibold uppercase tracking-[0.08em] text-black/48">Attributes</p>
                   <div className="flex flex-wrap gap-2">
                     {selectedNft.attributes.map((attribute, index) => (
-                      <div key={`${attribute.trait_type}-${index}`} className="rounded-lg border border-border bg-muted/40 px-3 py-2">
-                        <span className="block text-[10px] uppercase tracking-wider text-muted-foreground">
+                      <div key={`${attribute.trait_type}-${index}`} className="rounded-[11px] bg-accent px-3 py-2">
+                        <span className="block text-[10px] uppercase tracking-[0.08em] text-black/48">
                           {attribute.trait_type}
                         </span>
                         <strong className="text-sm">{attribute.value}</strong>
@@ -178,15 +182,16 @@ export function NftsPage({ network, health }: NftsPageProps) {
                 </div>
               ) : null}
 
-              <div className="flex flex-wrap gap-3 border-t pt-4">
-                <a
-                  className="inline-flex h-10 items-center rounded-lg bg-blue-600 px-4 text-sm font-semibold text-white transition-colors hover:bg-blue-700"
-                  href={`https://${network === 'testnet' ? 'testnet.' : ''}getgems.io/nft/${selectedNft.address}`}
-                  target="_blank"
-                  rel="noreferrer"
-                >
-                  Open NFT on GetGems
-                </a>
+              <div className="flex flex-wrap gap-3 border-t border-black/6 pt-4">
+                <Button asChild>
+                  <a
+                    href={`https://${network === 'testnet' ? 'testnet.' : ''}getgems.io/nft/${selectedNft.address}`}
+                    target="_blank"
+                    rel="noreferrer"
+                  >
+                    Open NFT on GetGems
+                  </a>
+                </Button>
                 <Button variant="outline" onClick={() => setSelectedNft(null)}>
                   Clear Selection
                 </Button>
@@ -221,20 +226,17 @@ export function NftsPage({ network, health }: NftsPageProps) {
       {!loadState.loading && !loadState.error && items.length === 0 && collectionAddress ? (
         <SurfaceCard title="No NFTs found" description="This collection has no minted NFTs yet, or the read API returned an empty list.">
           <div className="pt-4">
-            <a
-              className="inline-flex h-10 items-center rounded-lg bg-blue-600 px-4 text-sm font-semibold text-white transition-colors hover:bg-blue-700"
-              href="/mint"
-            >
-              Mint your first NFT
-            </a>
+            <Button asChild>
+              <Link to="/mint">Mint your first NFT</Link>
+            </Button>
           </div>
         </SurfaceCard>
       ) : null}
 
       {loadState.loading && items.length === 0 ? (
         <div className="flex flex-col items-center justify-center gap-4 py-32">
-          <div className="h-12 w-12 animate-spin rounded-full border-4 border-blue-600 border-t-transparent"></div>
-          <p className="text-sm font-bold text-muted-foreground">Loading NFTs from GetGems...</p>
+          <div className="h-12 w-12 animate-spin rounded-full border-4 border-primary border-t-transparent"></div>
+          <p className="text-sm font-bold text-black/56">Loading NFTs from GetGems...</p>
         </div>
       ) : null}
     </div>
@@ -245,7 +247,7 @@ function DetailBlock({ label, value, mono = false }: { label: string; value: str
   return (
     <div className="space-y-1">
       <span className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">{label}</span>
-      <p className={`rounded border border-border/50 bg-muted p-2 text-xs leading-tight ${mono ? 'font-mono break-all' : ''}`}>
+      <p className={`rounded-[11px] bg-accent p-3 text-xs leading-tight ${mono ? 'font-mono break-all' : ''}`}>
         {value}
       </p>
     </div>
@@ -258,10 +260,10 @@ function NftCard({ nft, onClick }: { nft: NftItem; onClick: () => void }) {
   return (
     <button
       type="button"
-      className="group flex flex-col overflow-hidden rounded-xl border border-border bg-card text-left transition-all hover:-translate-y-1 hover:border-blue-300 hover:shadow-xl"
+      className="apple-shadow group flex flex-col overflow-hidden rounded-xl bg-card text-left transition-transform hover:-translate-y-1"
       onClick={onClick}
     >
-      <div className="relative aspect-square w-full overflow-hidden bg-muted">
+      <div className="relative aspect-square w-full overflow-hidden bg-accent">
         {nft.image && !imgError ? (
           <img
             src={nft.image}
@@ -280,7 +282,7 @@ function NftCard({ nft, onClick }: { nft: NftItem; onClick: () => void }) {
       </div>
 
       <div className="space-y-2 p-3">
-        <p className="truncate text-xs font-bold uppercase tracking-tight text-foreground transition-colors group-hover:text-blue-600">
+        <p className="truncate text-xs font-bold uppercase tracking-[0.08em] text-foreground transition-colors group-hover:text-link">
           {nft.name || 'Unnamed NFT'}
         </p>
         {nft.attributes?.length ? (
@@ -288,7 +290,7 @@ function NftCard({ nft, onClick }: { nft: NftItem; onClick: () => void }) {
             {nft.attributes.length} attributes
           </p>
         ) : null}
-        <p className="truncate border-t border-border/50 pt-2 text-[10px] font-mono text-muted-foreground/60">
+        <p className="truncate border-t border-black/6 pt-2 text-[10px] font-mono text-black/42">
           {nft.ownerAddress.slice(0, 8)}...{nft.ownerAddress.slice(-4)}
         </p>
       </div>

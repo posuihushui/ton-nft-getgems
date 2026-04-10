@@ -46,9 +46,9 @@ export class NftsService {
   constructor(
     @Inject(HttpService) private readonly httpService: HttpService,
     @Inject(ConfigService) private readonly configService: ConfigService<AppEnvironment, true>,
-  ) {}
+  ) { }
 
-  /** GET /v1/collection/getCollectionItems - list NFTs within a collection */
+  /** GET /nft/collection/items/:collectionAddress - list NFTs within a collection */
   async getCollectionNfts(
     collectionAddress: string,
     cursor?: string,
@@ -62,16 +62,21 @@ export class NftsService {
     return this.request<{
       success: boolean;
       response: { items: NftItem[]; cursor: string | null };
-    }>(`${baseUrl}/v1/collection/getCollectionItems/${encodeURIComponent(collectionAddress)}`, params, network);
+    }>(`${baseUrl}/nft/collection/items/${encodeURIComponent(collectionAddress)}`, params, 'minting', network);
   }
 
-  /** GET /v1/nft/getItemByAddress - get single NFT details */
-  async getNftItem(nftAddress: string, network?: GetgemsNetwork) {
+  /** GET /nft/collection/by-address/:collectionAddress/:nftAddress - get single NFT details */
+  async getNftItem(collectionAddress: string, nftAddress: string, network?: GetgemsNetwork) {
     const baseUrl = this.getBaseUrl(network);
     return this.request<{
       success: boolean;
       response: NftItem;
-    }>(`${baseUrl}/v1/nft/getItemByAddress/${encodeURIComponent(nftAddress)}`, {}, network);
+    }>(
+      `${baseUrl}/nft/collection/by-address/${encodeURIComponent(collectionAddress)}/${encodeURIComponent(nftAddress)}`,
+      {},
+      'minting',
+      network,
+    );
   }
 
   /** GET /v1/nft/search - search NFTs in collection */
@@ -93,10 +98,10 @@ export class NftsService {
     return this.request<{
       success: boolean;
       response: { items: NftItem[]; cursor: string | null };
-    }>(`${baseUrl}/v1/nft/search`, params, network);
+    }>(`${baseUrl}/v1/nft/search`, params, 'minting', network);
   }
 
-  /** GET /v1/nfts/collection/:collectionAddress - on-sale NFTs */
+  /** GET /v1/nfts/on-sale/:collectionAddress - on-sale NFTs */
   async getOnSaleNfts(
     collectionAddress: string,
     cursor?: string,
@@ -110,16 +115,21 @@ export class NftsService {
     return this.request<{
       success: boolean;
       response: { items: NftItem[]; cursor: string | null };
-    }>(`${baseUrl}/v1/nfts/on-sale/${encodeURIComponent(collectionAddress)}`, params, network);
+    }>(`${baseUrl}/v1/nfts/on-sale/${encodeURIComponent(collectionAddress)}`, params, 'minting', network);
   }
 
-  private async request<T>(url: string, params: Record<string, string | number>, network?: GetgemsNetwork): Promise<T> {
+  private async request<T>(
+    url: string,
+    params: Record<string, string | number>,
+    scope: 'read' | 'minting' = 'read',
+    network?: GetgemsNetwork,
+  ): Promise<T> {
     const selectedNetwork = this.resolveNetwork(network);
-    const apiKey = this.getReadApiKey(selectedNetwork);
+    const apiKey = this.getApiKey(selectedNetwork, scope);
 
     if (!apiKey) {
       throw new ServiceUnavailableException(
-        `Getgems Read API key is missing for ${selectedNetwork}. Configure ${this.getReadApiKeyEnvVarName(selectedNetwork)} in apps/api/.env before calling read endpoints.`,
+        `Getgems ${scope} API key is missing for ${selectedNetwork}. Configure ${this.getApiKeyEnvVarName(selectedNetwork, scope)} in apps/api/.env before calling endpoints.`,
       );
     }
 
@@ -137,7 +147,7 @@ export class NftsService {
     } catch (error) {
       if (isAxiosError(error)) {
         throw new HttpException(
-          error.response?.data ?? 'GetGems Read API request failed',
+          error.response?.data ?? 'GetGems API request failed',
           error.response?.status ?? 502,
         );
       }
@@ -153,20 +163,17 @@ export class NftsService {
     return this.configService.get('GETGEMS_MAINNET_API_BASE_URL', { infer: true });
   }
 
-  private getReadApiKey(network: GetgemsNetwork): string {
-    if (network === 'testnet') {
-      return this.configService.get('GETGEMS_TESTNET_READ_API_KEY', { infer: true });
-    }
-
-    return this.configService.get('GETGEMS_MAINNET_READ_API_KEY', { infer: true });
+  private getApiKey(network: GetgemsNetwork, scope: 'read' | 'minting'): string {
+    const envVar = this.getApiKeyEnvVarName(network, scope);
+    return this.configService.get(envVar, { infer: true });
   }
 
-  private getReadApiKeyEnvVarName(network: GetgemsNetwork): 'GETGEMS_TESTNET_READ_API_KEY' | 'GETGEMS_MAINNET_READ_API_KEY' {
+  private getApiKeyEnvVarName(network: GetgemsNetwork, scope: 'read' | 'minting'): keyof AppEnvironment {
     if (network === 'testnet') {
-      return 'GETGEMS_TESTNET_READ_API_KEY';
+      return scope === 'read' ? 'GETGEMS_TESTNET_READ_API_KEY' : 'GETGEMS_TESTNET_API_KEY';
     }
 
-    return 'GETGEMS_MAINNET_READ_API_KEY';
+    return scope === 'read' ? 'GETGEMS_MAINNET_READ_API_KEY' : 'GETGEMS_MAINNET_API_KEY';
   }
 
   private resolveNetwork(network?: GetgemsNetwork): GetgemsNetwork {

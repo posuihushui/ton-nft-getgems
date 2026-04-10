@@ -26,12 +26,13 @@ export class NftsController {
     );
   }
 
-  /** GET /api/nfts/item/:nftAddress — Get a single NFT by address */
-  @Get('item/:nftAddress')
+  /** GET /api/nfts/item/:collectionAddress/:nftAddress — Get a single NFT by address */
+  @Get('item/:collectionAddress/:nftAddress')
   getNftItem(
+    @Param('collectionAddress') collectionAddress: string,
     @Param('nftAddress') nftAddress: string,
     @Query() query: NetworkQueryDto,
   ) {
-    return this.nftsService.getNftItem(nftAddress, query.network);
+    return this.nftsService.getNftItem(collectionAddress, nftAddress, query.network);
   }
 }

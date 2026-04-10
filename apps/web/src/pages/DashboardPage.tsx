@@ -1,8 +1,9 @@
 import { Link } from 'react-router-dom';
 
-import type { GetgemsNetwork, HealthPayload } from '../lib/api';
-import { PageHero, SectionIntro, StatGrid, SurfaceCard } from '../components/ui';
 import { Button } from '@/components/ui/button';
+
+import { PageHero, SectionIntro, StatGrid, SurfaceCard } from '../components/ui';
+import type { GetgemsNetwork, HealthPayload } from '../lib/api';
 
 type DashboardPageProps = {
   network: GetgemsNetwork;
@@ -75,19 +76,24 @@ export function DashboardPage({ network, health, onRefresh }: DashboardPageProps
   ];
 
   return (
-    <div className="flex flex-col gap-12 py-8 pb-16">
+    <div className="flex flex-col gap-14 pb-8">
       <PageHero
         eyebrow="Operations overview"
         title="A production-oriented control surface for Getgems launches."
         description="Use the Dashboard to verify environment routing, confirm credentials, and jump into collection or mint operations without losing your selected network."
         actions={
-          <div className="flex flex-wrap gap-4">
-            <Button asChild>
+          <div className="flex flex-wrap gap-3">
+            <Button asChild size="lg">
               <a href={getSwaggerLink(network)} target="_blank" rel="noreferrer">
                 Open {network} Swagger
               </a>
             </Button>
-            <Button variant="outline" onClick={onRefresh}>
+            <Button
+              variant="outline"
+              size="lg"
+              className="border-white/28 text-white hover:bg-white/10 hover:text-white"
+              onClick={onRefresh}
+            >
               Refresh health
             </Button>
           </div>
@@ -102,29 +108,33 @@ export function DashboardPage({ network, health, onRefresh }: DashboardPageProps
 
       <StatGrid items={stats} />
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
         <SurfaceCard
           title="Getgems connectivity"
           description="The health endpoint reflects the currently selected network and the actual Getgems base URL used by the backend."
           headerAction={
-            <Button variant="ghost" size="sm" onClick={onRefresh} className="h-8 text-xs font-semibold text-blue-600 hover:text-blue-700 hover:bg-blue-50">
+            <Button variant="link" size="sm" onClick={onRefresh} className="h-auto px-0 text-[14px]">
               Refresh
             </Button>
           }
         >
-          {health.loading ? <p className="text-sm text-muted-foreground animate-pulse">Checking backend connectivity now.</p> : null}
-          {health.error ? <p className="text-sm text-destructive font-medium">{health.error}</p> : null}
+          {health.loading ? <p className="text-sm text-black/56 animate-pulse">Checking backend connectivity now.</p> : null}
+          {health.error ? <p className="text-sm font-medium text-destructive">{health.error}</p> : null}
           {healthData ? (
-            <div className="space-y-4">
+            <div className="grid gap-4 sm:grid-cols-2">
               {[
                 { label: 'Backend service', value: healthData.service },
                 { label: 'Selected host', value: healthData.getgemsBaseUrl },
                 { label: 'Mainnet key', value: healthData.networkConfig.mainnet ? 'Configured' : 'Missing' },
                 { label: 'Testnet key', value: healthData.networkConfig.testnet ? 'Configured' : 'Missing' },
               ].map((item) => (
-                <div key={item.label} className="flex flex-col gap-1">
-                  <span className="text-xs uppercase tracking-wider text-muted-foreground font-medium">{item.label}</span>
-                  <strong className="text-sm font-semibold truncate text-foreground">{item.value}</strong>
+                <div key={item.label} className="rounded-xl bg-accent px-4 py-4">
+                  <span className="block text-[11px] font-semibold uppercase tracking-[0.08em] text-black/48">
+                    {item.label}
+                  </span>
+                  <strong className="mt-2 block text-[15px] font-semibold tracking-[-0.016em] text-foreground">
+                    {item.value}
+                  </strong>
                 </div>
               ))}
             </div>
@@ -137,9 +147,9 @@ export function DashboardPage({ network, health, onRefresh }: DashboardPageProps
         >
           <ul className="space-y-3">
             {launchChecklist.map((item) => (
-              <li key={item} className="text-sm text-muted-foreground flex gap-2">
-                <span className="text-blue-600 font-bold shrink-0">•</span>
-                {item}
+              <li key={item} className="flex gap-3 text-[15px] leading-7 tracking-[-0.016em] text-black/72">
+                <span className="mt-3 h-1.5 w-1.5 shrink-0 rounded-full bg-primary" />
+                <span>{item}</span>
               </li>
             ))}
           </ul>
@@ -152,14 +162,12 @@ export function DashboardPage({ network, health, onRefresh }: DashboardPageProps
         description="The control surface is organized by operator intent: collection setup first, mint execution second."
       />
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 leading-relaxed">
+      <div className="grid grid-cols-1 gap-6 leading-relaxed md:grid-cols-2">
         {routeCards.map((card) => (
           <SurfaceCard key={card.title} title={card.title} description={card.body}>
-            <div className="mt-4">
+            <div className="mt-2">
               <Button asChild className="w-full sm:w-auto">
-                <Link to={card.href}>
-                  Open {card.title}
-                </Link>
+                <Link to={card.href}>Open {card.title}</Link>
               </Button>
             </div>
           </SurfaceCard>
@@ -172,7 +180,7 @@ export function DashboardPage({ network, health, onRefresh }: DashboardPageProps
         description="Use the current network selection to open the matching Swagger UI, but keep the minting and metadata references close as well."
       />
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
         {docs.map(([label, href]) => {
           const resolvedHref = label === 'Selected Swagger' ? getSwaggerLink(network) : href;
 
@@ -182,12 +190,12 @@ export function DashboardPage({ network, health, onRefresh }: DashboardPageProps
               href={resolvedHref}
               target="_blank"
               rel="noreferrer"
-              className="group bg-card border border-border p-4 rounded-lg transition-all hover:border-blue-200 hover:shadow-md hover:-translate-y-0.5"
+              className="apple-shadow group rounded-xl bg-card p-5 no-underline transition-transform hover:-translate-y-0.5"
             >
-              <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground group-hover:text-blue-600 transition-colors">
+              <span className="text-[11px] font-semibold uppercase tracking-[0.08em] text-black/48 transition-colors group-hover:text-link">
                 {label}
               </span>
-              <strong className="block text-sm font-bold mt-1 truncate text-foreground group-hover:underline underline-offset-4 decoration-blue-500/30">
+              <strong className="mt-2 block truncate font-heading text-[21px] font-semibold leading-[1.19] tracking-[-0.022em] text-foreground group-hover:text-link">
                 {resolvedHref}
               </strong>
             </a>

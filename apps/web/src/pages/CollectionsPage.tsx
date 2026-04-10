@@ -229,7 +229,7 @@ export function CollectionsPage({ network, health }: CollectionsPageProps) {
   }
 
   return (
-    <div className="flex flex-col gap-10 py-8 pb-16">
+    <div className="flex flex-col gap-12 pb-8">
       <PageHero
         eyebrow="Collections"
         title="Create and maintain collection state without leaving the control surface."
@@ -365,7 +365,7 @@ export function CollectionsPage({ network, health }: CollectionsPageProps) {
               </FormField>
             </div>
 
-            <div className="flex justify-end pt-4 border-t">
+            <div className="flex justify-end border-t border-black/6 pt-4">
               <Button type="submit" disabled={createState.loading} className="px-8 h-11">
                 {createState.loading ? 'Creating...' : 'Create collection'}
               </Button>
@@ -404,7 +404,7 @@ export function CollectionsPage({ network, health }: CollectionsPageProps) {
               </FormField>
             </div>
 
-            <div className="flex justify-end pt-4 border-t">
+            <div className="flex justify-end border-t border-black/6 pt-4">
               <Button type="submit" variant="secondary" disabled={statusState.loading} className="w-full sm:w-auto">
                 {statusState.loading ? 'Checking...' : 'Check status'}
               </Button>
@@ -445,7 +445,7 @@ export function CollectionsPage({ network, health }: CollectionsPageProps) {
               </FormField>
             </div>
 
-            <div className="flex justify-end pt-4 border-t">
+            <div className="flex justify-end border-t border-black/6 pt-4">
               <Button type="submit" variant="secondary" disabled={uploadState.loading} className="w-full sm:w-auto">
                 {uploadState.loading ? 'Requesting...' : 'Request credentials'}
               </Button>
@@ -553,7 +553,7 @@ export function CollectionsPage({ network, health }: CollectionsPageProps) {
               </FormField>
             </div>
 
-            <div className="flex justify-end pt-4 border-t">
+            <div className="flex justify-end border-t border-black/6 pt-4">
               <Button type="submit" disabled={updateState.loading} className="px-8 h-11">
                 {updateState.loading ? 'Updating...' : 'Update collection'}
               </Button>

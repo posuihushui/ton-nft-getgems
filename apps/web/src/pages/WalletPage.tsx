@@ -86,7 +86,7 @@ export function WalletPage({ network, health }: WalletPageProps) {
   }
 
   return (
-    <div className="flex flex-col gap-10 py-8 pb-16">
+    <div className="flex flex-col gap-12 pb-8">
       <PageHero
         eyebrow="Wallet operations"
         title="Manage the minting wallet assigned to your collection."
@@ -112,7 +112,7 @@ export function WalletPage({ network, health }: WalletPageProps) {
                 required
               />
             </FormField>
-            <div className="flex justify-end pt-4 border-t">
+            <div className="flex justify-end border-t border-black/6 pt-4">
               <Button type="submit" variant="secondary" disabled={balanceState.loading} className="w-full sm:w-auto px-6">
                 {balanceState.loading ? 'Checking...' : 'Check balance'}
               </Button>
@@ -144,7 +144,7 @@ export function WalletPage({ network, health }: WalletPageProps) {
                 />
               </FormField>
             </div>
-            <div className="flex justify-end pt-4 border-t">
+            <div className="flex justify-end border-t border-black/6 pt-4">
               <Button type="submit" disabled={refundState.loading} className="w-full sm:w-auto px-8">
                 {refundState.loading ? 'Processing...' : 'Execute refund'}
               </Button>
@@ -181,12 +181,12 @@ export function WalletPage({ network, health }: WalletPageProps) {
               />
             </FormField>
           </div>
-          <div className="flex justify-end pt-4 border-t">
+          <div className="flex justify-end border-t border-black/6 pt-4">
             <Button
               variant="destructive"
               type="submit"
               disabled={deactivateState.loading}
-              className="w-full sm:w-auto px-8 shadow-lg shadow-destructive/20"
+              className="w-full sm:w-auto px-8"
             >
               {deactivateState.loading ? 'Deactivating...' : 'Deactivate API'}
             </Button>

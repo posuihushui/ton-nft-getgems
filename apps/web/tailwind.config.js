@@ -50,6 +50,18 @@ export default {
           DEFAULT: "hsl(var(--card))",
           foreground: "hsl(var(--card-foreground))",
         },
+        page: {
+          dark: "hsl(var(--page-dark))",
+          light: "hsl(var(--background))",
+        },
+        panel: {
+          dark: "hsl(var(--panel-dark))",
+          elevated: "hsl(var(--panel-dark-elevated))",
+        },
+        link: {
+          DEFAULT: "hsl(var(--link))",
+          dark: "hsl(var(--link-dark))",
+        },
       },
       borderRadius: {
         lg: `var(--radius)`,
@@ -57,7 +69,30 @@ export default {
         sm: "calc(var(--radius) - 4px)",
       },
       fontFamily: {
-        sans: ["Inter", ...defaultTheme.fontFamily.sans],
+        sans: [
+          "-apple-system",
+          "BlinkMacSystemFont",
+          "SF Pro Text",
+          "SF Pro Display",
+          "Helvetica Neue",
+          "Helvetica",
+          "Arial",
+          ...defaultTheme.fontFamily.sans,
+        ],
+        heading: [
+          "SF Pro Display",
+          "SF Pro Icons",
+          "Helvetica Neue",
+          "Helvetica",
+          "Arial",
+          ...defaultTheme.fontFamily.sans,
+        ],
+      },
+      boxShadow: {
+        apple: "3px 5px 30px rgba(0, 0, 0, 0.22)",
+      },
+      maxWidth: {
+        content: "980px",
       },
       keyframes: {
         "accordion-down": {
@@ -77,4 +112,3 @@ export default {
   },
   plugins: [require("tailwindcss-animate")],
 }
-
