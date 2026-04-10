@@ -302,6 +302,50 @@ export async function getNftUpdateStatus(
   );
 }
 
+export type NftItem = {
+  address: string;
+  collectionAddress: string;
+  ownerAddress: string;
+  actualOwnerAddress?: string;
+  image: string;
+  name: string;
+  description: string;
+  attributes: Array<{ trait_type: string; value: string }>;
+  sale: null | {
+    type: string;
+    currency: string;
+    minBid?: string;
+    maxBid?: string | null;
+    price?: string;
+  };
+};
+
+export async function getCollectionNfts(
+  collectionAddress: string,
+  network: GetgemsNetwork,
+  options?: { cursor?: string; limit?: number },
+): Promise<{ success: boolean; response: { items: NftItem[]; cursor: string | null } }> {
+  return request(`/nfts/collection/${encodeURIComponent(collectionAddress)}`, {
+    method: 'GET',
+    network,
+    query: {
+      cursor: options?.cursor,
+      limit: options?.limit,
+    },
+  });
+}
+
+export async function getNftItem(
+  nftAddress: string,
+  network: GetgemsNetwork,
+): Promise<{ success: boolean; response: NftItem }> {
+  return request(`/nfts/item/${encodeURIComponent(nftAddress)}`, {
+    method: 'GET',
+    network,
+  });
+}
+
+
 async function request<T>(path: string, options: RequestOptions): Promise<T> {
   const query = new URLSearchParams();
 

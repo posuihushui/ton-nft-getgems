@@ -23,7 +23,9 @@ The backend runs on `http://localhost:3000/api` and the frontend runs on `http:/
 Backend default network:
 
 - `NETWORK=mainnet` or `NETWORK=testnet`
+- `GETGEMS_MAINNET_READ_API_KEY`
 - `GETGEMS_MAINNET_API_KEY`
+- `GETGEMS_TESTNET_READ_API_KEY`
 - `GETGEMS_TESTNET_API_KEY`
 - `GETGEMS_MAINNET_API_BASE_URL`
 - `GETGEMS_TESTNET_API_BASE_URL`

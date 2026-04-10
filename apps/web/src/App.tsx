@@ -9,10 +9,13 @@ import {
   type HealthPayload,
 } from './lib/api';
 
-import { CollectionsPage } from './pages/CollectionsPage';
 import { DashboardPage } from './pages/DashboardPage';
 import { MintPage } from './pages/MintPage';
+import { NftsPage } from './pages/NftsPage';
 import { WalletPage } from './pages/WalletPage';
+import { TooltipProvider } from '@/components/ui/tooltip';
+import { Button } from '@/components/ui/button';
+import { cn } from '@/lib/utils';
 
 export type AsyncState = {
   loading: boolean;
@@ -68,40 +71,57 @@ function Layout() {
   const contextValue: NetworkContextType = { network, health, refreshHealth };
 
   return (
-    <div className="app-shell">
-      <header className="global-nav">
-        <div className="nav-inner">
-          <NavLink className="brand" to="/">
-            TON Getgems Issuer
-          </NavLink>
+    <TooltipProvider>
+      <div className="min-h-screen bg-background text-foreground selection:bg-blue-100">
+        <header className="sticky top-0 z-50 w-full border-b bg-background/80 backdrop-blur-md">
+          <div className="container mx-auto max-w-5xl h-14 flex items-center justify-between px-4">
+            <NavLink className="text-sm font-bold tracking-tight hover:opacity-80 transition-opacity" to="/">
+              TON GetGems Issuer
+            </NavLink>
 
-          <nav className="nav-links" aria-label="Primary">
-            <NavLink to="/">Dashboard</NavLink>
-            <NavLink to="/collections">Collections</NavLink>
-            <NavLink to="/mint">Minting</NavLink>
-            <NavLink to="/wallet">Wallet</NavLink>
-          </nav>
+            <nav className="hidden md:flex items-center gap-6 ml-6" aria-label="Primary">
+              {[
+                { to: '/', label: 'Dashboard' },
+                { to: '/nfts', label: 'NFTs' },
+                { to: '/mint', label: 'Mint' },
+                { to: '/wallet', label: 'Wallet' },
+              ].map((link) => (
+                <NavLink
+                  key={link.to}
+                  to={link.to}
+                  className={({ isActive }) =>
+                    cn(
+                      "text-xs font-medium transition-colors hover:text-blue-600",
+                      isActive ? "text-blue-600 font-semibold" : "text-muted-foreground"
+                    )
+                  }
+                >
+                  {link.label}
+                </NavLink>
+              ))}
+            </nav>
 
-          <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
-            {enabledNetworks.map((candidate) => (
-              <button
-                key={candidate}
-                type="button"
-                className={`network-toggle${candidate === network ? ' is-active' : ''}`}
-                onClick={() => setNetwork(candidate)}
-                style={{ minHeight: '28px', padding: '4px 12px', fontSize: '13px', borderRadius: '6px', borderWidth: '2px' }}
-              >
-                {candidate}
-              </button>
-            ))}
+            <div className="flex items-center gap-2">
+              {enabledNetworks.map((candidate) => (
+                <Button
+                  key={candidate}
+                  variant={candidate === network ? "default" : "outline"}
+                  size="sm"
+                  className="h-8 px-3 text-[11px] font-bold uppercase tracking-wider transition-all"
+                  onClick={() => setNetwork(candidate)}
+                >
+                  {candidate}
+                </Button>
+              ))}
+            </div>
           </div>
-        </div>
-      </header>
+        </header>
 
-      <main>
-        <Outlet context={contextValue} />
-      </main>
-    </div>
+        <main className="container mx-auto max-w-5xl px-4">
+          <Outlet context={contextValue} />
+        </main>
+      </div>
+    </TooltipProvider>
   );
 }
 
@@ -114,9 +134,9 @@ function DashboardRoute() {
   return <DashboardPage network={network} health={health} onRefresh={refreshHealth} />;
 }
 
-function CollectionsRoute() {
+function NftsRoute() {
   const { network, health } = useNetworkContext();
-  return <CollectionsPage network={network} health={health} />;
+  return <NftsPage network={network} health={health} />;
 }
 
 function MintRoute() {
@@ -135,7 +155,7 @@ export default function App() {
       <Routes>
         <Route path="/" element={<Layout />}>
           <Route index element={<DashboardRoute />} />
-          <Route path="collections" element={<CollectionsRoute />} />
+          <Route path="nfts" element={<NftsRoute />} />
           <Route path="mint" element={<MintRoute />} />
           <Route path="wallet" element={<WalletRoute />} />
         </Route>
@@ -143,3 +163,4 @@ export default function App() {
     </BrowserRouter>
   );
 }
+

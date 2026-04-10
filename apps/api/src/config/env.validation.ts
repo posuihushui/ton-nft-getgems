@@ -11,6 +11,8 @@ export type AppEnvironment = {
   NETWORK: GetgemsNetwork;
   GETGEMS_MAINNET_API_BASE_URL: string;
   GETGEMS_TESTNET_API_BASE_URL: string;
+  GETGEMS_MAINNET_READ_API_KEY: string;
+  GETGEMS_TESTNET_READ_API_KEY: string;
   GETGEMS_MAINNET_API_KEY: string;
   GETGEMS_TESTNET_API_KEY: string;
   GETGEMS_COLLECTION_ADDRESS: string;
@@ -40,6 +42,8 @@ export function validateEnvironment(raw: Record<string, unknown>): AppEnvironmen
     GETGEMS_TESTNET_API_BASE_URL: String(
       raw.GETGEMS_TESTNET_API_BASE_URL ?? 'https://api.testnet.getgems.io/public-api',
     ).replace(/\/$/, ''),
+    GETGEMS_MAINNET_READ_API_KEY: String(raw.GETGEMS_MAINNET_READ_API_KEY ?? ''),
+    GETGEMS_TESTNET_READ_API_KEY: String(raw.GETGEMS_TESTNET_READ_API_KEY ?? ''),
     GETGEMS_MAINNET_API_KEY: String(raw.GETGEMS_MAINNET_API_KEY ?? ''),
     GETGEMS_TESTNET_API_KEY: String(raw.GETGEMS_TESTNET_API_KEY ?? ''),
     GETGEMS_COLLECTION_ADDRESS: String(raw.GETGEMS_COLLECTION_ADDRESS ?? ''),

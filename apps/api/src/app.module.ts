@@ -5,6 +5,7 @@ import { validateEnvironment } from './config/env.validation';
 import { GetgemsModule } from './getgems/getgems.module';
 import { HealthModule } from './health/health.module';
 import { MintingModule } from './minting/minting.module';
+import { NftsModule } from './nfts/nfts.module';
 
 @Module({
   imports: [
@@ -16,7 +17,9 @@ import { MintingModule } from './minting/minting.module';
     HealthModule,
     GetgemsModule,
     MintingModule,
+    NftsModule,
   ],
 })
 export class AppModule {}
+
 

@@ -1,15 +1,18 @@
 import { useEffect, useState, type FormEvent } from 'react';
 
-import { FormField, PageHero, ResultPanel, SectionIntro, SurfaceCard, type OperationState } from '../components/ui';
+import { FormField, PageHero, ResultPanel, SectionIntro, SurfaceCard, type OperationState } from '@/components/ui';
 import {
   createCollectionFromTemplate,
   createUploadCredentials,
   updateCollectionMetadata,
   getCollectionCreationStatus,
   type GetgemsNetwork,
-} from '../lib/api';
+} from '@/lib/api';
 
-import type { AsyncState } from '../App';
+import type { AsyncState } from '@/App';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Textarea } from '@/components/ui/textarea';
 
 type CollectionsPageProps = {
   network: GetgemsNetwork;
@@ -226,20 +229,21 @@ export function CollectionsPage({ network, health }: CollectionsPageProps) {
   }
 
   return (
-    <div className="page-stack">
+    <div className="flex flex-col gap-10 py-8 pb-16">
       <PageHero
         eyebrow="Collections"
         title="Create and maintain collection state without leaving the control surface."
         description="Use the collection tools to submit creation requests, check progress, request upload credentials, and update metadata on the currently selected network."
         actions={
-          <a
-            className="cta cta-primary"
-            href="https://github.com/getgems-io/nft-contracts/blob/main/docs/minting-api-en.md"
-            target="_blank"
-            rel="noreferrer"
-          >
-            Review minting guide
-          </a>
+          <Button asChild>
+            <a
+              href="https://github.com/getgems-io/nft-contracts/blob/main/docs/minting-api-en.md"
+              target="_blank"
+              rel="noreferrer"
+            >
+              Review minting guide
+            </a>
+          </Button>
         }
       />
 
@@ -249,16 +253,15 @@ export function CollectionsPage({ network, health }: CollectionsPageProps) {
         description="Collection creation on Getgems still deserves testnet validation first, so this page keeps creation, lookup, upload, and metadata maintenance close together."
       />
 
-      <div className="content-grid content-grid-two">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
         <SurfaceCard
           title="Create collection"
           description="Submit a new collection creation request using a template collection context and the currently selected network."
         >
-          <form className="operation-form" onSubmit={handleCreateCollection}>
-            <div className="form-grid form-grid-two">
-              <FormField label="Template collection address" hint="Used as the route context for new-collection.">
-                <input
-                  className="text-input"
+          <form className="space-y-8" onSubmit={handleCreateCollection}>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <FormField label="Template collection address" hint="Used as route context">
+                <Input
                   value={createForm.templateCollectionAddress}
                   onChange={(event) =>
                     setCreateForm((current) => ({ ...current, templateCollectionAddress: event.target.value }))
@@ -268,76 +271,74 @@ export function CollectionsPage({ network, health }: CollectionsPageProps) {
                 />
               </FormField>
               <FormField label="Request ID">
-                <input
-                  className="text-input"
+                <Input
                   value={createForm.requestId}
                   onChange={(event) => setCreateForm((current) => ({ ...current, requestId: event.target.value }))}
                   required
                 />
               </FormField>
               <FormField label="Owner address">
-                <input
-                  className="text-input"
+                <Input
                   value={createForm.ownerAddress}
                   onChange={(event) => setCreateForm((current) => ({ ...current, ownerAddress: event.target.value }))}
                   placeholder="UQ..."
                   required
                 />
               </FormField>
-              <FormField label="Royalty percent">
-                <input
-                  className="text-input"
-                  type="number"
-                  min="0"
-                  max="49"
-                  value={createForm.royaltyPercent}
-                  onChange={(event) =>
-                    setCreateForm((current) => ({ ...current, royaltyPercent: event.target.value }))
-                  }
-                  required
-                />
-              </FormField>
-              <FormField label="Royalty address">
-                <input
-                  className="text-input"
-                  value={createForm.royaltyAddress}
-                  onChange={(event) =>
-                    setCreateForm((current) => ({ ...current, royaltyAddress: event.target.value }))
-                  }
-                  placeholder="UQ..."
-                  required
-                />
-              </FormField>
-              <FormField label="Collection name">
-                <input
-                  className="text-input"
-                  value={createForm.name}
-                  onChange={(event) => setCreateForm((current) => ({ ...current, name: event.target.value }))}
-                  required
-                />
-              </FormField>
-              <FormField label="Description" hint="Up to 1000 characters." >
-                <textarea
-                  className="text-area"
-                  value={createForm.description}
-                  onChange={(event) =>
-                    setCreateForm((current) => ({ ...current, description: event.target.value }))
-                  }
-                  rows={4}
-                  required
-                />
-              </FormField>
+              <div className="grid grid-cols-2 gap-4">
+                <FormField label="Royalty %">
+                  <Input
+                    type="number"
+                    min="0"
+                    max="49"
+                    value={createForm.royaltyPercent}
+                    onChange={(event) =>
+                      setCreateForm((current) => ({ ...current, royaltyPercent: event.target.value }))
+                    }
+                    required
+                  />
+                </FormField>
+                <FormField label="Royalty address">
+                  <Input
+                    value={createForm.royaltyAddress}
+                    onChange={(event) =>
+                      setCreateForm((current) => ({ ...current, royaltyAddress: event.target.value }))
+                    }
+                    placeholder="UQ..."
+                    required
+                  />
+                </FormField>
+              </div>
+              <div className="md:col-span-2">
+                <FormField label="Collection name">
+                  <Input
+                    value={createForm.name}
+                    onChange={(event) => setCreateForm((current) => ({ ...current, name: event.target.value }))}
+                    required
+                  />
+                </FormField>
+              </div>
+              <div className="md:col-span-2">
+                <FormField label="Description" hint="Up to 1000 characters.">
+                  <Textarea
+                    value={createForm.description}
+                    onChange={(event) =>
+                      setCreateForm((current) => ({ ...current, description: event.target.value }))
+                    }
+                    rows={4}
+                    required
+                  />
+                </FormField>
+              </div>
               <FormField label="Image URL">
-                <input
-                  className="text-input"
+                <Input
                   value={createForm.image}
                   onChange={(event) => setCreateForm((current) => ({ ...current, image: event.target.value }))}
                   placeholder="https://..."
                 />
               </FormField>
               <FormField label="External link">
-                <input
-                  className="text-input"
+                <Input
                   value={createForm.externalLink}
                   onChange={(event) =>
                     setCreateForm((current) => ({ ...current, externalLink: event.target.value }))
@@ -346,16 +347,14 @@ export function CollectionsPage({ network, health }: CollectionsPageProps) {
                 />
               </FormField>
               <FormField label="Cover image URL">
-                <input
-                  className="text-input"
+                <Input
                   value={createForm.coverImage}
                   onChange={(event) => setCreateForm((current) => ({ ...current, coverImage: event.target.value }))}
                   placeholder="https://..."
                 />
               </FormField>
-              <FormField label="Social links" hint="One URL per line or comma separated.">
-                <textarea
-                  className="text-area"
+              <FormField label="Social links" hint="Comma or newline separated">
+                <Textarea
                   value={createForm.socialLinks}
                   onChange={(event) =>
                     setCreateForm((current) => ({ ...current, socialLinks: event.target.value }))
@@ -366,29 +365,28 @@ export function CollectionsPage({ network, health }: CollectionsPageProps) {
               </FormField>
             </div>
 
-            <div className="form-actions">
-              <button className="cta cta-primary" type="submit" disabled={createState.loading}>
+            <div className="flex justify-end pt-4 border-t">
+              <Button type="submit" disabled={createState.loading} className="px-8 h-11">
                 {createState.loading ? 'Creating...' : 'Create collection'}
-              </button>
+              </Button>
             </div>
           </form>
 
           <ResultPanel
             title="Collection creation response"
             state={createState}
-            emptyMessage="Submit a creation request to see the Getgems response payload here."
+            emptyMessage="Submit a creation request to see response."
           />
         </SurfaceCard>
 
         <SurfaceCard
-          title="Check collection status"
-          description="Look up the status of a collection creation request using the same template address and request ID."
+          title="Check status"
+          description="Look up status of a collection creation request."
         >
-          <form className="operation-form" onSubmit={handleGetCollectionStatus}>
-            <div className="form-grid">
+          <form className="space-y-6" onSubmit={handleGetCollectionStatus}>
+            <div className="space-y-4">
               <FormField label="Template collection address">
-                <input
-                  className="text-input"
+                <Input
                   value={statusForm.templateCollectionAddress}
                   onChange={(event) =>
                     setStatusForm((current) => ({ ...current, templateCollectionAddress: event.target.value }))
@@ -398,8 +396,7 @@ export function CollectionsPage({ network, health }: CollectionsPageProps) {
                 />
               </FormField>
               <FormField label="Request ID">
-                <input
-                  className="text-input"
+                <Input
                   value={statusForm.requestId}
                   onChange={(event) => setStatusForm((current) => ({ ...current, requestId: event.target.value }))}
                   required
@@ -407,31 +404,30 @@ export function CollectionsPage({ network, health }: CollectionsPageProps) {
               </FormField>
             </div>
 
-            <div className="form-actions">
-              <button className="cta cta-dark" type="submit" disabled={statusState.loading}>
+            <div className="flex justify-end pt-4 border-t">
+              <Button type="submit" variant="secondary" disabled={statusState.loading} className="w-full sm:w-auto">
                 {statusState.loading ? 'Checking...' : 'Check status'}
-              </button>
+              </Button>
             </div>
           </form>
 
           <ResultPanel
             title="Collection status"
             state={statusState}
-            emptyMessage="Request status will appear here after you submit a lookup."
+            emptyMessage="Status will appear here."
           />
         </SurfaceCard>
       </div>
 
-      <div className="content-grid content-grid-two">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
         <SurfaceCard
           title="Create upload credentials"
-          description="Request temporary upload credentials for a file tied to an existing collection."
+          description="Request temporary upload credentials for a file."
         >
-          <form className="operation-form" onSubmit={handleCreateUploadCredentials}>
-            <div className="form-grid">
+          <form className="space-y-6" onSubmit={handleCreateUploadCredentials}>
+            <div className="space-y-4">
               <FormField label="Collection address">
-                <input
-                  className="text-input"
+                <Input
                   value={uploadForm.collectionAddress}
                   onChange={(event) =>
                     setUploadForm((current) => ({ ...current, collectionAddress: event.target.value }))
@@ -440,9 +436,8 @@ export function CollectionsPage({ network, health }: CollectionsPageProps) {
                   required
                 />
               </FormField>
-              <FormField label="File name" hint="Supports optional extension such as cover.png or metadata.json.">
-                <input
-                  className="text-input"
+              <FormField label="File name" hint="e.g. cover.png or metadata.json">
+                <Input
                   value={uploadForm.fileName}
                   onChange={(event) => setUploadForm((current) => ({ ...current, fileName: event.target.value }))}
                   required
@@ -450,29 +445,28 @@ export function CollectionsPage({ network, health }: CollectionsPageProps) {
               </FormField>
             </div>
 
-            <div className="form-actions">
-              <button className="cta cta-dark" type="submit" disabled={uploadState.loading}>
+            <div className="flex justify-end pt-4 border-t">
+              <Button type="submit" variant="secondary" disabled={uploadState.loading} className="w-full sm:w-auto">
                 {uploadState.loading ? 'Requesting...' : 'Request credentials'}
-              </button>
+              </Button>
             </div>
           </form>
 
           <ResultPanel
             title="Upload credentials"
             state={uploadState}
-            emptyMessage="Upload URL, key prefix, and form fields will appear here after the request succeeds."
+            emptyMessage="Credentials will appear here."
           />
         </SurfaceCard>
 
         <SurfaceCard
-          title="Update collection metadata"
-          description="Patch collection metadata and royalty settings on the currently selected network."
+          title="Update metadata"
+          description="Patch collection metadata and royalty settings."
         >
-          <form className="operation-form" onSubmit={handleUpdateCollection}>
-            <div className="form-grid form-grid-two">
+          <form className="space-y-8" onSubmit={handleUpdateCollection}>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <FormField label="Collection address">
-                <input
-                  className="text-input"
+                <Input
                   value={updateForm.collectionAddress}
                   onChange={(event) =>
                     setUpdateForm((current) => ({ ...current, collectionAddress: event.target.value }))
@@ -481,23 +475,20 @@ export function CollectionsPage({ network, health }: CollectionsPageProps) {
                   required
                 />
               </FormField>
-              <FormField label="Request ID" hint="Optional, but useful for tracking update requests.">
-                <input
-                  className="text-input"
+              <FormField label="Request ID">
+                <Input
                   value={updateForm.requestId}
                   onChange={(event) => setUpdateForm((current) => ({ ...current, requestId: event.target.value }))}
                 />
               </FormField>
               <FormField label="Name">
-                <input
-                  className="text-input"
+                <Input
                   value={updateForm.name}
                   onChange={(event) => setUpdateForm((current) => ({ ...current, name: event.target.value }))}
                 />
               </FormField>
-              <FormField label="Royalty percent">
-                <input
-                  className="text-input"
+              <FormField label="Royalty %">
+                <Input
                   type="number"
                   min="0"
                   max="49"
@@ -507,19 +498,19 @@ export function CollectionsPage({ network, health }: CollectionsPageProps) {
                   }
                 />
               </FormField>
-              <FormField label="Description">
-                <textarea
-                  className="text-area"
-                  value={updateForm.description}
-                  onChange={(event) =>
-                    setUpdateForm((current) => ({ ...current, description: event.target.value }))
-                  }
-                  rows={4}
-                />
-              </FormField>
+              <div className="md:col-span-2">
+                <FormField label="Description">
+                  <Textarea
+                    value={updateForm.description}
+                    onChange={(event) =>
+                      setUpdateForm((current) => ({ ...current, description: event.target.value }))
+                    }
+                    rows={4}
+                  />
+                </FormField>
+              </div>
               <FormField label="Royalty address">
-                <input
-                  className="text-input"
+                <Input
                   value={updateForm.royaltyAddress}
                   onChange={(event) =>
                     setUpdateForm((current) => ({ ...current, royaltyAddress: event.target.value }))
@@ -528,16 +519,14 @@ export function CollectionsPage({ network, health }: CollectionsPageProps) {
                 />
               </FormField>
               <FormField label="Image URL">
-                <input
-                  className="text-input"
+                <Input
                   value={updateForm.image}
                   onChange={(event) => setUpdateForm((current) => ({ ...current, image: event.target.value }))}
                   placeholder="https://..."
                 />
               </FormField>
               <FormField label="External link">
-                <input
-                  className="text-input"
+                <Input
                   value={updateForm.externalLink}
                   onChange={(event) =>
                     setUpdateForm((current) => ({ ...current, externalLink: event.target.value }))
@@ -546,16 +535,14 @@ export function CollectionsPage({ network, health }: CollectionsPageProps) {
                 />
               </FormField>
               <FormField label="Cover image URL">
-                <input
-                  className="text-input"
+                <Input
                   value={updateForm.coverImage}
                   onChange={(event) => setUpdateForm((current) => ({ ...current, coverImage: event.target.value }))}
                   placeholder="https://..."
                 />
               </FormField>
               <FormField label="Social links">
-                <textarea
-                  className="text-area"
+                <Textarea
                   value={updateForm.socialLinks}
                   onChange={(event) =>
                     setUpdateForm((current) => ({ ...current, socialLinks: event.target.value }))
@@ -566,15 +553,15 @@ export function CollectionsPage({ network, health }: CollectionsPageProps) {
               </FormField>
             </div>
 
-            <div className="form-actions">
-              <button className="cta cta-primary" type="submit" disabled={updateState.loading}>
+            <div className="flex justify-end pt-4 border-t">
+              <Button type="submit" disabled={updateState.loading} className="px-8 h-11">
                 {updateState.loading ? 'Updating...' : 'Update collection'}
-              </button>
+              </Button>
             </div>
           </form>
 
           <ResultPanel
-            title="Collection update response"
+            title="Update response"
             state={updateState}
             emptyMessage="Updated metadata responses will render here."
           />

@@ -9,6 +9,7 @@ export type BatchMintItem = {
   description: string;
   image: string;
   attributes: Array<{ trait_type: string; value: string }>;
+  _error?: string;
 };
 
 export type CsvParseError = {
@@ -25,7 +26,7 @@ const TEMPLATE_HEADER = 'ownerAddress,name,description,image,attributes';
 
 const TEMPLATE_ROWS = [
   'UQB5HQfjevz9su4ZQGcDT_4IB0IUGh5PM2vAXPU2e4O6_YBm,Genesis #1,First NFT in the collection,https://example.com/1.png,"[{""trait_type"":""Tier"",""value"":""Gold""}]"',
-  'UQC7KxExampleAddress_Replace_With_Real,Genesis #2,Second NFT in the collection,https://example.com/2.png,"[{""trait_type"":""Tier"",""value"":""Silver""},{""trait_type"":""Rarity"",""value"":""Rare""}]"',
+  'UQAoVzGcKCJ2Cs8ggxqiSb9rf51RgyzWcJx-oZWF1RryME2u,Genesis #2,Second NFT in the collection,https://example.com/2.png,"[{""trait_type"":""Tier"",""value"":""Silver""},{""trait_type"":""Rarity"",""value"":""Rare""}]"',
 ];
 
 /**
@@ -151,7 +152,9 @@ export function parseCsvText(text: string): CsvParseResult {
     }
 
     if (rowErrors.length > 0) {
-      errors.push({ row: rowNum, message: rowErrors.join('; ') });
+      const errorMessage = rowErrors.join('; ');
+      errors.push({ row: rowNum, message: errorMessage });
+      items.push({ ownerAddress, name, description, image, attributes, _error: errorMessage });
     } else {
       items.push({ ownerAddress, name, description, image, attributes });
     }

@@ -1,8 +1,10 @@
 import { useEffect, useState, type FormEvent } from 'react';
 
-import { FormField, PageHero, ResultPanel, SectionIntro, SurfaceCard, type OperationState } from '../components/ui';
-import { deactivateApi, getWalletBalance, refundWallet, type GetgemsNetwork } from '../lib/api';
-import type { AsyncState } from '../App';
+import { FormField, PageHero, ResultPanel, SectionIntro, SurfaceCard, type OperationState } from '@/components/ui';
+import { deactivateApi, getWalletBalance, refundWallet, type GetgemsNetwork } from '@/lib/api';
+import type { AsyncState } from '@/App';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
 
 type WalletPageProps = {
   network: GetgemsNetwork;
@@ -84,7 +86,7 @@ export function WalletPage({ network, health }: WalletPageProps) {
   }
 
   return (
-    <div className="page-stack">
+    <div className="flex flex-col gap-10 py-8 pb-16">
       <PageHero
         eyebrow="Wallet operations"
         title="Manage the minting wallet assigned to your collection."
@@ -97,26 +99,23 @@ export function WalletPage({ network, health }: WalletPageProps) {
         description="The Getgems API operates non-custodially, but requires gas for network fees. You can refund unused balance to a secure external address."
       />
 
-      <div className="content-grid content-grid-two">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
         <SurfaceCard
           title="Check wallet balance"
           description="Read the current balance of the underlying smart contract wallet for your active network."
         >
-          <form className="operation-form" onSubmit={handleGetBalance}>
-            <div className="form-grid">
-              <FormField label="Collection address">
-                <input
-                  className="text-input"
-                  value={balanceForm.collectionAddress}
-                  onChange={(e) => setBalanceForm((c) => ({ ...c, collectionAddress: e.target.value }))}
-                  required
-                />
-              </FormField>
-            </div>
-            <div className="form-actions">
-              <button className="cta cta-dark" type="submit" disabled={balanceState.loading}>
+          <form className="space-y-6" onSubmit={handleGetBalance}>
+            <FormField label="Collection address">
+              <Input
+                value={balanceForm.collectionAddress}
+                onChange={(e) => setBalanceForm((c) => ({ ...c, collectionAddress: e.target.value }))}
+                required
+              />
+            </FormField>
+            <div className="flex justify-end pt-4 border-t">
+              <Button type="submit" variant="secondary" disabled={balanceState.loading} className="w-full sm:w-auto px-6">
                 {balanceState.loading ? 'Checking...' : 'Check balance'}
-              </button>
+              </Button>
             </div>
           </form>
 
@@ -127,19 +126,17 @@ export function WalletPage({ network, health }: WalletPageProps) {
           title="Refund wallet"
           description="Withdraw all available TON from the minting wallet to an external receiver address."
         >
-          <form className="operation-form" onSubmit={handleRefund}>
-            <div className="form-grid">
+          <form className="space-y-6" onSubmit={handleRefund}>
+            <div className="space-y-4">
               <FormField label="Collection address">
-                <input
-                  className="text-input"
+                <Input
                   value={refundForm.collectionAddress}
                   onChange={(e) => setRefundForm((c) => ({ ...c, collectionAddress: e.target.value }))}
                   required
                 />
               </FormField>
               <FormField label="Receiver address">
-                <input
-                  className="text-input"
+                <Input
                   value={refundForm.receiverAddress}
                   onChange={(e) => setRefundForm((c) => ({ ...c, receiverAddress: e.target.value }))}
                   placeholder="UQ..."
@@ -147,10 +144,10 @@ export function WalletPage({ network, health }: WalletPageProps) {
                 />
               </FormField>
             </div>
-            <div className="form-actions">
-              <button className="cta cta-primary" type="submit" disabled={refundState.loading}>
+            <div className="flex justify-end pt-4 border-t">
+              <Button type="submit" disabled={refundState.loading} className="w-full sm:w-auto px-8">
                 {refundState.loading ? 'Processing...' : 'Execute refund'}
-              </button>
+              </Button>
             </div>
           </form>
 
@@ -165,30 +162,34 @@ export function WalletPage({ network, health }: WalletPageProps) {
       />
 
       <SurfaceCard title="Deactivate API" description="This action immediately stops all API operations and is irreversible. Proceed with extreme caution.">
-        <form className="operation-form" onSubmit={handleDeactivate}>
-          <div className="form-grid">
+        <form className="space-y-6" onSubmit={handleDeactivate}>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <FormField label="Collection address">
-              <input
-                className="text-input"
+              <Input
                 value={deactivateForm.collectionAddress}
                 onChange={(e) => setDeactivateForm((c) => ({ ...c, collectionAddress: e.target.value }))}
                 required
               />
             </FormField>
             <FormField label="Confirmation text" hint="Type DEACTIVATE to confirm">
-              <input
-                className="text-input"
+              <Input
                 value={deactivateForm.confirmText}
                 onChange={(e) => setDeactivateForm((c) => ({ ...c, confirmText: e.target.value }))}
                 placeholder="DEACTIVATE"
                 required
+                className="border-destructive/50 focus-visible:ring-destructive/50"
               />
             </FormField>
           </div>
-          <div className="form-actions">
-            <button className="cta cta-primary" style={{ background: '#c00' }} type="submit" disabled={deactivateState.loading}>
+          <div className="flex justify-end pt-4 border-t">
+            <Button
+              variant="destructive"
+              type="submit"
+              disabled={deactivateState.loading}
+              className="w-full sm:w-auto px-8 shadow-lg shadow-destructive/20"
+            >
               {deactivateState.loading ? 'Deactivating...' : 'Deactivate API'}
-            </button>
+            </Button>
           </div>
         </form>
 

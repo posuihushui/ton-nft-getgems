@@ -26,6 +26,13 @@ import type {
   GetgemsWalletBalance,
 } from './getgems.types';
 
+type GetgemsApiScope = 'minting' | 'read';
+type GetgemsApiKeyEnvVar =
+  | 'GETGEMS_MAINNET_API_KEY'
+  | 'GETGEMS_TESTNET_API_KEY'
+  | 'GETGEMS_MAINNET_READ_API_KEY'
+  | 'GETGEMS_TESTNET_READ_API_KEY';
+
 @Injectable()
 export class GetgemsService {
   constructor(
@@ -211,6 +218,10 @@ export class GetgemsService {
 
   getNetworkSummary(network?: GetgemsNetwork) {
     const selectedNetwork = this.resolveNetwork(network);
+    const networkKeyConfig = {
+      mainnet: this.getApiKeySummary('mainnet'),
+      testnet: this.getApiKeySummary('testnet'),
+    };
 
     return {
       defaultNetwork: this.configService.get('NETWORK', { infer: true }),
@@ -218,9 +229,11 @@ export class GetgemsService {
       collectionAddress: this.getDefaultCollectionAddress(),
       getgemsBaseUrl: this.getBaseUrl(selectedNetwork),
       networkConfig: {
-        mainnet: this.hasApiKey('mainnet'),
-        testnet: this.hasApiKey('testnet'),
+        mainnet: this.hasRequiredApiKeys('mainnet'),
+        testnet: this.hasRequiredApiKeys('testnet'),
       },
+      networkKeyConfig,
+      selectedNetworkKeyConfig: networkKeyConfig[selectedNetwork],
     };
   }
 
@@ -233,11 +246,11 @@ export class GetgemsService {
   ): Promise<T> {
     const selectedNetwork = this.resolveNetwork(network);
     const baseUrl = this.getBaseUrl(selectedNetwork);
-    const apiKey = this.getApiKey(selectedNetwork);
+    const apiKey = this.getApiKey(selectedNetwork, 'minting');
 
     if (!apiKey) {
       throw new ServiceUnavailableException(
-        `Getgems API key is missing for ${selectedNetwork}. Configure apps/api/.env before calling minting endpoints.`,
+        `Getgems minting API key is missing for ${selectedNetwork}. Configure ${this.getEnvVarName(selectedNetwork, 'minting')} in apps/api/.env before calling minting endpoints.`,
       );
     }
 
@@ -278,15 +291,30 @@ export class GetgemsService {
     return this.configService.get('GETGEMS_MAINNET_API_BASE_URL', { infer: true });
   }
 
-  private getApiKey(network: GetgemsNetwork): string {
-    if (network === 'testnet') {
-      return this.configService.get('GETGEMS_TESTNET_API_KEY', { infer: true });
-    }
+  private getApiKey(network: GetgemsNetwork, scope: GetgemsApiScope): string {
+    const envVarName = this.getEnvVarName(network, scope);
 
-    return this.configService.get('GETGEMS_MAINNET_API_KEY', { infer: true });
+    return this.configService.get(envVarName, { infer: true });
   }
 
-  private hasApiKey(network: GetgemsNetwork): boolean {
-    return this.getApiKey(network).length > 0;
+  private getEnvVarName(network: GetgemsNetwork, scope: GetgemsApiScope): GetgemsApiKeyEnvVar {
+    if (network === 'testnet') {
+      return scope === 'read' ? 'GETGEMS_TESTNET_READ_API_KEY' : 'GETGEMS_TESTNET_API_KEY';
+    }
+
+    return scope === 'read' ? 'GETGEMS_MAINNET_READ_API_KEY' : 'GETGEMS_MAINNET_API_KEY';
+  }
+
+  private getApiKeySummary(network: GetgemsNetwork) {
+    return {
+      readApiKeyConfigured: this.getApiKey(network, 'read').length > 0,
+      mintingApiKeyConfigured: this.getApiKey(network, 'minting').length > 0,
+    };
+  }
+
+  private hasRequiredApiKeys(network: GetgemsNetwork): boolean {
+    const summary = this.getApiKeySummary(network);
+
+    return summary.readApiKeyConfigured && summary.mintingApiKeyConfigured;
   }
 }

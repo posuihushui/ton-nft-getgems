@@ -27,6 +27,8 @@ export class HealthController {
       getgemsBaseUrl: networkSummary.getgemsBaseUrl,
       getgemsConfigured: networkSummary.networkConfig[networkSummary.selectedNetwork],
       networkConfig: networkSummary.networkConfig,
+      selectedNetworkKeyConfig: networkSummary.selectedNetworkKeyConfig,
+      networkKeyConfig: networkSummary.networkKeyConfig,
     };
   }
 }
