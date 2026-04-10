@@ -22,11 +22,12 @@ export type CsvParseResult = {
   errors: CsvParseError[];
 };
 
-const TEMPLATE_HEADER = 'ownerAddress,name,description,image,attributes';
+const TEMPLATE_HEADER = 'id,ownerAddress,image,Name,Description,Category,Skin,Eyes,Ears,Decos,Energy Ring,Background,Rarity';
 
 const TEMPLATE_ROWS = [
-  'UQB5HQfjevz9su4ZQGcDT_4IB0IUGh5PM2vAXPU2e4O6_YBm,Genesis #1,First NFT in the collection,https://example.com/1.png,"[{""trait_type"":""Tier"",""value"":""Gold""}]"',
-  'UQAoVzGcKCJ2Cs8ggxqiSb9rf51RgyzWcJx-oZWF1RryME2u,Genesis #2,Second NFT in the collection,https://example.com/2.png,"[{""trait_type"":""Tier"",""value"":""Silver""},{""trait_type"":""Rarity"",""value"":""Rare""}]"',
+  '1,UQB5HQfjevz9su4ZQGcDT_4IB0IUGh5PM2vAXPU2e4O6_YBm,https://static.tbook.vip/img/9eb7347d164647ab9fe80c61e0e238fb,Vampire Bookie,"Vampire Bookie thrives after sunset. It moves elegantly through shadows, feeding on secrets, ambition, and weak souls.",Travel Bookies,Metal,Red,Orange,Headwear,None,Unique Scenario,SSR',
+  '2,UQARnT3j0MJJRJxic1MXTQ89MVTRx7_Mj-OZ2VPVgV2Lu20P,https://static.tbook.vip/img/d789ab90f9264398b23db1f1bc10294e,Elysium Scout Bookie,"Elysium Scout Bookie watches over the gates to the sky, calm and unblinking, its ethereal presence inspiring awe and quiet hesitation in all who approach.",Travel Bookies,Ceramic,Red,Orange,Earrings,None,Unique Scenario,SSR',
+  '3,UQC-bfP-GF8v3Ph96BRBHEiadYrdGnPb3o81xnWXUPuBzB3E,https://static.tbook.vip/img/d43fb1ff6a6a4a409d3835e43c5cb53d,Bookie 668,"The trendsetters. Dressed to impress, they wear high-end fashion and embody the sophistication of high-value assets.",Style Bookies,Metal,Red,Metal,Headwear,None,Gradient ,SR',
 ];
 
 /**
@@ -73,21 +74,43 @@ export function parseCsvText(text: string): CsvParseResult {
   // Parse and validate header
   const headerFields = parseCsvRow(lines[0]);
   const headerLower = headerFields.map((h) => h.trim().toLowerCase());
-  const expectedColumns = ['owneraddress', 'name', 'description', 'image', 'attributes'];
 
-  for (const expected of expectedColumns) {
-    if (!headerLower.includes(expected)) {
-      return {
-        items: [],
-        errors: [{ row: 1, message: `Missing required column: "${expected}". Expected columns: ${TEMPLATE_HEADER}` }],
-      };
+  // Mandatory columns check
+  const mandatory = ['owneraddress', 'name', 'description', 'image'];
+  const missing = [];
+  for (const m of mandatory) {
+    if (!headerLower.includes(m)) {
+      missing.push(m);
     }
   }
 
-  const colIndex = Object.fromEntries(expectedColumns.map((col) => [col, headerLower.indexOf(col)])) as Record<
-    string,
-    number
-  >;
+  if (missing.length > 0) {
+    return {
+      items: [],
+      errors: [
+        {
+          row: 1,
+          message: `Missing required column(s): ${missing.join(', ')}. Expected headers like: ${TEMPLATE_HEADER}`,
+        },
+      ],
+    };
+  }
+
+  const colIndex = {
+    id: headerLower.indexOf('id'),
+    ownerAddress: headerLower.indexOf('owneraddress'),
+    name: headerLower.indexOf('name'),
+    description: headerLower.indexOf('description'),
+    image: headerLower.indexOf('image'),
+  };
+
+  // Identify trait columns (anything not id, ownerAddress, Name, Description, image)
+  const traitCols: Array<{ index: number; trait_type: string }> = [];
+  headerLower.forEach((h, i) => {
+    if (!['id', 'owneraddress', 'name', 'description', 'image'].includes(h)) {
+      traitCols.push({ index: i, trait_type: headerFields[i].trim() });
+    }
+  });
 
   const items: BatchMintItem[] = [];
   const errors: CsvParseError[] = [];
@@ -99,18 +122,17 @@ export function parseCsvText(text: string): CsvParseResult {
     const fields = parseCsvRow(line);
     const rowNum = i + 1;
 
-    const ownerAddress = fields[colIndex.owneraddress]?.trim() ?? '';
+    const ownerAddress = fields[colIndex.ownerAddress]?.trim() ?? '';
     const name = fields[colIndex.name]?.trim() ?? '';
     const description = fields[colIndex.description]?.trim() ?? '';
     const image = fields[colIndex.image]?.trim() ?? '';
-    const attributesRaw = fields[colIndex.attributes]?.trim() ?? '';
 
     // Validate required fields
     const rowErrors: string[] = [];
 
     if (!ownerAddress) {
       rowErrors.push('ownerAddress is required');
-    } else if (!/^(UQ|EQ|0Q)[A-Za-z0-9_-]{46}$/.test(ownerAddress)) {
+    } else if (!/^(UQ|EQ|0Q)[A-Za-z0-9_-]{46,64}$/.test(ownerAddress)) {
       rowErrors.push(`ownerAddress format invalid: "${ownerAddress}"`);
     }
 
@@ -123,31 +145,12 @@ export function parseCsvText(text: string): CsvParseResult {
       rowErrors.push(`image must be a valid URL: "${image}"`);
     }
 
-    // Parse attributes
-    let attributes: Array<{ trait_type: string; value: string }> = [];
-
-    if (!attributesRaw) {
-      rowErrors.push('attributes is required (use [] for empty)');
-    } else {
-      try {
-        const parsed = JSON.parse(attributesRaw) as unknown;
-
-        if (!Array.isArray(parsed)) {
-          rowErrors.push('attributes must be a JSON array');
-        } else {
-          for (let j = 0; j < parsed.length; j++) {
-            const attr = parsed[j] as Record<string, unknown>;
-            if (typeof attr.trait_type !== 'string' || typeof attr.value !== 'string') {
-              rowErrors.push(`attributes[${j}] must have "trait_type" and "value" strings`);
-            }
-          }
-
-          if (rowErrors.length === 0) {
-            attributes = parsed as Array<{ trait_type: string; value: string }>;
-          }
-        }
-      } catch {
-        rowErrors.push(`attributes JSON parse error: ${attributesRaw.substring(0, 60)}`);
+    // Process attributes from dynamic columns
+    const attributes: Array<{ trait_type: string; value: string }> = [];
+    for (const tc of traitCols) {
+      const value = fields[tc.index]?.trim() ?? '';
+      if (value) {
+        attributes.push({ trait_type: tc.trait_type, value });
       }
     }
 
@@ -167,17 +170,35 @@ export function parseCsvText(text: string): CsvParseResult {
  * Convert batch mint items back to CSV text.
  */
 export function itemsToCsv(items: BatchMintItem[]): string {
-  const rows = items.map((item) => {
-    return [
-      escapeCsvField(item.ownerAddress),
-      escapeCsvField(item.name),
-      escapeCsvField(item.description),
-      escapeCsvField(item.image),
-      escapeCsvField(JSON.stringify(item.attributes)),
-    ].join(',');
+  if (items.length === 0) return TEMPLATE_HEADER + '\n';
+
+  // Extract all unique trait types across all items
+  const allTraits = new Set<string>();
+  items.forEach((item) => {
+    item.attributes.forEach((attr) => allTraits.add(attr.trait_type));
   });
 
-  return [TEMPLATE_HEADER, ...rows].join('\n') + '\n';
+  const traitList = Array.from(allTraits);
+  const header = ['id', 'ownerAddress', 'image', 'Name', 'Description', ...traitList];
+
+  const rows = items.map((item, index) => {
+    const rowData: string[] = [
+      String(index + 1),
+      item.ownerAddress,
+      item.image,
+      item.name,
+      item.description,
+    ];
+
+    traitList.forEach((trait) => {
+      const attr = item.attributes.find((a) => a.trait_type === trait);
+      rowData.push(attr?.value ?? '');
+    });
+
+    return rowData.map((field) => escapeCsvField(field)).join(',');
+  });
+
+  return [header.join(','), ...rows].join('\n') + '\n';
 }
 
 // ── Internal helpers ──────────────────────────────────────────────────
@@ -256,8 +277,10 @@ function parseCsvRow(line: string): string[] {
  * Escape a field for CSV output.
  */
 function escapeCsvField(value: string): string {
-  if (value.includes(',') || value.includes('"') || value.includes('\n')) {
-    return '"' + value.replace(/"/g, '""') + '"';
+  if (value === undefined || value === null) return '';
+  const stringValue = String(value);
+  if (stringValue.includes(',') || stringValue.includes('"') || stringValue.includes('\n')) {
+    return '"' + stringValue.replace(/"/g, '""') + '"';
   }
-  return value;
+  return stringValue;
 }
