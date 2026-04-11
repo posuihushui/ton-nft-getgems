@@ -197,6 +197,23 @@ cell $global_buildFullContent(cell $common_content, cell $individual_content) im
     return (($self'next_item_index, $self'owner, $self'collection_content, $self'common_content, $self'royalty_numerator, $self'royalty_denominator, $self'royalty_destination, $self'mint_locked, $self'mint_in_progress, $self'lock_broadcast_failure_count, $self'last_failed_lock_address), ());
 }
 
+(((int, slice, cell, cell, int, int, slice, int, int, int, slice)), ()) $NftCollection$_internal_binary_WithdrawTon((int, slice, cell, cell, int, int, slice, int, int, int, slice) $self, (int, slice) $msg) impure inline {
+    var ($self'next_item_index, $self'owner, $self'collection_content, $self'common_content, $self'royalty_numerator, $self'royalty_denominator, $self'royalty_destination, $self'mint_locked, $self'mint_in_progress, $self'lock_broadcast_failure_count, $self'last_failed_lock_address) = $self;
+    var ($msg'amount, $msg'destination) = $msg;
+    var ($ctx'bounced, $ctx'sender, $ctx'value, $ctx'raw) = __tact_context_get();
+    if ($ctx'bounced) {
+        return (($self'next_item_index, $self'owner, $self'collection_content, $self'common_content, $self'royalty_numerator, $self'royalty_denominator, $self'royalty_destination, $self'mint_locked, $self'mint_in_progress, $self'lock_broadcast_failure_count, $self'last_failed_lock_address), ());
+    }
+    throw_unless(6803, ( __tact_slice_eq_bits($self'owner, $ctx'sender) ));
+    throw_unless(33847, ($msg'amount > 0));
+    int $fwd_fee = $global_getOriginalFwdFee($Context$_fun_readForwardFee(($ctx'bounced, $ctx'sender, $ctx'value, $ctx'raw)), false);
+    int $withdrawable = (($global_myBalance() - 50000000) - $fwd_fee);
+    throw_unless(28049, ($withdrawable > 0));
+    throw_unless(33977, ($msg'amount <= $withdrawable));
+    $global_send($SendParameters$_constructor_to_value_mode_bounce($msg'destination, $msg'amount, 1, false));
+    return (($self'next_item_index, $self'owner, $self'collection_content, $self'common_content, $self'royalty_numerator, $self'royalty_denominator, $self'royalty_destination, $self'mint_locked, $self'mint_in_progress, $self'lock_broadcast_failure_count, $self'last_failed_lock_address), ());
+}
+
 (((int, slice, cell, cell, int, int, slice, int, int, int, slice)), ()) $NftCollection$_internal_binary_OwnershipChanged((int, slice, cell, cell, int, int, slice, int, int, int, slice) $self, (int, slice, slice) $msg) impure inline {
     var ($self'next_item_index, $self'owner, $self'collection_content, $self'common_content, $self'royalty_numerator, $self'royalty_denominator, $self'royalty_destination, $self'mint_locked, $self'mint_in_progress, $self'lock_broadcast_failure_count, $self'last_failed_lock_address) = $self;
     var ($msg'index, $msg'prev_owner, $msg'new_owner) = $msg;
@@ -351,6 +368,13 @@ _ lazy_deployment_completed() method_id {
     if (op == 0x6f89f5e3) {
         var msg = in_msg~$UpdateRoyalty$_load();
         self~$NftCollection$_internal_binary_UpdateRoyalty(msg);
+        return (self, true);
+    }
+    
+    ;; Receive WithdrawTon message
+    if (op == 0x8f34d6f) {
+        var msg = in_msg~$WithdrawTon$_load();
+        self~$NftCollection$_internal_binary_WithdrawTon(msg);
         return (self, true);
     }
     

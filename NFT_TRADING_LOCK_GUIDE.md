@@ -34,7 +34,12 @@
   - `get_royalty_params`
   - `report_royalty_params`
 
-在保持这套标准读取接口不变的前提下，collection 额外提供了 owner-only 的 `UpdateRoyalty` 运维消息，用来在部署后调整版税配置。
+在保持这套标准读取接口不变的前提下，collection 额外提供了 owner-only 的运维消息：
+
+- `UpdateRoyalty`
+  用来在部署后调整版税配置
+- `WithdrawTon`
+  用来提取 collection 中超出最小存储预留的 TON，避免运营过程中余额被困住
 
 另外修复了 `report_static_data` 的标准 opcode，当前使用的是标准值 `0x8b771735`。
 
@@ -198,6 +203,24 @@ await nftCollection.send(
 
 - [apps/contracts/scripts/updateRoyalty.ts](/Users/lake/work/tbook/ton-nft-getgems/apps/contracts/scripts/updateRoyalty.ts)
 
+### 提取 Collection 余额
+
+```ts
+await nftCollection.send(
+  provider.sender(),
+  { value: toNano('0.05') },
+  {
+    $$type: 'WithdrawTon',
+    amount: toNano('1'),
+    destination: treasuryAddress,
+  }
+);
+```
+
+配套脚本见：
+
+- [apps/contracts/scripts/withdrawCollectionTon.ts](/Users/lake/work/tbook/ton-nft-getgems/apps/contracts/scripts/withdrawCollectionTon.ts)
+
 配套脚本见：
 
 - [apps/contracts/scripts/unlockTrading.ts](/Users/lake/work/tbook/ton-nft-getgems/apps/contracts/scripts/unlockTrading.ts)
@@ -209,6 +232,7 @@ await nftCollection.send(
 - `SetMintLock` 只影响 **未来新 mint 的 item**
 - `BroadcastLock` 影响 **已经存在的 item**
 - `UpdateRoyalty` 只允许 **collection owner** 调用，更新后标准 royalty getter 会直接返回新值
+- `WithdrawTon` 只允许 **collection owner** 调用，且只能提取超出最小存储预留的 TON
 
 所以里程碑开启交易时，标准操作应该是：
 
@@ -239,6 +263,7 @@ await nftCollection.send(
 - `get_nft_content` 能正确拼出 item metadata URL
 - `royalty_params` 与 `get_royalty_params` 一致
 - `UpdateRoyalty` 后 getter 能读到新 royalty
+- `WithdrawTon` 能成功提取 excess balance，且 collection 仍保留最小存储余额
 - `get_static_data` 返回标准 opcode
 - 锁定时 `transfer` 失败
 - 解锁并广播后 `transfer` 成功

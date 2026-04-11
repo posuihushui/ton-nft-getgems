@@ -123,6 +123,9 @@ The admin-side royalty update is also additive:
 - `UpdateRoyalty`
   Owner-only maintenance message that updates numerator, denominator, and destination without changing the standard read interface.
 
+- `WithdrawTon`
+  Owner-only maintenance message that withdraws excess TON from the collection while preserving a small storage reserve on-chain.
+
 ## Key Design Decisions
 
 - **Single mint only**
@@ -193,6 +196,16 @@ Reference:
 
 - [updateRoyalty.ts](/Users/lake/work/tbook/ton-nft-getgems/apps/contracts/scripts/updateRoyalty.ts)
 
+### Withdraw Excess TON
+
+- Owner sends `WithdrawTon`
+- Collection validates that the sender is the owner
+- Collection keeps its storage reserve and transfers only the requested excess amount
+
+Reference:
+
+- [withdrawCollectionTon.ts](/Users/lake/work/tbook/ton-nft-getgems/apps/contracts/scripts/withdrawCollectionTon.ts)
+
 ### Re-lock
 
 1. Send `SetMintLock { locked: true }`
@@ -205,6 +218,7 @@ Reference:
   - standard collection getters
   - royalty getter
   - royalty update flow
+  - owner-only excess TON withdrawal
   - metadata composition
   - locked transfer rejection
   - unlock and successful transfer

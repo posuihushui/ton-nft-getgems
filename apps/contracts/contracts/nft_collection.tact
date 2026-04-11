@@ -33,6 +33,11 @@ message(0x6f89f5e3) UpdateRoyalty {
     destination: Address;
 }
 
+message(0x08f34d6f) WithdrawTon {
+    amount: Int as coins;
+    destination: Address;
+}
+
 struct CollectionData {
     next_item_index: Int;
     collection_content: Cell;
@@ -56,6 +61,10 @@ fun itemDeployValue(): Int {
 
 fun lockBroadcastValue(): Int {
     return ton("0.02");
+}
+
+fun minCollectionTonsForStorage(): Int {
+    return ton("0.05");
 }
 
 fun buildFullContent(common_content: Cell, individual_content: Cell): Cell {
@@ -215,6 +224,30 @@ contract NftCollection with Deployable {
         self.royalty_numerator = msg.numerator;
         self.royalty_denominator = msg.denominator;
         self.royalty_destination = msg.destination;
+    }
+
+    receive(msg: WithdrawTon) {
+        let ctx: Context = context();
+        if (ctx.bounced) {
+            return;
+        }
+
+        require(ctx.sender == self.owner, "Only owner can withdraw TON");
+        require(msg.amount > 0, "Withdraw amount must be positive");
+
+        // Keep a permanent storage reserve so operational withdrawals cannot empty the collection.
+        let fwd_fee: Int = getOriginalFwdFee(ctx.readForwardFee(), false);
+        let withdrawable: Int = myBalance() - minCollectionTonsForStorage() - fwd_fee;
+
+        require(withdrawable > 0, "No withdrawable TON available");
+        require(msg.amount <= withdrawable, "Withdraw amount exceeds available TON");
+
+        send(SendParameters{
+            to: msg.destination,
+            value: msg.amount,
+            mode: SendPayGasSeparately,
+            bounce: false
+        });
     }
 
     // Accept best-effort ownership callbacks from items without making transfer depend on collection state.

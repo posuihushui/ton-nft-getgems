@@ -6,6 +6,7 @@ This document covers how to deploy the custom NFT collection contract from `apps
 
 - [scripts/deployNftCollection.ts](/Users/lake/work/tbook/ton-nft-getgems/apps/contracts/scripts/deployNftCollection.ts): deployment entrypoint
 - [scripts/updateRoyalty.ts](/Users/lake/work/tbook/ton-nft-getgems/apps/contracts/scripts/updateRoyalty.ts): owner-only royalty update entrypoint
+- [scripts/withdrawCollectionTon.ts](/Users/lake/work/tbook/ton-nft-getgems/apps/contracts/scripts/withdrawCollectionTon.ts): owner-only TON withdrawal entrypoint
 - [.env.example](/Users/lake/work/tbook/ton-nft-getgems/apps/contracts/.env.example): environment template
 - [contracts/nft_collection.tact](/Users/lake/work/tbook/ton-nft-getgems/apps/contracts/contracts/nft_collection.tact): collection contract
 - [contracts/nft_item.tact](/Users/lake/work/tbook/ton-nft-getgems/apps/contracts/contracts/nft_item.tact): item contract
@@ -49,6 +50,8 @@ For each network you want to use, configure:
 - `TESTNET_COLLECTION_ADDRESS` / `MAINNET_COLLECTION_ADDRESS` when running royalty updates
 - `TESTNET_NEW_ROYALTY_NUMERATOR` / `MAINNET_NEW_ROYALTY_NUMERATOR` when running royalty updates
 - `TESTNET_NEW_ROYALTY_DENOMINATOR` / `MAINNET_NEW_ROYALTY_DENOMINATOR` when running royalty updates
+- `TESTNET_COLLECTION_ADDRESS` / `MAINNET_COLLECTION_ADDRESS` when running withdrawals
+- `TESTNET_WITHDRAW_AMOUNT` / `MAINNET_WITHDRAW_AMOUNT` when running withdrawals
 
 ### Optional variables
 
@@ -58,9 +61,12 @@ For each network you want to use, configure:
 - `TESTNET_DEPLOY_VALUE` / `MAINNET_DEPLOY_VALUE`
 - `TESTNET_NEW_ROYALTY_DESTINATION` / `MAINNET_NEW_ROYALTY_DESTINATION`
 - `TESTNET_UPDATE_ROYALTY_VALUE` / `MAINNET_UPDATE_ROYALTY_VALUE`
+- `TESTNET_WITHDRAW_DESTINATION` / `MAINNET_WITHDRAW_DESTINATION`
+- `TESTNET_WITHDRAW_VALUE` / `MAINNET_WITHDRAW_VALUE`
 
 If `ROYALTY_DESTINATION` is empty, the deploy script uses the deployer wallet address.
 If `NEW_ROYALTY_DESTINATION` is empty, the update script keeps the current on-chain royalty destination.
+If `WITHDRAW_DESTINATION` is empty, the withdraw script uses the current on-chain collection owner address.
 
 If a network-specific variable is missing, the script falls back to the unprefixed generic key:
 
@@ -75,6 +81,9 @@ If a network-specific variable is missing, the script falls back to the unprefix
 - `NEW_ROYALTY_DENOMINATOR`
 - `NEW_ROYALTY_DESTINATION`
 - `UPDATE_ROYALTY_VALUE`
+- `WITHDRAW_AMOUNT`
+- `WITHDRAW_DESTINATION`
+- `WITHDRAW_VALUE`
 
 ## Metadata Notes
 
@@ -159,6 +168,39 @@ Using mnemonic wallet:
 npm run update-royalty:mainnet -- --mnemonic
 ```
 
+## Collection Withdrawal Commands
+
+The collection owner can withdraw excess TON after deployment by sending `WithdrawTon`.
+The contract always keeps a small storage reserve and rejects withdrawals that would exceed the currently available excess balance.
+
+### Testnet
+
+Using TON Connect:
+
+```bash
+npm run withdraw:testnet -- --tonconnect
+```
+
+Using mnemonic wallet:
+
+```bash
+npm run withdraw:testnet -- --mnemonic
+```
+
+### Mainnet
+
+Using TON Connect:
+
+```bash
+npm run withdraw:mainnet -- --tonconnect
+```
+
+Using mnemonic wallet:
+
+```bash
+npm run withdraw:mainnet -- --mnemonic
+```
+
 ## Wallet Options
 
 The deployment command supports Blueprint's standard sender flags, for example:
@@ -199,6 +241,14 @@ The royalty update script:
 4. Prints the current and target royalty values
 5. Sends the owner-only `UpdateRoyalty` message
 
+The withdraw script:
+
+1. Detects the active network from Blueprint
+2. Reads the collection address and withdrawal config from `.env`
+3. Reads the current on-chain collection owner
+4. Defaults the withdrawal destination to that owner when no destination is configured
+5. Sends the owner-only `WithdrawTon` message
+
 ## Output
 
 On success, Blueprint will print:
@@ -221,6 +271,13 @@ The royalty update script also prints:
 - current royalty configuration
 - new royalty configuration
 
+The withdraw script also prints:
+
+- collection address
+- on-chain collection owner
+- withdrawal amount
+- withdrawal destination
+
 ## Recommended Workflow
 
 1. Fill in `TESTNET_*` variables first
@@ -228,9 +285,11 @@ The royalty update script also prints:
 3. Deploy to testnet
 4. Verify metadata and getters on-chain
 5. If royalty changes later, fill in `TESTNET_COLLECTION_ADDRESS` plus `TESTNET_NEW_ROYALTY_*` and run `npm run update-royalty:testnet -- --tonconnect`
-6. Fill in `MAINNET_*` variables
-7. Deploy to mainnet
-8. If needed later, update mainnet royalty with `npm run update-royalty:mainnet -- --tonconnect`
+6. If excess TON accumulates later, fill in `TESTNET_COLLECTION_ADDRESS` plus `TESTNET_WITHDRAW_*` and run `npm run withdraw:testnet -- --tonconnect`
+7. Fill in `MAINNET_*` variables
+8. Deploy to mainnet
+9. If needed later, update mainnet royalty with `npm run update-royalty:mainnet -- --tonconnect`
+10. If needed later, withdraw mainnet excess TON with `npm run withdraw:mainnet -- --tonconnect`
 
 ## Related Docs
 

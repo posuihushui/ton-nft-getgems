@@ -14,6 +14,7 @@ The custom milestone-lock NFT contracts are now structured as a standard-compati
 
 - The collection keeps the standard NFT getters and royalty interface, then adds `SetMintLock` and `BroadcastLock` for milestone control.
 - Royalty remains TEP-66-readable and can now be updated later by the collection owner through `UpdateRoyalty`.
+- The collection owner can also withdraw excess TON later through `WithdrawTon`, while the contract keeps a small on-chain storage reserve.
 - `BatchMint` has been removed to keep minting semantics simple and auditable.
 - Operationally this means `1 transaction = 1 NFT`.
 - Lock/unlock for already minted items still uses ranged `BroadcastLock`, because broadcast is a maintenance operation rather than a minting interface.

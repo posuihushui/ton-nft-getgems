@@ -1,9 +1,9 @@
 # TACT Compilation Report
 Contract: NftCollection
-BOC Size: 2293 bytes
+BOC Size: 2486 bytes
 
 # Types
-Total Types: 29
+Total Types: 30
 
 ## StateInit
 TLB: `_ code:^cell data:^cell = StateInit`
@@ -105,6 +105,10 @@ Signature: `ReportRoyaltyParams{query_id:uint64,numerator:uint16,denominator:uin
 TLB: `update_royalty#6f89f5e3 numerator:uint16 denominator:uint16 destination:address = UpdateRoyalty`
 Signature: `UpdateRoyalty{numerator:uint16,denominator:uint16,destination:address}`
 
+## WithdrawTon
+TLB: `withdraw_ton#08f34d6f amount:coins destination:address = WithdrawTon`
+Signature: `WithdrawTon{amount:coins,destination:address}`
+
 ## CollectionData
 TLB: `_ next_item_index:int257 collection_content:^cell owner_address:address = CollectionData`
 Signature: `CollectionData{next_item_index:int257,collection_content:^cell,owner_address:address}`
@@ -179,12 +183,16 @@ Argument: individual_content
 2977: Already initialized
 4055: Only item can confirm mint
 4420: Only owner can update royalty
+6803: Only owner can withdraw TON
 7657: Not initialized
 8291: Transfer query_id must be increasing
 12308: Only collection can initialize
 14760: Invalid royalty denominator
 19314: Unexpected mint index
 27983: Trading is locked for this item
+28049: No withdrawable TON available
+33847: Withdraw amount must be positive
+33977: Withdraw amount exceeds available TON
 36952: Only owner can transfer
 40129: Only item can notify ownership change
 40282: Invalid range

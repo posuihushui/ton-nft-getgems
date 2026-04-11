@@ -31,6 +31,7 @@ PROGRAM{
   DECLPROC $ReportRoyaltyParams$_store
   DECLPROC $ReportRoyaltyParams$_store_cell
   DECLPROC $UpdateRoyalty$_load
+  DECLPROC $WithdrawTon$_load
   DECLPROC $NftCollection$_store
   DECLPROC $NftCollection$_load
   DECLPROC $StateInit$_not_null
@@ -46,6 +47,7 @@ PROGRAM{
   DECLPROC $global_send
   DECLPROC $Cell$_fun_asSlice
   DECLPROC $global_buildFullContent
+  DECLPROC $Context$_fun_readForwardFee
   DECLPROC $NftItem$_init_child
   DECLPROC $SendParameters$_constructor_bounce_to_value_mode_body_code_data
   DECLPROC $SendParameters$_constructor_to_value_mode_bounce_body_code_data
@@ -67,6 +69,7 @@ PROGRAM{
   DECLPROC $SetLocked$_constructor_locked
   DECLPROC $SendParameters$_constructor_to_value_mode_bounce_body
   DECLPROC $ReportRoyaltyParams$_constructor_query_id_numerator_denominator_destination
+  DECLPROC $SendParameters$_constructor_to_value_mode_bounce
   DECLPROC $DeployOk$_constructor_queryId
   DECLPROC %$NftCollection$_internal_empty
   DECLPROC $NftCollection$_internal_binary_Mint
@@ -77,6 +80,7 @@ PROGRAM{
   DECLPROC $NftCollection$_receive_binary_bounce_Initialize
   DECLPROC $NftCollection$_internal_binary_GetRoyaltyParams
   DECLPROC $NftCollection$_internal_binary_UpdateRoyalty
+  DECLPROC $NftCollection$_internal_binary_WithdrawTon
   DECLPROC $NftCollection$_internal_binary_OwnershipChanged
   DECLPROC $NftCollection$_internal_binary_Deploy
   102491 DECLMETHOD %get_collection_data
@@ -361,6 +365,16 @@ PROGRAM{
     __tact_load_address INLINECALLDICT
     s3 s3 s0 XCHG3
   }>
+  $WithdrawTon$_load PROCINLINE:<{
+    32 LDU
+    SWAP
+    150162799 PUSHINT
+    EQUAL
+    129 THROWIFNOT
+    LDVARUINT16
+    __tact_load_address INLINECALLDICT
+    s1 s2 XCHG
+  }>
   $NftCollection$_store PROCINLINE:<{
     s10 s11 XCHG2
     64 STU
@@ -619,6 +633,21 @@ PROGRAM{
     STREF
     ENDC
   }>
+  $Context$_fun_readForwardFee PROCREF:<{
+    3 1 BLKDROP2
+    __tact_load_address INLINECALLDICT
+    DROP
+    LDVARUINT16
+    NIP
+    1 PUSHINT
+    SDSKIPFIRST
+    LDVARUINT16
+    NIP
+    LDVARUINT16
+    DROP
+    3 MULCONST
+    1 RSHIFT#
+  }>
   $NftItem$_init_child PROCREF:<{
     s0 s2 XCHG
     CTOS
@@ -761,6 +790,12 @@ PROGRAM{
     PUSHNULL
   }>
   $ReportRoyaltyParams$_constructor_query_id_numerator_denominator_destination PROCINLINE:<{
+  }>
+  $SendParameters$_constructor_to_value_mode_bounce PROCINLINE:<{
+    3 -ROLL
+    PUSHNULL
+    PUSHNULL
+    PUSHNULL
   }>
   $DeployOk$_constructor_queryId PROCINLINE:<{
   }>
@@ -1001,6 +1036,46 @@ PROGRAM{
       s4 s5 XCHG
     }>
   }>
+  $NftCollection$_internal_binary_WithdrawTon PROCINLINE:<{
+    __tact_context_get INLINECALLDICT
+    s3 PUSH
+    IF:<{
+      6 BLKDROP
+    }>ELSE<{
+      6803 PUSHINT
+      16 s() PUSH
+      s4 PUSH
+      __tact_slice_eq_bits INLINECALLDICT
+      THROWANYIFNOT
+      33847 PUSHINT
+      s6 PUSH
+      0 GTINT
+      THROWANYIFNOT
+      $Context$_fun_readForwardFee INLINECALLDICT
+      FALSE
+      GETORIGINALFWDFEE
+      BALANCE FIRST
+      50000000 PUSHINT
+      SUB
+      SWAP
+      SUB
+      28049 PUSHINT
+      OVER
+      0 GTINT
+      THROWANYIFNOT
+      s2 PUSH
+      33977 PUSHINT
+      s0 s2 XCHG
+      LEQ
+      THROWANYIFNOT
+      SWAP
+      1 PUSHINT
+      FALSE
+      $SendParameters$_constructor_to_value_mode_bounce INLINECALLDICT
+      $global_send INLINECALLDICT
+      DROP
+    }>
+  }>
   $NftCollection$_internal_binary_OwnershipChanged PROCINLINE:<{
     2DROP
     __tact_context_get INLINECALLDICT
@@ -1191,6 +1266,16 @@ PROGRAM{
       $UpdateRoyalty$_load INLINECALLDICT
       1 3 BLKDROP2
       $NftCollection$_internal_binary_UpdateRoyalty INLINECALLDICT
+      TRUE
+    }>
+    DUP
+    150162799 PUSHINT
+    EQUAL
+    IFJMP:<{
+      DROP
+      $WithdrawTon$_load INLINECALLDICT
+      1 2 BLKDROP2
+      $NftCollection$_internal_binary_WithdrawTon INLINECALLDICT
       TRUE
     }>
     DUP

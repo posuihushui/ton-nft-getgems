@@ -1445,6 +1445,59 @@ function dictValueParserUpdateRoyalty(): DictionaryValue<UpdateRoyalty> {
     }
 }
 
+export type WithdrawTon = {
+    $$type: 'WithdrawTon';
+    amount: bigint;
+    destination: Address;
+}
+
+export function storeWithdrawTon(src: WithdrawTon) {
+    return (builder: Builder) => {
+        let b_0 = builder;
+        b_0.storeUint(150162799, 32);
+        b_0.storeCoins(src.amount);
+        b_0.storeAddress(src.destination);
+    };
+}
+
+export function loadWithdrawTon(slice: Slice) {
+    let sc_0 = slice;
+    if (sc_0.loadUint(32) !== 150162799) { throw Error('Invalid prefix'); }
+    let _amount = sc_0.loadCoins();
+    let _destination = sc_0.loadAddress();
+    return { $$type: 'WithdrawTon' as const, amount: _amount, destination: _destination };
+}
+
+function loadTupleWithdrawTon(source: TupleReader) {
+    let _amount = source.readBigNumber();
+    let _destination = source.readAddress();
+    return { $$type: 'WithdrawTon' as const, amount: _amount, destination: _destination };
+}
+
+function loadGetterTupleWithdrawTon(source: TupleReader) {
+    let _amount = source.readBigNumber();
+    let _destination = source.readAddress();
+    return { $$type: 'WithdrawTon' as const, amount: _amount, destination: _destination };
+}
+
+function storeTupleWithdrawTon(source: WithdrawTon) {
+    let builder = new TupleBuilder();
+    builder.writeNumber(source.amount);
+    builder.writeAddress(source.destination);
+    return builder.build();
+}
+
+function dictValueParserWithdrawTon(): DictionaryValue<WithdrawTon> {
+    return {
+        serialize: (src, builder) => {
+            builder.storeRef(beginCell().store(storeWithdrawTon(src)).endCell());
+        },
+        parse: (src) => {
+            return loadWithdrawTon(src.loadRef().beginParse());
+        }
+    }
+}
+
 export type CollectionData = {
     $$type: 'CollectionData';
     next_item_index: bigint;
@@ -1780,12 +1833,16 @@ const NftItem_errors: { [key: number]: { message: string } } = {
     2977: { message: `Already initialized` },
     4055: { message: `Only item can confirm mint` },
     4420: { message: `Only owner can update royalty` },
+    6803: { message: `Only owner can withdraw TON` },
     7657: { message: `Not initialized` },
     8291: { message: `Transfer query_id must be increasing` },
     12308: { message: `Only collection can initialize` },
     14760: { message: `Invalid royalty denominator` },
     19314: { message: `Unexpected mint index` },
     27983: { message: `Trading is locked for this item` },
+    28049: { message: `No withdrawable TON available` },
+    33847: { message: `Withdraw amount must be positive` },
+    33977: { message: `Withdraw amount exceeds available TON` },
     36952: { message: `Only owner can transfer` },
     40129: { message: `Only item can notify ownership change` },
     40282: { message: `Invalid range` },
@@ -1830,6 +1887,7 @@ const NftItem_types: ABIType[] = [
     {"name":"GetRoyaltyParams","header":1765620048,"fields":[{"name":"query_id","type":{"kind":"simple","type":"uint","optional":false,"format":64}}]},
     {"name":"ReportRoyaltyParams","header":2831876269,"fields":[{"name":"query_id","type":{"kind":"simple","type":"uint","optional":false,"format":64}},{"name":"numerator","type":{"kind":"simple","type":"uint","optional":false,"format":16}},{"name":"denominator","type":{"kind":"simple","type":"uint","optional":false,"format":16}},{"name":"destination","type":{"kind":"simple","type":"address","optional":false}}]},
     {"name":"UpdateRoyalty","header":1871312355,"fields":[{"name":"numerator","type":{"kind":"simple","type":"uint","optional":false,"format":16}},{"name":"denominator","type":{"kind":"simple","type":"uint","optional":false,"format":16}},{"name":"destination","type":{"kind":"simple","type":"address","optional":false}}]},
+    {"name":"WithdrawTon","header":150162799,"fields":[{"name":"amount","type":{"kind":"simple","type":"uint","optional":false,"format":"coins"}},{"name":"destination","type":{"kind":"simple","type":"address","optional":false}}]},
     {"name":"CollectionData","header":null,"fields":[{"name":"next_item_index","type":{"kind":"simple","type":"int","optional":false,"format":257}},{"name":"collection_content","type":{"kind":"simple","type":"cell","optional":false}},{"name":"owner_address","type":{"kind":"simple","type":"address","optional":false}}]},
     {"name":"RoyaltyParams","header":null,"fields":[{"name":"numerator","type":{"kind":"simple","type":"uint","optional":false,"format":16}},{"name":"denominator","type":{"kind":"simple","type":"uint","optional":false,"format":16}},{"name":"destination","type":{"kind":"simple","type":"address","optional":false}}]},
     {"name":"BroadcastFailureState","header":null,"fields":[{"name":"failure_count","type":{"kind":"simple","type":"int","optional":false,"format":257}},{"name":"last_failed_address","type":{"kind":"simple","type":"address","optional":true}}]},

@@ -285,6 +285,60 @@ describe('NftCollection', () => {
         expect(royalty.destination.equals(newRoyaltyRecipient.address)).toBe(true);
     });
 
+    it('should let the owner withdraw excess TON without draining the collection storage reserve', async () => {
+        const outsider = await blockchain.treasury('outsider');
+        const recipient = await blockchain.treasury('withdraw-recipient');
+
+        await deployer.send({
+            to: nftCollection.address,
+            value: toNano('0.30'),
+        });
+
+        const balanceBefore = (await blockchain.getContract(nftCollection.address)).balance;
+
+        const failedWithdraw = await nftCollection.send(
+            outsider.getSender(),
+            { value: toNano('0.05') },
+            {
+                $$type: 'WithdrawTon',
+                amount: toNano('0.10'),
+                destination: recipient.address,
+            }
+        );
+
+        expect(failedWithdraw.transactions).toHaveTransaction({
+            from: outsider.address,
+            to: nftCollection.address,
+            success: false,
+        });
+
+        const withdrawResult = await nftCollection.send(
+            deployer.getSender(),
+            { value: toNano('0.05') },
+            {
+                $$type: 'WithdrawTon',
+                amount: toNano('0.10'),
+                destination: recipient.address,
+            }
+        );
+
+        expect(withdrawResult.transactions).toHaveTransaction({
+            from: deployer.address,
+            to: nftCollection.address,
+            success: true,
+        });
+        expect(withdrawResult.transactions).toHaveTransaction({
+            from: nftCollection.address,
+            to: recipient.address,
+            value: toNano('0.10'),
+            success: true,
+        });
+
+        const balanceAfter = (await blockchain.getContract(nftCollection.address)).balance;
+        expect(balanceAfter).toBeLessThan(balanceBefore);
+        expect(balanceAfter).toBeGreaterThanOrEqual(toNano('0.05'));
+    });
+
     it('should return the standard empty nft data tuple for an uninitialized item', async () => {
         const uninitializedItem = blockchain.openContract(
             await NftItem.fromInit(nftCollection.address, 99n)
