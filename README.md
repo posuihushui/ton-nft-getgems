@@ -6,6 +6,15 @@ This workspace contains a production-oriented starter architecture for issuing T
 
 - `apps/api`: NestJS backend that wraps the Getgems minting endpoints and keeps API keys server-side.
 - `apps/web`: Vite + React operations dashboard for the minting flow, architecture overview, and API health checks.
+- `apps/contracts`: TON Blueprint + Tact contracts for the custom NFT collection and item flow.
+
+## Contract Notes
+
+The custom milestone-lock NFT contracts intentionally expose only single-item `Mint`.
+
+- `BatchMint` has been removed from the collection contract to keep minting semantics simple and auditable.
+- Operationally this means `1 transaction = 1 NFT`.
+- Lock/unlock still uses ranged `BroadcastLock`, because broadcast is a maintenance operation rather than a minting interface.
 
 ## Quick Start
 
@@ -40,3 +49,4 @@ The UI can switch networks at runtime, and the backend can also accept `?network
 ## Root Documentation
 
 - `GETGEMS_MINTING_GUIDE.md`: implementation flow, architecture notes, API mapping, and official references.
+- `NFT_TRADING_LOCK_GUIDE.md`: custom contract approach for milestone lock / unlock, including the single-mint policy.

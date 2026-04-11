@@ -56,6 +56,14 @@ Collection Owner
 3. **开启交易** — Owner 调用 Collection 合约的 `toggle_trading`，Collection 向所有 item 广播 `set_locked(false)`
 4. **关闭交易**（可选） — 同理广播 `set_locked(true)` 重新锁定
 
+### Mint 策略
+
+当前落地方案只保留单笔 `Mint`，不再提供 `BatchMint`。
+
+- 原因 1：避免单笔交易里出现部分成功、部分失败的静默截断。
+- 原因 2：保持 `next_item_index`、部署结果和链下运营记录一一对应。
+- 原因 3：里程碑解锁场景更适合把复杂度放在 `BroadcastLock` 这类运维操作上，而不是放在 mint 接口上。
+
 ---
 
 ## 智能合约实现
@@ -332,9 +340,28 @@ npx blueprint build
 npx blueprint run --testnet
 ```
 
-#### Phase 2: 铸造 NFT
+#### Phase 2: 单笔铸造 NFT
 
 通过你的后端 API 或脚本调用 Collection 合约的 `mint` 方法，所有 item 将以 `is_locked = 1` 状态创建。
+
+> 说明：当前合约不暴露 `BatchMint`。如果要连续铸造多个 NFT，请在链下逐笔发送 `Mint`，保证每一笔 mint 都有独立的交易回执和索引推进。
+
+```typescript
+import { beginCell, toNano } from '@ton/core';
+
+await nftCollection.send(
+    provider.sender(),
+    { value: toNano('0.1') },
+    {
+        $$type: 'Mint',
+        owner: recipientAddress,
+        content: beginCell()
+            .storeUint(0, 8) // off-chain content prefix
+            .storeStringTail('https://example.com/nft/metadata/1.json')
+            .endCell(),
+    }
+);
+```
 
 #### Phase 3: 开启交易
 
@@ -420,7 +447,7 @@ for (let from = 0; from < totalItems; from += batchSize) {
    - `GET /api/collections/:address/trading-status` — 查询 `is_trading_enabled` getter
    - `GET /api/items/:address/lock-status` — 查询 `is_locked` getter
 3. **前端** — 在运营后台添加"开启/关闭交易"按钮和进度条（批量广播进度）
-4. **Mint 逻辑** — 改为直接与自定义 Collection 合约交互，不再通过 GetGems Minting API
+4. **Mint 逻辑** — 改为直接与自定义 Collection 合约交互，不再通过 GetGems Minting API，且只保留单笔 `Mint`
 
 ---
 

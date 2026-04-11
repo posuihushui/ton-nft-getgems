@@ -1,5 +1,5 @@
 import { Blockchain, SandboxContract, TreasuryContract } from '@ton/sandbox';
-import { beginCell, toNano, Dictionary } from '@ton/core';
+import { beginCell, toNano } from '@ton/core';
 import { NftCollection } from '../build/NftCollection/tact_NftCollection';
 import { NftItem } from '../build/NftCollection/tact_NftItem';
 import '@ton/test-utils';
@@ -117,45 +117,5 @@ describe('NftCollection', () => {
 
         const nftData = await nft1.getGetNftData();
         expect(nftData.owner_address.equals(recipient.address)).toBe(true);
-    });
-
-    it('should perform batch minting', async () => {
-        const user1 = await blockchain.treasury('user1');
-        const user2 = await blockchain.treasury('user2');
-
-        const mints: Dictionary<bigint, { $$type: 'Mint', owner: any, content: any }> = Dictionary.empty(Dictionary.Keys.BigInt(256), {
-            serialize: (src, builder) => {
-                builder.storeAddress(src.owner);
-                builder.storeMaybeRef(src.content);
-            },
-            parse: (src) => {
-                return {
-                    $$type: 'Mint' as const,
-                    owner: src.loadAddress(),
-                    content: src.loadMaybeRef(),
-                };
-            }
-        });
-
-        mints.set(0n, { $$type: 'Mint', owner: user1.address, content: null });
-        mints.set(1n, { $$type: 'Mint', owner: user2.address, content: null });
-
-        const batchMintResult = await nftCollection.send(
-            deployer.getSender(),
-            { value: toNano('0.2') },
-            {
-                $$type: 'BatchMint',
-                mints: mints,
-            }
-        );
-
-        expect(batchMintResult.transactions).toHaveTransaction({
-            from: nftCollection.address,
-            deploy: true,
-            success: true,
-        });
-
-        const nextIndex = (await nftCollection.getGetCollectionData()).next_item_index;
-        expect(nextIndex).toBe(2n);
     });
 });

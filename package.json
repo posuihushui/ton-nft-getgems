@@ -4,7 +4,8 @@
   "version": "0.1.0",
   "workspaces": [
     "apps/api",
-    "apps/web"
+    "apps/web",
+    "apps/contracts"
   ],
   "scripts": {
     "dev": "concurrently -n api,web -c cyan,magenta \"npm run start:dev --workspace @ton-getgems/api\" \"npm run dev --workspace @ton-getgems/web\"",

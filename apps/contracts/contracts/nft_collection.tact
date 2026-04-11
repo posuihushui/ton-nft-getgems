@@ -7,10 +7,6 @@ message Mint {
     content: Cell?;
 }
 
-message BatchMint {
-    mints: map<Int, Mint>;
-}
-
 // Custom Messages for Lock/Unlock
 message ToggleTrading {
     enabled: Bool;
@@ -42,17 +38,6 @@ contract NftCollection with Deployable {
     receive(msg: Mint) {
         require(sender() == self.owner, "Only owner can mint");
         self._mint(msg.owner, msg.content);
-    }
-
-    receive(msg: BatchMint) {
-        require(sender() == self.owner, "Only owner can mint");
-        let count: Int = 0;
-        foreach (i, m in msg.mints) {
-            if (count < 50) { // Safety limit per transaction
-                self._mint(m.owner, m.content);
-                count = count + 1;
-            }
-        }
     }
 
     receive(msg: ToggleTrading) {
