@@ -1,0 +1,39 @@
+{
+  "name": "Elysium Scout Bookie",
+  "description": "Elysium Scout Bookie watches over the gates to the sky, calm and unblinking, its ethereal presence inspiring awe and quiet hesitation in all who approach.",
+  "image": "https://static.tbook.vip/img/d789ab90f9264398b23db1f1bc10294e",
+  "attributes": [
+    {
+      "trait_type": "Category",
+      "value": "Travel Bookies"
+    },
+    {
+      "trait_type": "Skin",
+      "value": "Ceramic"
+    },
+    {
+      "trait_type": "Eyes",
+      "value": "Red"
+    },
+    {
+      "trait_type": "Ears",
+      "value": "Orange"
+    },
+    {
+      "trait_type": "Decos",
+      "value": "Earrings"
+    },
+    {
+      "trait_type": "Energy Ring",
+      "value": "None"
+    },
+    {
+      "trait_type": "Background",
+      "value": "Unique Scenario"
+    },
+    {
+      "trait_type": "Rarity",
+      "value": "SSR"
+    }
+  ]
+}

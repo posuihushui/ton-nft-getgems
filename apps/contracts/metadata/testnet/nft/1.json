@@ -1,0 +1,39 @@
+{
+  "name": "Vampire Bookie",
+  "description": "Vampire Bookie thrives after sunset. It moves elegantly through shadows, feeding on secrets, ambition, and weak souls.",
+  "image": "https://static.tbook.vip/img/9eb7347d164647ab9fe80c61e0e238fb",
+  "attributes": [
+    {
+      "trait_type": "Category",
+      "value": "Travel Bookies"
+    },
+    {
+      "trait_type": "Skin",
+      "value": "Metal"
+    },
+    {
+      "trait_type": "Eyes",
+      "value": "Red"
+    },
+    {
+      "trait_type": "Ears",
+      "value": "Orange"
+    },
+    {
+      "trait_type": "Decos",
+      "value": "Headwear"
+    },
+    {
+      "trait_type": "Energy Ring",
+      "value": "None"
+    },
+    {
+      "trait_type": "Background",
+      "value": "Unique Scenario"
+    },
+    {
+      "trait_type": "Rarity",
+      "value": "SSR"
+    }
+  ]
+}

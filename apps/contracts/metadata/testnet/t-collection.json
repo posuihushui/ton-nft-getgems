@@ -1,0 +1,10 @@
+{
+  "name": "Milestone Lock Testnet Collection for tbook",
+  "description": "Testnet collection metadata template for the standard NFT + milestone lock contracts.",
+  "image": "https://static.tbook.vip/img/d43fb1ff6a6a4a409d3835e43c5cb53d",
+  "cover_image": "https://static.tbook.vip/img/d43fb1ff6a6a4a409d3835e43c5cb53d",
+  "social_links": [
+    "https://x.com/example",
+    "https://t.me/example"
+  ]
+}

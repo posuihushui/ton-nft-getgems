@@ -1,0 +1,39 @@
+{
+  "name": "Bookie 668",
+  "description": "The trendsetters. Dressed to impress, they wear high-end fashion and embody the sophistication of high-value assets.",
+  "image": "https://static.tbook.vip/img/d43fb1ff6a6a4a409d3835e43c5cb53d",
+  "attributes": [
+    {
+      "trait_type": "Category",
+      "value": "Style Bookies"
+    },
+    {
+      "trait_type": "Skin",
+      "value": "Metal"
+    },
+    {
+      "trait_type": "Eyes",
+      "value": "Red"
+    },
+    {
+      "trait_type": "Ears",
+      "value": "Metal"
+    },
+    {
+      "trait_type": "Decos",
+      "value": "Headwear"
+    },
+    {
+      "trait_type": "Energy Ring",
+      "value": "None"
+    },
+    {
+      "trait_type": "Background",
+      "value": "Gradient"
+    },
+    {
+      "trait_type": "Rarity",
+      "value": "SR"
+    }
+  ]
+}
