@@ -1,89 +1,250 @@
 import "@stdlib/deploy";
 import "./nft_item";
 
-// TEP-62 Messages for Collection
-message Mint {
+message(0xf57f638d) Mint {
     owner: Address;
-    content: Cell?;
+    content: Cell;
 }
 
-// Custom Messages for Lock/Unlock
-message ToggleTrading {
-    enabled: Bool;
+message(0x2a3b4c5d) SetMintLock {
+    locked: Bool;
 }
 
-message BroadcastLock {
+message(0x3e4f5a6b) BroadcastLock {
     locked: Bool;
     from_index: Int as uint64;
     to_index: Int as uint64;
 }
 
+message(0x693d3950) GetRoyaltyParams {
+    query_id: Int as uint64;
+}
+
+message(0xa8cb00ad) ReportRoyaltyParams {
+    query_id: Int as uint64;
+    numerator: Int as uint16;
+    denominator: Int as uint16;
+    destination: Address;
+}
+
+message(0x6f89f5e3) UpdateRoyalty {
+    numerator: Int as uint16;
+    denominator: Int as uint16;
+    destination: Address;
+}
+
 struct CollectionData {
     next_item_index: Int;
-    content: Cell;
+    collection_content: Cell;
     owner_address: Address;
+}
+
+struct RoyaltyParams {
+    numerator: Int as uint16;
+    denominator: Int as uint16;
+    destination: Address;
+}
+
+struct BroadcastFailureState {
+    failure_count: Int;
+    last_failed_address: Address?;
+}
+
+fun itemDeployValue(): Int {
+    return ton("0.07");
+}
+
+fun lockBroadcastValue(): Int {
+    return ton("0.02");
+}
+
+fun buildFullContent(common_content: Cell, individual_content: Cell): Cell {
+    return beginCell()
+        .storeUint(1, 8)
+        .storeSlice(common_content.asSlice())
+        .storeRef(individual_content)
+        .endCell();
 }
 
 contract NftCollection with Deployable {
     next_item_index: Int as uint64 = 0;
     owner: Address;
-    content: Cell;
-    trading_enabled: Bool = false;
+    collection_content: Cell;
+    common_content: Cell;
+    royalty_numerator: Int as uint16;
+    royalty_denominator: Int as uint16;
+    royalty_destination: Address;
+    mint_locked: Bool = true;
+    mint_in_progress: Bool = false;
+    // Keep the last bounced lock target for operators without changing the push-broadcast architecture.
+    lock_broadcast_failure_count: Int as uint64 = 0;
+    last_failed_lock_address: Address?;
 
-    init(owner: Address, content: Cell) {
+    init(
+        owner: Address,
+        collection_content: Cell,
+        common_content: Cell,
+        royalty_numerator: Int,
+        royalty_denominator: Int,
+        royalty_destination: Address,
+    ) {
+        require(royalty_denominator > 0, "Invalid royalty denominator");
+        require(royalty_numerator <= royalty_denominator, "Invalid royalty ratio");
+
         self.owner = owner;
-        self.content = content;
+        self.collection_content = collection_content;
+        self.common_content = common_content;
+        self.royalty_numerator = royalty_numerator;
+        self.royalty_denominator = royalty_denominator;
+        self.royalty_destination = royalty_destination;
     }
+
+    receive() {}
 
     receive(msg: Mint) {
-        require(sender() == self.owner, "Only owner can mint");
-        self._mint(msg.owner, msg.content);
+        let ctx: Context = context();
+        if (ctx.bounced) {
+            return;
+        }
+
+        require(ctx.sender == self.owner, "Only owner can mint");
+        require(!self.mint_in_progress, "Mint already in progress");
+        self.mint_in_progress = true;
+        self.deployItem(self.next_item_index, msg.owner, msg.content, self.mint_locked);
     }
 
-    receive(msg: ToggleTrading) {
-        require(sender() == self.owner, "Only owner can toggle trading");
-        self.trading_enabled = msg.enabled;
+    receive(msg: SetMintLock) {
+        let ctx: Context = context();
+        if (ctx.bounced) {
+            return;
+        }
+
+        require(ctx.sender == self.owner, "Only owner can set mint lock");
+        self.mint_locked = msg.locked;
     }
 
     receive(msg: BroadcastLock) {
-        require(sender() == self.owner, "Only owner can broadcast");
-        let i: Int = msg.from_index;
-        let limit: Int = msg.to_index;
-        if (limit > self.next_item_index) {
-            limit = self.next_item_index;
+        let ctx: Context = context();
+        if (ctx.bounced) {
+            return;
         }
 
-        while (i < limit) {
-            let item_addr: Address = self.get_nft_address_by_index(i);
+        require(ctx.sender == self.owner, "Only owner can broadcast");
+        require(self.next_item_index > 0, "No minted items to broadcast");
+        require(msg.from_index <= msg.to_index, "Invalid range");
+        require(msg.to_index <= self.next_item_index, "Range exceeds minted items");
+        require(msg.to_index - msg.from_index <= 250, "Range too large");
+        self.last_failed_lock_address = null;
+
+        let i: Int = msg.from_index;
+        while (i < msg.to_index) {
             send(SendParameters{
-                to: item_addr,
-                value: ton("0.02"), // Gas for item update
-                mode: SendIgnoreErrors,
+                to: self.get_nft_address_by_index(i),
+                value: lockBroadcastValue(),
+                bounce: true,
+                mode: SendPayGasSeparately,
                 body: SetLocked{locked: msg.locked}.toCell()
             });
             i = i + 1;
         }
     }
 
-    fun _mint(new_owner: Address, content: Cell?) {
-        let item_init: StateInit = self.get_nft_item_state_init(self.next_item_index);
-        let item_addr: Address = contractAddress(item_init);
-        
+    // Record bounced SetLocked pushes so operators can inspect the latest failed target.
+    bounced(msg: SetLocked) {
+        msg;
+        let ctx: Context = context();
+        self.lock_broadcast_failure_count = self.lock_broadcast_failure_count + 1;
+        self.last_failed_lock_address = ctx.sender;
+    }
+
+    // Mint index advances only after the expected item confirms initialization.
+    receive(msg: ItemInitialized) {
+        let ctx: Context = context();
+        if (ctx.bounced) {
+            return;
+        }
+
+        require(self.mint_in_progress, "No mint in progress");
+        require(msg.index == self.next_item_index, "Unexpected mint index");
+        require(ctx.sender == self.get_nft_address_by_index(msg.index), "Only item can confirm mint");
+
+        self.mint_in_progress = false;
+        self.next_item_index = self.next_item_index + 1;
+    }
+
+    // If item deployment or initialization fails, clear the pending mint instead of burning the index.
+    bounced(msg: bounced<Initialize>) {
+        msg;
+        let ctx: Context = context();
+
+        if (self.mint_in_progress && ctx.sender == self.get_nft_address_by_index(self.next_item_index)) {
+            self.mint_in_progress = false;
+        }
+    }
+
+    receive(msg: GetRoyaltyParams) {
+        let ctx: Context = context();
+        if (ctx.bounced) {
+            return;
+        }
+
         send(SendParameters{
-            to: item_addr,
-            value: ton("0.05"), // Deployment cost
-            mode: SendIgnoreErrors,
+            to: ctx.sender,
+            value: 0,
+            mode: SendRemainingValue,
             bounce: false,
+            body: ReportRoyaltyParams{
+                query_id: msg.query_id,
+                numerator: self.royalty_numerator,
+                denominator: self.royalty_denominator,
+                destination: self.royalty_destination
+            }.toCell()
+        });
+    }
+
+    receive(msg: UpdateRoyalty) {
+        let ctx: Context = context();
+        if (ctx.bounced) {
+            return;
+        }
+
+        require(ctx.sender == self.owner, "Only owner can update royalty");
+        require(msg.denominator > 0, "Invalid royalty denominator");
+        require(msg.numerator <= msg.denominator, "Invalid royalty ratio");
+
+        self.royalty_numerator = msg.numerator;
+        self.royalty_denominator = msg.denominator;
+        self.royalty_destination = msg.destination;
+    }
+
+    // Accept best-effort ownership callbacks from items without making transfer depend on collection state.
+    receive(msg: OwnershipChanged) {
+        let ctx: Context = context();
+        if (ctx.bounced) {
+            return;
+        }
+
+        require(msg.index < self.next_item_index, "Invalid item index");
+        require(ctx.sender == self.get_nft_address_by_index(msg.index), "Only item can notify ownership change");
+        msg.prev_owner;
+        msg.new_owner;
+    }
+
+    fun deployItem(index: Int, new_owner: Address, item_content: Cell, locked: Bool) {
+        let item_init: StateInit = self.get_nft_item_state_init(index);
+        send(SendParameters{
+            to: contractAddress(item_init),
+            value: itemDeployValue(),
+            mode: SendPayGasSeparately,
+            bounce: true,
             body: Initialize{
-                owner: new_owner, 
-                content: content, 
-                locked: !self.trading_enabled 
+                owner: new_owner,
+                content: item_content,
+                locked: locked
             }.toCell(),
             code: item_init.code,
             data: item_init.data
         });
-        
-        self.next_item_index = self.next_item_index + 1;
     }
 
     fun get_nft_item_state_init(index: Int): StateInit {
@@ -93,7 +254,7 @@ contract NftCollection with Deployable {
     get fun get_collection_data(): CollectionData {
         return CollectionData{
             next_item_index: self.next_item_index,
-            content: self.content,
+            collection_content: self.collection_content,
             owner_address: self.owner
         };
     }
@@ -103,7 +264,27 @@ contract NftCollection with Deployable {
         return contractAddress(item_init);
     }
 
-    get fun is_trading_enabled(): Bool {
-        return self.trading_enabled;
+    get fun royalty_params(): RoyaltyParams {
+        return RoyaltyParams{
+            numerator: self.royalty_numerator,
+            denominator: self.royalty_denominator,
+            destination: self.royalty_destination
+        };
+    }
+
+    get fun get_broadcast_failure_state(): BroadcastFailureState {
+        return BroadcastFailureState{
+            failure_count: self.lock_broadcast_failure_count,
+            last_failed_address: self.last_failed_lock_address
+        };
+    }
+
+    get fun get_nft_content(index: Int, individual_content: Cell): Cell {
+        index;
+        return buildFullContent(self.common_content, individual_content);
+    }
+
+    get fun is_mint_locked(): Bool {
+        return self.mint_locked;
     }
 }

@@ -7,24 +7,28 @@ export async function run(provider: NetworkProvider) {
     const collectionAddress = Address.parse('EQ...your_address...'); 
     const nftCollection = provider.open(NftCollection.fromAddress(collectionAddress));
 
-    console.log('1. Enabling trading in Collection...');
+    const collectionData = await nftCollection.getGetCollectionData();
+    const totalItems = collectionData.next_item_index;
+    const unlockCost = totalItems * toNano('0.02') + toNano('0.05');
+
+    console.log('1. Unlocking future mints in Collection...');
     await nftCollection.send(
         provider.sender(),
         { value: toNano('0.05') },
-        { $$type: 'ToggleTrading', enabled: true }
+        { $$type: 'SetMintLock', locked: false }
     );
 
     await sleep(5000);
 
-    console.log('2. Broadcasting unlock to items 0-50...');
+    console.log(`2. Broadcasting unlock to items 0-${collectionData.next_item_index}...`);
     await nftCollection.send(
         provider.sender(),
-        { value: toNano('1.2') }, // ~0.02 TON gas per item * 50
+        { value: unlockCost },
         { 
             $$type: 'BroadcastLock', 
             locked: false, 
             from_index: 0n, 
-            to_index: 50n 
+            to_index: collectionData.next_item_index
         }
     );
 

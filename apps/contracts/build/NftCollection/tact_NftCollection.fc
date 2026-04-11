@@ -10,89 +10,212 @@
 ;; Contract NftCollection functions
 ;;
 
-(int, slice, cell, int) $NftCollection$_contract_init(slice $owner, cell $content) impure inline_ref {
-    var (($self'next_item_index, $self'owner, $self'content, $self'trading_enabled)) = (0, null(), null(), false);
+(int, slice, cell, cell, int, int, slice, int, int, int, slice) $NftCollection$_contract_init(slice $owner, cell $collection_content, cell $common_content, int $royalty_numerator, int $royalty_denominator, slice $royalty_destination) impure inline_ref {
+    var (($self'next_item_index, $self'owner, $self'collection_content, $self'common_content, $self'royalty_numerator, $self'royalty_denominator, $self'royalty_destination, $self'mint_locked, $self'mint_in_progress, $self'lock_broadcast_failure_count, $self'last_failed_lock_address)) = (0, null(), null(), null(), null(), null(), null(), true, false, 0, null());
+    throw_unless(14760, ($royalty_denominator > 0));
+    throw_unless(54169, ($royalty_numerator <= $royalty_denominator));
     $self'owner = $owner;
-    $self'content = $content;
-    return ($self'next_item_index, $self'owner, $self'content, $self'trading_enabled);
+    $self'collection_content = $collection_content;
+    $self'common_content = $common_content;
+    $self'royalty_numerator = $royalty_numerator;
+    $self'royalty_denominator = $royalty_denominator;
+    $self'royalty_destination = $royalty_destination;
+    return ($self'next_item_index, $self'owner, $self'collection_content, $self'common_content, $self'royalty_numerator, $self'royalty_denominator, $self'royalty_destination, $self'mint_locked, $self'mint_in_progress, $self'lock_broadcast_failure_count, $self'last_failed_lock_address);
 }
 
-((int, slice, cell, int), (cell, cell)) $NftCollection$_fun_get_nft_item_state_init((int, slice, cell, int) $self, int $index) impure inline_ref {
-    var (($self'next_item_index, $self'owner, $self'content, $self'trading_enabled)) = $self;
-    var $fresh$ret_8 = $NftItem$_init_child(__tact_context_sys, $global_myAddress(), $index);
-    return (($self'next_item_index, $self'owner, $self'content, $self'trading_enabled), $fresh$ret_8);
+cell $global_buildFullContent(cell $common_content, cell $individual_content) impure inline_ref {
+    return $Builder$_fun_endCell($Builder$_fun_storeRef($Builder$_fun_storeSlice(store_uint($global_beginCell(), 1, 8), $Cell$_fun_asSlice($common_content)), $individual_content));
 }
 
-((int, slice, cell, int), ()) $NftCollection$_fun__mint((int, slice, cell, int) $self, slice $new_owner, cell $content) impure inline_ref {
-    var (($self'next_item_index, $self'owner, $self'content, $self'trading_enabled)) = $self;
-    var ($item_init'code, $item_init'data) = ($self'next_item_index, $self'owner, $self'content, $self'trading_enabled)~$NftCollection$_fun_get_nft_item_state_init($self'next_item_index);
-    slice $item_addr = $global_contractAddress(($item_init'code, $item_init'data));
-    $global_send($SendParameters$_constructor_to_value_mode_bounce_body_code_data($item_addr, 50000000, 2, false, $Initialize$_store_cell($Initialize$_constructor_owner_content_locked($new_owner, $content, (~ $self'trading_enabled))), $item_init'code, $item_init'data));
-    $self'next_item_index = ($self'next_item_index + 1);
-    return (($self'next_item_index, $self'owner, $self'content, $self'trading_enabled), ());
+((int, slice, cell, cell, int, int, slice, int, int, int, slice), (cell, cell)) $NftCollection$_fun_get_nft_item_state_init((int, slice, cell, cell, int, int, slice, int, int, int, slice) $self, int $index) impure inline_ref {
+    var (($self'next_item_index, $self'owner, $self'collection_content, $self'common_content, $self'royalty_numerator, $self'royalty_denominator, $self'royalty_destination, $self'mint_locked, $self'mint_in_progress, $self'lock_broadcast_failure_count, $self'last_failed_lock_address)) = $self;
+    var $fresh$ret_11 = $NftItem$_init_child(__tact_context_sys, $global_myAddress(), $index);
+    return (($self'next_item_index, $self'owner, $self'collection_content, $self'common_content, $self'royalty_numerator, $self'royalty_denominator, $self'royalty_destination, $self'mint_locked, $self'mint_in_progress, $self'lock_broadcast_failure_count, $self'last_failed_lock_address), $fresh$ret_11);
 }
 
-((int, slice, cell, int), (int, cell, slice)) $NftCollection$_fun_get_collection_data((int, slice, cell, int) $self) impure inline_ref {
-    var (($self'next_item_index, $self'owner, $self'content, $self'trading_enabled)) = $self;
-    var $fresh$ret_9 = $CollectionData$_constructor_next_item_index_content_owner_address($self'next_item_index, $self'content, $self'owner);
-    return (($self'next_item_index, $self'owner, $self'content, $self'trading_enabled), $fresh$ret_9);
+((int, slice, cell, cell, int, int, slice, int, int, int, slice), ()) $NftCollection$_fun_deployItem((int, slice, cell, cell, int, int, slice, int, int, int, slice) $self, int $index, slice $new_owner, cell $item_content, int $locked) impure inline_ref {
+    var (($self'next_item_index, $self'owner, $self'collection_content, $self'common_content, $self'royalty_numerator, $self'royalty_denominator, $self'royalty_destination, $self'mint_locked, $self'mint_in_progress, $self'lock_broadcast_failure_count, $self'last_failed_lock_address)) = $self;
+    var ($item_init'code, $item_init'data) = ($self'next_item_index, $self'owner, $self'collection_content, $self'common_content, $self'royalty_numerator, $self'royalty_denominator, $self'royalty_destination, $self'mint_locked, $self'mint_in_progress, $self'lock_broadcast_failure_count, $self'last_failed_lock_address)~$NftCollection$_fun_get_nft_item_state_init($index);
+    $global_send($SendParameters$_constructor_to_value_mode_bounce_body_code_data($global_contractAddress(($item_init'code, $item_init'data)), 70000000, 1, true, $Initialize$_store_cell($Initialize$_constructor_owner_content_locked($new_owner, $item_content, $locked)), $item_init'code, $item_init'data));
+    return (($self'next_item_index, $self'owner, $self'collection_content, $self'common_content, $self'royalty_numerator, $self'royalty_denominator, $self'royalty_destination, $self'mint_locked, $self'mint_in_progress, $self'lock_broadcast_failure_count, $self'last_failed_lock_address), ());
 }
 
-((int, slice, cell, int), slice) $NftCollection$_fun_get_nft_address_by_index((int, slice, cell, int) $self, int $index) impure inline_ref {
-    var (($self'next_item_index, $self'owner, $self'content, $self'trading_enabled)) = $self;
-    var ($item_init'code, $item_init'data) = ($self'next_item_index, $self'owner, $self'content, $self'trading_enabled)~$NftCollection$_fun_get_nft_item_state_init($index);
-    var $fresh$ret_10 = $global_contractAddress(($item_init'code, $item_init'data));
-    return (($self'next_item_index, $self'owner, $self'content, $self'trading_enabled), $fresh$ret_10);
+((int, slice, cell, cell, int, int, slice, int, int, int, slice), (int, cell, slice)) $NftCollection$_fun_get_collection_data((int, slice, cell, cell, int, int, slice, int, int, int, slice) $self) impure inline_ref {
+    var (($self'next_item_index, $self'owner, $self'collection_content, $self'common_content, $self'royalty_numerator, $self'royalty_denominator, $self'royalty_destination, $self'mint_locked, $self'mint_in_progress, $self'lock_broadcast_failure_count, $self'last_failed_lock_address)) = $self;
+    var $fresh$ret_12 = $CollectionData$_constructor_next_item_index_collection_content_owner_address($self'next_item_index, $self'collection_content, $self'owner);
+    return (($self'next_item_index, $self'owner, $self'collection_content, $self'common_content, $self'royalty_numerator, $self'royalty_denominator, $self'royalty_destination, $self'mint_locked, $self'mint_in_progress, $self'lock_broadcast_failure_count, $self'last_failed_lock_address), $fresh$ret_12);
 }
 
-((int, slice, cell, int), int) $NftCollection$_fun_is_trading_enabled((int, slice, cell, int) $self) impure inline_ref {
-    var (($self'next_item_index, $self'owner, $self'content, $self'trading_enabled)) = $self;
-    var $fresh$ret_11 = $self'trading_enabled;
-    return (($self'next_item_index, $self'owner, $self'content, $self'trading_enabled), $fresh$ret_11);
+((int, slice, cell, cell, int, int, slice, int, int, int, slice), slice) $NftCollection$_fun_get_nft_address_by_index((int, slice, cell, cell, int, int, slice, int, int, int, slice) $self, int $index) impure inline_ref {
+    var (($self'next_item_index, $self'owner, $self'collection_content, $self'common_content, $self'royalty_numerator, $self'royalty_denominator, $self'royalty_destination, $self'mint_locked, $self'mint_in_progress, $self'lock_broadcast_failure_count, $self'last_failed_lock_address)) = $self;
+    var ($item_init'code, $item_init'data) = ($self'next_item_index, $self'owner, $self'collection_content, $self'common_content, $self'royalty_numerator, $self'royalty_denominator, $self'royalty_destination, $self'mint_locked, $self'mint_in_progress, $self'lock_broadcast_failure_count, $self'last_failed_lock_address)~$NftCollection$_fun_get_nft_item_state_init($index);
+    var $fresh$ret_13 = $global_contractAddress(($item_init'code, $item_init'data));
+    return (($self'next_item_index, $self'owner, $self'collection_content, $self'common_content, $self'royalty_numerator, $self'royalty_denominator, $self'royalty_destination, $self'mint_locked, $self'mint_in_progress, $self'lock_broadcast_failure_count, $self'last_failed_lock_address), $fresh$ret_13);
+}
+
+((int, slice, cell, cell, int, int, slice, int, int, int, slice), (int, int, slice)) $NftCollection$_fun_royalty_params((int, slice, cell, cell, int, int, slice, int, int, int, slice) $self) impure inline_ref {
+    var (($self'next_item_index, $self'owner, $self'collection_content, $self'common_content, $self'royalty_numerator, $self'royalty_denominator, $self'royalty_destination, $self'mint_locked, $self'mint_in_progress, $self'lock_broadcast_failure_count, $self'last_failed_lock_address)) = $self;
+    var $fresh$ret_14 = $RoyaltyParams$_constructor_numerator_denominator_destination($self'royalty_numerator, $self'royalty_denominator, $self'royalty_destination);
+    return (($self'next_item_index, $self'owner, $self'collection_content, $self'common_content, $self'royalty_numerator, $self'royalty_denominator, $self'royalty_destination, $self'mint_locked, $self'mint_in_progress, $self'lock_broadcast_failure_count, $self'last_failed_lock_address), $fresh$ret_14);
+}
+
+((int, slice, cell, cell, int, int, slice, int, int, int, slice), (int, slice)) $NftCollection$_fun_get_broadcast_failure_state((int, slice, cell, cell, int, int, slice, int, int, int, slice) $self) impure inline_ref {
+    var (($self'next_item_index, $self'owner, $self'collection_content, $self'common_content, $self'royalty_numerator, $self'royalty_denominator, $self'royalty_destination, $self'mint_locked, $self'mint_in_progress, $self'lock_broadcast_failure_count, $self'last_failed_lock_address)) = $self;
+    var $fresh$ret_15 = $BroadcastFailureState$_constructor_failure_count_last_failed_address($self'lock_broadcast_failure_count, $self'last_failed_lock_address);
+    return (($self'next_item_index, $self'owner, $self'collection_content, $self'common_content, $self'royalty_numerator, $self'royalty_denominator, $self'royalty_destination, $self'mint_locked, $self'mint_in_progress, $self'lock_broadcast_failure_count, $self'last_failed_lock_address), $fresh$ret_15);
+}
+
+((int, slice, cell, cell, int, int, slice, int, int, int, slice), cell) $NftCollection$_fun_get_nft_content((int, slice, cell, cell, int, int, slice, int, int, int, slice) $self, int $index, cell $individual_content) impure inline_ref {
+    var (($self'next_item_index, $self'owner, $self'collection_content, $self'common_content, $self'royalty_numerator, $self'royalty_denominator, $self'royalty_destination, $self'mint_locked, $self'mint_in_progress, $self'lock_broadcast_failure_count, $self'last_failed_lock_address)) = $self;
+    $index;
+    var $fresh$ret_16 = $global_buildFullContent($self'common_content, $individual_content);
+    return (($self'next_item_index, $self'owner, $self'collection_content, $self'common_content, $self'royalty_numerator, $self'royalty_denominator, $self'royalty_destination, $self'mint_locked, $self'mint_in_progress, $self'lock_broadcast_failure_count, $self'last_failed_lock_address), $fresh$ret_16);
+}
+
+((int, slice, cell, cell, int, int, slice, int, int, int, slice), int) $NftCollection$_fun_is_mint_locked((int, slice, cell, cell, int, int, slice, int, int, int, slice) $self) impure inline_ref {
+    var (($self'next_item_index, $self'owner, $self'collection_content, $self'common_content, $self'royalty_numerator, $self'royalty_denominator, $self'royalty_destination, $self'mint_locked, $self'mint_in_progress, $self'lock_broadcast_failure_count, $self'last_failed_lock_address)) = $self;
+    var $fresh$ret_17 = $self'mint_locked;
+    return (($self'next_item_index, $self'owner, $self'collection_content, $self'common_content, $self'royalty_numerator, $self'royalty_denominator, $self'royalty_destination, $self'mint_locked, $self'mint_in_progress, $self'lock_broadcast_failure_count, $self'last_failed_lock_address), $fresh$ret_17);
 }
 
 ;;
 ;; Receivers of a Contract NftCollection
 ;;
 
-(((int, slice, cell, int)), ()) $NftCollection$_internal_binary_Mint((int, slice, cell, int) $self, (slice, cell) $msg) impure inline {
-    var ($self'next_item_index, $self'owner, $self'content, $self'trading_enabled) = $self;
+(((int, slice, cell, cell, int, int, slice, int, int, int, slice)), ()) %$NftCollection$_internal_empty((int, slice, cell, cell, int, int, slice, int, int, int, slice) $self) impure inline {
+    var ($self'next_item_index, $self'owner, $self'collection_content, $self'common_content, $self'royalty_numerator, $self'royalty_denominator, $self'royalty_destination, $self'mint_locked, $self'mint_in_progress, $self'lock_broadcast_failure_count, $self'last_failed_lock_address) = $self;
+    return (($self'next_item_index, $self'owner, $self'collection_content, $self'common_content, $self'royalty_numerator, $self'royalty_denominator, $self'royalty_destination, $self'mint_locked, $self'mint_in_progress, $self'lock_broadcast_failure_count, $self'last_failed_lock_address), ());
+}
+
+(((int, slice, cell, cell, int, int, slice, int, int, int, slice)), ()) $NftCollection$_internal_binary_Mint((int, slice, cell, cell, int, int, slice, int, int, int, slice) $self, (slice, cell) $msg) impure inline {
+    var ($self'next_item_index, $self'owner, $self'collection_content, $self'common_content, $self'royalty_numerator, $self'royalty_denominator, $self'royalty_destination, $self'mint_locked, $self'mint_in_progress, $self'lock_broadcast_failure_count, $self'last_failed_lock_address) = $self;
     var ($msg'owner, $msg'content) = $msg;
-    throw_unless(57579, ( __tact_slice_eq_bits($self'owner, __tact_context_get_sender()) ));
-    ($self'next_item_index, $self'owner, $self'content, $self'trading_enabled)~$NftCollection$_fun__mint($msg'owner, $msg'content);
-    return (($self'next_item_index, $self'owner, $self'content, $self'trading_enabled), ());
-}
-
-(((int, slice, cell, int)), ()) $NftCollection$_internal_binary_ToggleTrading((int, slice, cell, int) $self, (int) $msg) impure inline {
-    var ($self'next_item_index, $self'owner, $self'content, $self'trading_enabled) = $self;
-    var ($msg'enabled) = $msg;
-    throw_unless(5340, ( __tact_slice_eq_bits($self'owner, __tact_context_get_sender()) ));
-    $self'trading_enabled = $msg'enabled;
-    return (($self'next_item_index, $self'owner, $self'content, $self'trading_enabled), ());
-}
-
-(((int, slice, cell, int)), ()) $NftCollection$_internal_binary_BroadcastLock((int, slice, cell, int) $self, (int, int, int) $msg) impure inline {
-    var ($self'next_item_index, $self'owner, $self'content, $self'trading_enabled) = $self;
-    var ($msg'locked, $msg'from_index, $msg'to_index) = $msg;
-    throw_unless(54045, ( __tact_slice_eq_bits($self'owner, __tact_context_get_sender()) ));
-    int $i = $msg'from_index;
-    int $limit = $msg'to_index;
-    if (($limit > $self'next_item_index)) {
-        $limit = $self'next_item_index;
+    var ($ctx'bounced, $ctx'sender, $ctx'value, $ctx'raw) = __tact_context_get();
+    if ($ctx'bounced) {
+        return (($self'next_item_index, $self'owner, $self'collection_content, $self'common_content, $self'royalty_numerator, $self'royalty_denominator, $self'royalty_destination, $self'mint_locked, $self'mint_in_progress, $self'lock_broadcast_failure_count, $self'last_failed_lock_address), ());
     }
-    while (($i < $limit)) {
-        slice $item_addr = ($self'next_item_index, $self'owner, $self'content, $self'trading_enabled)~$NftCollection$_fun_get_nft_address_by_index($i);
-        $global_send($SendParameters$_constructor_to_value_mode_body($item_addr, 20000000, 2, $SetLocked$_store_cell($SetLocked$_constructor_locked($msg'locked))));
+    throw_unless(57579, ( __tact_slice_eq_bits($self'owner, $ctx'sender) ));
+    throw_unless(44504, (~ $self'mint_in_progress));
+    $self'mint_in_progress = true;
+    ($self'next_item_index, $self'owner, $self'collection_content, $self'common_content, $self'royalty_numerator, $self'royalty_denominator, $self'royalty_destination, $self'mint_locked, $self'mint_in_progress, $self'lock_broadcast_failure_count, $self'last_failed_lock_address)~$NftCollection$_fun_deployItem($self'next_item_index, $msg'owner, $msg'content, $self'mint_locked);
+    return (($self'next_item_index, $self'owner, $self'collection_content, $self'common_content, $self'royalty_numerator, $self'royalty_denominator, $self'royalty_destination, $self'mint_locked, $self'mint_in_progress, $self'lock_broadcast_failure_count, $self'last_failed_lock_address), ());
+}
+
+(((int, slice, cell, cell, int, int, slice, int, int, int, slice)), ()) $NftCollection$_internal_binary_SetMintLock((int, slice, cell, cell, int, int, slice, int, int, int, slice) $self, (int) $msg) impure inline {
+    var ($self'next_item_index, $self'owner, $self'collection_content, $self'common_content, $self'royalty_numerator, $self'royalty_denominator, $self'royalty_destination, $self'mint_locked, $self'mint_in_progress, $self'lock_broadcast_failure_count, $self'last_failed_lock_address) = $self;
+    var ($msg'locked) = $msg;
+    var ($ctx'bounced, $ctx'sender, $ctx'value, $ctx'raw) = __tact_context_get();
+    if ($ctx'bounced) {
+        return (($self'next_item_index, $self'owner, $self'collection_content, $self'common_content, $self'royalty_numerator, $self'royalty_denominator, $self'royalty_destination, $self'mint_locked, $self'mint_in_progress, $self'lock_broadcast_failure_count, $self'last_failed_lock_address), ());
+    }
+    throw_unless(62399, ( __tact_slice_eq_bits($self'owner, $ctx'sender) ));
+    $self'mint_locked = $msg'locked;
+    return (($self'next_item_index, $self'owner, $self'collection_content, $self'common_content, $self'royalty_numerator, $self'royalty_denominator, $self'royalty_destination, $self'mint_locked, $self'mint_in_progress, $self'lock_broadcast_failure_count, $self'last_failed_lock_address), ());
+}
+
+(((int, slice, cell, cell, int, int, slice, int, int, int, slice)), ()) $NftCollection$_internal_binary_BroadcastLock((int, slice, cell, cell, int, int, slice, int, int, int, slice) $self, (int, int, int) $msg) impure inline {
+    var ($self'next_item_index, $self'owner, $self'collection_content, $self'common_content, $self'royalty_numerator, $self'royalty_denominator, $self'royalty_destination, $self'mint_locked, $self'mint_in_progress, $self'lock_broadcast_failure_count, $self'last_failed_lock_address) = $self;
+    var ($msg'locked, $msg'from_index, $msg'to_index) = $msg;
+    var ($ctx'bounced, $ctx'sender, $ctx'value, $ctx'raw) = __tact_context_get();
+    if ($ctx'bounced) {
+        return (($self'next_item_index, $self'owner, $self'collection_content, $self'common_content, $self'royalty_numerator, $self'royalty_denominator, $self'royalty_destination, $self'mint_locked, $self'mint_in_progress, $self'lock_broadcast_failure_count, $self'last_failed_lock_address), ());
+    }
+    throw_unless(54045, ( __tact_slice_eq_bits($self'owner, $ctx'sender) ));
+    throw_unless(40609, ($self'next_item_index > 0));
+    throw_unless(40282, ($msg'from_index <= $msg'to_index));
+    throw_unless(60814, ($msg'to_index <= $self'next_item_index));
+    throw_unless(41880, (($msg'to_index - $msg'from_index) <= 250));
+    $self'last_failed_lock_address = null();
+    int $i = $msg'from_index;
+    while (($i < $msg'to_index)) {
+        $global_send($SendParameters$_constructor_to_value_bounce_mode_body(($self'next_item_index, $self'owner, $self'collection_content, $self'common_content, $self'royalty_numerator, $self'royalty_denominator, $self'royalty_destination, $self'mint_locked, $self'mint_in_progress, $self'lock_broadcast_failure_count, $self'last_failed_lock_address)~$NftCollection$_fun_get_nft_address_by_index($i), 20000000, true, 1, $SetLocked$_store_cell($SetLocked$_constructor_locked($msg'locked))));
         $i = ($i + 1);
     }
-    return (($self'next_item_index, $self'owner, $self'content, $self'trading_enabled), ());
+    return (($self'next_item_index, $self'owner, $self'collection_content, $self'common_content, $self'royalty_numerator, $self'royalty_denominator, $self'royalty_destination, $self'mint_locked, $self'mint_in_progress, $self'lock_broadcast_failure_count, $self'last_failed_lock_address), ());
 }
 
-(((int, slice, cell, int)), ()) $NftCollection$_internal_binary_Deploy((int, slice, cell, int) $self, (int) $deploy) impure inline {
-    var ($self'next_item_index, $self'owner, $self'content, $self'trading_enabled) = $self;
+(((int, slice, cell, cell, int, int, slice, int, int, int, slice)), ()) $NftCollection$_receive_binary_bounce_SetLocked((int, slice, cell, cell, int, int, slice, int, int, int, slice) $self, (int) $msg) impure inline {
+    var ($self'next_item_index, $self'owner, $self'collection_content, $self'common_content, $self'royalty_numerator, $self'royalty_denominator, $self'royalty_destination, $self'mint_locked, $self'mint_in_progress, $self'lock_broadcast_failure_count, $self'last_failed_lock_address) = $self;
+    var ($msg'locked) = $msg;
+    ($msg'locked);
+    var ($ctx'bounced, $ctx'sender, $ctx'value, $ctx'raw) = __tact_context_get();
+    $self'lock_broadcast_failure_count = ($self'lock_broadcast_failure_count + 1);
+    $self'last_failed_lock_address = $ctx'sender;
+    return (($self'next_item_index, $self'owner, $self'collection_content, $self'common_content, $self'royalty_numerator, $self'royalty_denominator, $self'royalty_destination, $self'mint_locked, $self'mint_in_progress, $self'lock_broadcast_failure_count, $self'last_failed_lock_address), ());
+}
+
+(((int, slice, cell, cell, int, int, slice, int, int, int, slice)), ()) $NftCollection$_internal_binary_ItemInitialized((int, slice, cell, cell, int, int, slice, int, int, int, slice) $self, (int) $msg) impure inline {
+    var ($self'next_item_index, $self'owner, $self'collection_content, $self'common_content, $self'royalty_numerator, $self'royalty_denominator, $self'royalty_destination, $self'mint_locked, $self'mint_in_progress, $self'lock_broadcast_failure_count, $self'last_failed_lock_address) = $self;
+    var ($msg'index) = $msg;
+    var ($ctx'bounced, $ctx'sender, $ctx'value, $ctx'raw) = __tact_context_get();
+    if ($ctx'bounced) {
+        return (($self'next_item_index, $self'owner, $self'collection_content, $self'common_content, $self'royalty_numerator, $self'royalty_denominator, $self'royalty_destination, $self'mint_locked, $self'mint_in_progress, $self'lock_broadcast_failure_count, $self'last_failed_lock_address), ());
+    }
+    throw_unless(59800, $self'mint_in_progress);
+    throw_unless(19314, ($msg'index == $self'next_item_index));
+    throw_unless(4055, ( __tact_slice_eq_bits(($self'next_item_index, $self'owner, $self'collection_content, $self'common_content, $self'royalty_numerator, $self'royalty_denominator, $self'royalty_destination, $self'mint_locked, $self'mint_in_progress, $self'lock_broadcast_failure_count, $self'last_failed_lock_address)~$NftCollection$_fun_get_nft_address_by_index($msg'index), $ctx'sender) ));
+    $self'mint_in_progress = false;
+    $self'next_item_index = ($self'next_item_index + 1);
+    return (($self'next_item_index, $self'owner, $self'collection_content, $self'common_content, $self'royalty_numerator, $self'royalty_denominator, $self'royalty_destination, $self'mint_locked, $self'mint_in_progress, $self'lock_broadcast_failure_count, $self'last_failed_lock_address), ());
+}
+
+(((int, slice, cell, cell, int, int, slice, int, int, int, slice)), ()) $NftCollection$_receive_binary_bounce_Initialize((int, slice, cell, cell, int, int, slice, int, int, int, slice) $self, tuple $msg) impure inline {
+    var ($self'next_item_index, $self'owner, $self'collection_content, $self'common_content, $self'royalty_numerator, $self'royalty_denominator, $self'royalty_destination, $self'mint_locked, $self'mint_in_progress, $self'lock_broadcast_failure_count, $self'last_failed_lock_address) = $self;
+    var $msg = $msg;
+    $msg;
+    var ($ctx'bounced, $ctx'sender, $ctx'value, $ctx'raw) = __tact_context_get();
+    if (( ($self'mint_in_progress) ? (( __tact_slice_eq_bits(($self'next_item_index, $self'owner, $self'collection_content, $self'common_content, $self'royalty_numerator, $self'royalty_denominator, $self'royalty_destination, $self'mint_locked, $self'mint_in_progress, $self'lock_broadcast_failure_count, $self'last_failed_lock_address)~$NftCollection$_fun_get_nft_address_by_index($self'next_item_index), $ctx'sender) )) : (false) )) {
+        $self'mint_in_progress = false;
+    }
+    return (($self'next_item_index, $self'owner, $self'collection_content, $self'common_content, $self'royalty_numerator, $self'royalty_denominator, $self'royalty_destination, $self'mint_locked, $self'mint_in_progress, $self'lock_broadcast_failure_count, $self'last_failed_lock_address), ());
+}
+
+(((int, slice, cell, cell, int, int, slice, int, int, int, slice)), ()) $NftCollection$_internal_binary_GetRoyaltyParams((int, slice, cell, cell, int, int, slice, int, int, int, slice) $self, (int) $msg) impure inline {
+    var ($self'next_item_index, $self'owner, $self'collection_content, $self'common_content, $self'royalty_numerator, $self'royalty_denominator, $self'royalty_destination, $self'mint_locked, $self'mint_in_progress, $self'lock_broadcast_failure_count, $self'last_failed_lock_address) = $self;
+    var ($msg'query_id) = $msg;
+    var ($ctx'bounced, $ctx'sender, $ctx'value, $ctx'raw) = __tact_context_get();
+    if ($ctx'bounced) {
+        return (($self'next_item_index, $self'owner, $self'collection_content, $self'common_content, $self'royalty_numerator, $self'royalty_denominator, $self'royalty_destination, $self'mint_locked, $self'mint_in_progress, $self'lock_broadcast_failure_count, $self'last_failed_lock_address), ());
+    }
+    $global_send($SendParameters$_constructor_to_value_mode_bounce_body($ctx'sender, 0, 64, false, $ReportRoyaltyParams$_store_cell($ReportRoyaltyParams$_constructor_query_id_numerator_denominator_destination($msg'query_id, $self'royalty_numerator, $self'royalty_denominator, $self'royalty_destination))));
+    return (($self'next_item_index, $self'owner, $self'collection_content, $self'common_content, $self'royalty_numerator, $self'royalty_denominator, $self'royalty_destination, $self'mint_locked, $self'mint_in_progress, $self'lock_broadcast_failure_count, $self'last_failed_lock_address), ());
+}
+
+(((int, slice, cell, cell, int, int, slice, int, int, int, slice)), ()) $NftCollection$_internal_binary_UpdateRoyalty((int, slice, cell, cell, int, int, slice, int, int, int, slice) $self, (int, int, slice) $msg) impure inline {
+    var ($self'next_item_index, $self'owner, $self'collection_content, $self'common_content, $self'royalty_numerator, $self'royalty_denominator, $self'royalty_destination, $self'mint_locked, $self'mint_in_progress, $self'lock_broadcast_failure_count, $self'last_failed_lock_address) = $self;
+    var ($msg'numerator, $msg'denominator, $msg'destination) = $msg;
+    var ($ctx'bounced, $ctx'sender, $ctx'value, $ctx'raw) = __tact_context_get();
+    if ($ctx'bounced) {
+        return (($self'next_item_index, $self'owner, $self'collection_content, $self'common_content, $self'royalty_numerator, $self'royalty_denominator, $self'royalty_destination, $self'mint_locked, $self'mint_in_progress, $self'lock_broadcast_failure_count, $self'last_failed_lock_address), ());
+    }
+    throw_unless(4420, ( __tact_slice_eq_bits($self'owner, $ctx'sender) ));
+    throw_unless(14760, ($msg'denominator > 0));
+    throw_unless(54169, ($msg'numerator <= $msg'denominator));
+    $self'royalty_numerator = $msg'numerator;
+    $self'royalty_denominator = $msg'denominator;
+    $self'royalty_destination = $msg'destination;
+    return (($self'next_item_index, $self'owner, $self'collection_content, $self'common_content, $self'royalty_numerator, $self'royalty_denominator, $self'royalty_destination, $self'mint_locked, $self'mint_in_progress, $self'lock_broadcast_failure_count, $self'last_failed_lock_address), ());
+}
+
+(((int, slice, cell, cell, int, int, slice, int, int, int, slice)), ()) $NftCollection$_internal_binary_OwnershipChanged((int, slice, cell, cell, int, int, slice, int, int, int, slice) $self, (int, slice, slice) $msg) impure inline {
+    var ($self'next_item_index, $self'owner, $self'collection_content, $self'common_content, $self'royalty_numerator, $self'royalty_denominator, $self'royalty_destination, $self'mint_locked, $self'mint_in_progress, $self'lock_broadcast_failure_count, $self'last_failed_lock_address) = $self;
+    var ($msg'index, $msg'prev_owner, $msg'new_owner) = $msg;
+    var ($ctx'bounced, $ctx'sender, $ctx'value, $ctx'raw) = __tact_context_get();
+    if ($ctx'bounced) {
+        return (($self'next_item_index, $self'owner, $self'collection_content, $self'common_content, $self'royalty_numerator, $self'royalty_denominator, $self'royalty_destination, $self'mint_locked, $self'mint_in_progress, $self'lock_broadcast_failure_count, $self'last_failed_lock_address), ());
+    }
+    throw_unless(59449, ($msg'index < $self'next_item_index));
+    throw_unless(40129, ( __tact_slice_eq_bits(($self'next_item_index, $self'owner, $self'collection_content, $self'common_content, $self'royalty_numerator, $self'royalty_denominator, $self'royalty_destination, $self'mint_locked, $self'mint_in_progress, $self'lock_broadcast_failure_count, $self'last_failed_lock_address)~$NftCollection$_fun_get_nft_address_by_index($msg'index), $ctx'sender) ));
+    $msg'prev_owner;
+    $msg'new_owner;
+    return (($self'next_item_index, $self'owner, $self'collection_content, $self'common_content, $self'royalty_numerator, $self'royalty_denominator, $self'royalty_destination, $self'mint_locked, $self'mint_in_progress, $self'lock_broadcast_failure_count, $self'last_failed_lock_address), ());
+}
+
+(((int, slice, cell, cell, int, int, slice, int, int, int, slice)), ()) $NftCollection$_internal_binary_Deploy((int, slice, cell, cell, int, int, slice, int, int, int, slice) $self, (int) $deploy) impure inline {
+    var ($self'next_item_index, $self'owner, $self'collection_content, $self'common_content, $self'royalty_numerator, $self'royalty_denominator, $self'royalty_destination, $self'mint_locked, $self'mint_in_progress, $self'lock_broadcast_failure_count, $self'last_failed_lock_address) = $self;
     var ($deploy'queryId) = $deploy;
-    ($self'next_item_index, $self'owner, $self'content, $self'trading_enabled)~$NftCollection$_fun_notify($DeployOk$_store_cell($DeployOk$_constructor_queryId($deploy'queryId)));
-    return (($self'next_item_index, $self'owner, $self'content, $self'trading_enabled), ());
+    ($self'next_item_index, $self'owner, $self'collection_content, $self'common_content, $self'royalty_numerator, $self'royalty_denominator, $self'royalty_destination, $self'mint_locked, $self'mint_in_progress, $self'lock_broadcast_failure_count, $self'last_failed_lock_address)~$NftCollection$_fun_notify($DeployOk$_store_cell($DeployOk$_constructor_queryId($deploy'queryId)));
+    return (($self'next_item_index, $self'owner, $self'collection_content, $self'common_content, $self'royalty_numerator, $self'royalty_denominator, $self'royalty_destination, $self'mint_locked, $self'mint_in_progress, $self'lock_broadcast_failure_count, $self'last_failed_lock_address), ());
 }
 
 ;;
@@ -112,9 +235,29 @@ _ %get_nft_address_by_index(int $index) method_id(92067) {
     return res;
 }
 
-_ %is_trading_enabled() method_id(82925) {
+_ %royalty_params() method_id(85719) {
     var self = $NftCollection$_contract_load();
-    var res = self~$NftCollection$_fun_is_trading_enabled();
+    var res = self~$NftCollection$_fun_royalty_params();
+    return $RoyaltyParams$_to_external(res);
+}
+
+_ %get_broadcast_failure_state() method_id(127413) {
+    var self = $NftCollection$_contract_load();
+    var res = self~$NftCollection$_fun_get_broadcast_failure_state();
+    return $BroadcastFailureState$_to_external(res);
+}
+
+_ %get_nft_content(int $index, cell $individual_content) method_id(68445) {
+    int $index = $index;
+    cell $individual_content = $individual_content;
+    var self = $NftCollection$_contract_load();
+    var res = self~$NftCollection$_fun_get_nft_content($index, $individual_content);
+    return res;
+}
+
+_ %is_mint_locked() method_id(120812) {
+    var self = $NftCollection$_contract_load();
+    var res = self~$NftCollection$_fun_is_mint_locked();
     return res;
 }
 
@@ -126,9 +269,33 @@ _ lazy_deployment_completed() method_id {
 ;; Routing of a Contract NftCollection
 ;;
 
-((int, slice, cell, int), int) $NftCollection$_contract_router_internal((int, slice, cell, int) self, int msg_bounced, slice in_msg) impure inline_ref {
+((int, slice, cell, cell, int, int, slice, int, int, int, slice), int) $NftCollection$_contract_router_internal((int, slice, cell, cell, int, int, slice, int, int, int, slice) self, int msg_bounced, slice in_msg) impure inline_ref {
     ;; Handle bounced messages
     if (msg_bounced) {
+        
+        ;; Skip 0xFFFFFFFF
+        in_msg~skip_bits(32);
+        
+        ;; Parse op
+        int op = 0;
+        if (slice_bits(in_msg) >= 32) {
+            op = in_msg.preload_uint(32);
+        }
+        
+        ;; Bounced handler for SetLocked message
+        if (op == 0x1d4c0e4a) {
+            var msg = in_msg~$SetLocked$_load();
+            self~$NftCollection$_receive_binary_bounce_SetLocked(msg);
+            return (self, true);
+        }
+        
+        ;; Bounced handler for Initialize message
+        if (op == 0xfe8b8455) {
+            var msg = in_msg~$Initialize$_load_bounced();
+            self~$NftCollection$_receive_binary_bounce_Initialize(msg);
+            return (self, true);
+        }
+        
         return (self, true);
     }
     
@@ -139,24 +306,58 @@ _ lazy_deployment_completed() method_id {
     }
     
     
+    ;; Receive empty message
+    if ((op == 0) & (slice_bits(in_msg) <= 32)) {
+        self~%$NftCollection$_internal_empty();
+        return (self, true);
+    }
+    
     ;; Receive Mint message
-    if (op == 4118766477) {
+    if (op == 0xf57f638d) {
         var msg = in_msg~$Mint$_load();
         self~$NftCollection$_internal_binary_Mint(msg);
         return (self, true);
     }
     
-    ;; Receive ToggleTrading message
-    if (op == 4051840417) {
-        var msg = in_msg~$ToggleTrading$_load();
-        self~$NftCollection$_internal_binary_ToggleTrading(msg);
+    ;; Receive SetMintLock message
+    if (op == 0x2a3b4c5d) {
+        var msg = in_msg~$SetMintLock$_load();
+        self~$NftCollection$_internal_binary_SetMintLock(msg);
         return (self, true);
     }
     
     ;; Receive BroadcastLock message
-    if (op == 4229725070) {
+    if (op == 0x3e4f5a6b) {
         var msg = in_msg~$BroadcastLock$_load();
         self~$NftCollection$_internal_binary_BroadcastLock(msg);
+        return (self, true);
+    }
+    
+    ;; Receive ItemInitialized message
+    if (op == 0xf0a6d5c) {
+        var msg = in_msg~$ItemInitialized$_load();
+        self~$NftCollection$_internal_binary_ItemInitialized(msg);
+        return (self, true);
+    }
+    
+    ;; Receive GetRoyaltyParams message
+    if (op == 0x693d3950) {
+        var msg = in_msg~$GetRoyaltyParams$_load();
+        self~$NftCollection$_internal_binary_GetRoyaltyParams(msg);
+        return (self, true);
+    }
+    
+    ;; Receive UpdateRoyalty message
+    if (op == 0x6f89f5e3) {
+        var msg = in_msg~$UpdateRoyalty$_load();
+        self~$NftCollection$_internal_binary_UpdateRoyalty(msg);
+        return (self, true);
+    }
+    
+    ;; Receive OwnershipChanged message
+    if (op == 0x3a4d7e91) {
+        var msg = in_msg~$OwnershipChanged$_load();
+        self~$NftCollection$_internal_binary_OwnershipChanged(msg);
         return (self, true);
     }
     

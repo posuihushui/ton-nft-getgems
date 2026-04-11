@@ -10,11 +10,13 @@ This workspace contains a production-oriented starter architecture for issuing T
 
 ## Contract Notes
 
-The custom milestone-lock NFT contracts intentionally expose only single-item `Mint`.
+The custom milestone-lock NFT contracts are now structured as a standard-compatible TON NFT collection/item pair with a minimal lock extension.
 
-- `BatchMint` has been removed from the collection contract to keep minting semantics simple and auditable.
+- The collection keeps the standard NFT getters and royalty interface, then adds `SetMintLock` and `BroadcastLock` for milestone control.
+- Royalty remains TEP-66-readable and can now be updated later by the collection owner through `UpdateRoyalty`.
+- `BatchMint` has been removed to keep minting semantics simple and auditable.
 - Operationally this means `1 transaction = 1 NFT`.
-- Lock/unlock still uses ranged `BroadcastLock`, because broadcast is a maintenance operation rather than a minting interface.
+- Lock/unlock for already minted items still uses ranged `BroadcastLock`, because broadcast is a maintenance operation rather than a minting interface.
 
 ## Quick Start
 
@@ -48,5 +50,7 @@ The UI can switch networks at runtime, and the backend can also accept `?network
 
 ## Root Documentation
 
+- `STANDARD_NFT_MILESTONE_LOCK_ARCHITECTURE.md`: root-level architecture overview for the standard-compatible NFT + milestone lock contract track.
 - `GETGEMS_MINTING_GUIDE.md`: implementation flow, architecture notes, API mapping, and official references.
 - `NFT_TRADING_LOCK_GUIDE.md`: custom contract approach for milestone lock / unlock, including the single-mint policy.
+- `apps/contracts/DEPLOYMENT.md`: contract-project deployment guide for testnet and mainnet environments.

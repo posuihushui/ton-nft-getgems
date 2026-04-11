@@ -1,9 +1,9 @@
 # TACT Compilation Report
 Contract: NftItem
-BOC Size: 1320 bytes
+BOC Size: 1622 bytes
 
 # Types
-Total Types: 22
+Total Types: 29
 
 ## StateInit
 TLB: `_ code:^cell data:^cell = StateInit`
@@ -53,41 +53,69 @@ Signature: `Excesses{query_id:uint64}`
 TLB: `get_static_data#2fcb26a2 query_id:uint64 = GetStaticData`
 Signature: `GetStaticData{query_id:uint64}`
 
+## OwnershipChanged
+TLB: `ownership_changed#3a4d7e91 index:uint64 prev_owner:address new_owner:address = OwnershipChanged`
+Signature: `OwnershipChanged{index:uint64,prev_owner:address,new_owner:address}`
+
+## ItemInitialized
+TLB: `item_initialized#0f0a6d5c index:uint64 = ItemInitialized`
+Signature: `ItemInitialized{index:uint64}`
+
 ## ReportStaticData
-TLB: `report_static_data#8b771345 query_id:uint64 index:uint256 collection_address:address = ReportStaticData`
+TLB: `report_static_data#8b771735 query_id:uint64 index:uint256 collection_address:address = ReportStaticData`
 Signature: `ReportStaticData{query_id:uint64,index:uint256,collection_address:address}`
 
 ## Initialize
-TLB: `initialize#6b203fbd owner:address content:Maybe ^cell locked:bool = Initialize`
-Signature: `Initialize{owner:address,content:Maybe ^cell,locked:bool}`
+TLB: `initialize#fe8b8455 owner:address content:^cell locked:bool = Initialize`
+Signature: `Initialize{owner:address,content:^cell,locked:bool}`
 
 ## SetLocked
-TLB: `set_locked#bb7f7d59 locked:bool = SetLocked`
+TLB: `set_locked#1d4c0e4a locked:bool = SetLocked`
 Signature: `SetLocked{locked:bool}`
 
 ## NftData
-TLB: `_ is_initialized:bool index:int257 collection_address:address owner_address:address content:Maybe ^cell = NftData`
-Signature: `NftData{is_initialized:bool,index:int257,collection_address:address,owner_address:address,content:Maybe ^cell}`
+TLB: `_ init:bool index:int257 collection_address:address owner_address:Maybe address content:Maybe ^cell = NftData`
+Signature: `NftData{init:bool,index:int257,collection_address:address,owner_address:Maybe address,content:Maybe ^cell}`
 
 ## NftItem$Data
 TLB: `null`
 Signature: `null`
 
 ## Mint
-TLB: `mint#f57f638d owner:address content:Maybe ^cell = Mint`
-Signature: `Mint{owner:address,content:Maybe ^cell}`
+TLB: `mint#f57f638d owner:address content:^cell = Mint`
+Signature: `Mint{owner:address,content:^cell}`
 
-## ToggleTrading
-TLB: `toggle_trading#f1822da1 enabled:bool = ToggleTrading`
-Signature: `ToggleTrading{enabled:bool}`
+## SetMintLock
+TLB: `set_mint_lock#2a3b4c5d locked:bool = SetMintLock`
+Signature: `SetMintLock{locked:bool}`
 
 ## BroadcastLock
-TLB: `broadcast_lock#fc1c7b8e locked:bool from_index:uint64 to_index:uint64 = BroadcastLock`
+TLB: `broadcast_lock#3e4f5a6b locked:bool from_index:uint64 to_index:uint64 = BroadcastLock`
 Signature: `BroadcastLock{locked:bool,from_index:uint64,to_index:uint64}`
 
+## GetRoyaltyParams
+TLB: `get_royalty_params#693d3950 query_id:uint64 = GetRoyaltyParams`
+Signature: `GetRoyaltyParams{query_id:uint64}`
+
+## ReportRoyaltyParams
+TLB: `report_royalty_params#a8cb00ad query_id:uint64 numerator:uint16 denominator:uint16 destination:address = ReportRoyaltyParams`
+Signature: `ReportRoyaltyParams{query_id:uint64,numerator:uint16,denominator:uint16,destination:address}`
+
+## UpdateRoyalty
+TLB: `update_royalty#6f89f5e3 numerator:uint16 denominator:uint16 destination:address = UpdateRoyalty`
+Signature: `UpdateRoyalty{numerator:uint16,denominator:uint16,destination:address}`
+
 ## CollectionData
-TLB: `_ next_item_index:int257 content:^cell owner_address:address = CollectionData`
-Signature: `CollectionData{next_item_index:int257,content:^cell,owner_address:address}`
+TLB: `_ next_item_index:int257 collection_content:^cell owner_address:address = CollectionData`
+Signature: `CollectionData{next_item_index:int257,collection_content:^cell,owner_address:address}`
+
+## RoyaltyParams
+TLB: `_ numerator:uint16 denominator:uint16 destination:address = RoyaltyParams`
+Signature: `RoyaltyParams{numerator:uint16,denominator:uint16,destination:address}`
+
+## BroadcastFailureState
+TLB: `_ failure_count:int257 last_failed_address:Maybe address = BroadcastFailureState`
+Signature: `BroadcastFailureState{failure_count:int257,last_failed_address:Maybe address}`
 
 ## NftCollection$Data
 TLB: `null`
@@ -138,14 +166,30 @@ Total Get Methods: 2
 136: Invalid address
 137: Masterchain support is not enabled for this contract
 2977: Already initialized
-5340: Only owner can toggle trading
+4055: Only item can confirm mint
+4420: Only owner can update royalty
 7657: Not initialized
+8291: Transfer query_id must be increasing
 12308: Only collection can initialize
+14760: Invalid royalty denominator
+19314: Unexpected mint index
 27983: Trading is locked for this item
 36952: Only owner can transfer
+40129: Only item can notify ownership change
+40282: Invalid range
+40609: No minted items to broadcast
+41880: Range too large
+42377: Insufficient value for transfer
+44504: Mint already in progress
 47098: Only collection can change lock status
 54045: Only owner can broadcast
+54169: Invalid royalty ratio
+55650: Only basechain addresses supported
 57579: Only owner can mint
+59449: Invalid item index
+59800: No mint in progress
+60814: Range exceeds minted items
+62399: Only owner can set mint lock
 
 # Trait Inheritance Diagram
 

@@ -694,6 +694,112 @@ function dictValueParserGetStaticData(): DictionaryValue<GetStaticData> {
     }
 }
 
+export type OwnershipChanged = {
+    $$type: 'OwnershipChanged';
+    index: bigint;
+    prev_owner: Address;
+    new_owner: Address;
+}
+
+export function storeOwnershipChanged(src: OwnershipChanged) {
+    return (builder: Builder) => {
+        let b_0 = builder;
+        b_0.storeUint(978157201, 32);
+        b_0.storeUint(src.index, 64);
+        b_0.storeAddress(src.prev_owner);
+        b_0.storeAddress(src.new_owner);
+    };
+}
+
+export function loadOwnershipChanged(slice: Slice) {
+    let sc_0 = slice;
+    if (sc_0.loadUint(32) !== 978157201) { throw Error('Invalid prefix'); }
+    let _index = sc_0.loadUintBig(64);
+    let _prev_owner = sc_0.loadAddress();
+    let _new_owner = sc_0.loadAddress();
+    return { $$type: 'OwnershipChanged' as const, index: _index, prev_owner: _prev_owner, new_owner: _new_owner };
+}
+
+function loadTupleOwnershipChanged(source: TupleReader) {
+    let _index = source.readBigNumber();
+    let _prev_owner = source.readAddress();
+    let _new_owner = source.readAddress();
+    return { $$type: 'OwnershipChanged' as const, index: _index, prev_owner: _prev_owner, new_owner: _new_owner };
+}
+
+function loadGetterTupleOwnershipChanged(source: TupleReader) {
+    let _index = source.readBigNumber();
+    let _prev_owner = source.readAddress();
+    let _new_owner = source.readAddress();
+    return { $$type: 'OwnershipChanged' as const, index: _index, prev_owner: _prev_owner, new_owner: _new_owner };
+}
+
+function storeTupleOwnershipChanged(source: OwnershipChanged) {
+    let builder = new TupleBuilder();
+    builder.writeNumber(source.index);
+    builder.writeAddress(source.prev_owner);
+    builder.writeAddress(source.new_owner);
+    return builder.build();
+}
+
+function dictValueParserOwnershipChanged(): DictionaryValue<OwnershipChanged> {
+    return {
+        serialize: (src, builder) => {
+            builder.storeRef(beginCell().store(storeOwnershipChanged(src)).endCell());
+        },
+        parse: (src) => {
+            return loadOwnershipChanged(src.loadRef().beginParse());
+        }
+    }
+}
+
+export type ItemInitialized = {
+    $$type: 'ItemInitialized';
+    index: bigint;
+}
+
+export function storeItemInitialized(src: ItemInitialized) {
+    return (builder: Builder) => {
+        let b_0 = builder;
+        b_0.storeUint(252341596, 32);
+        b_0.storeUint(src.index, 64);
+    };
+}
+
+export function loadItemInitialized(slice: Slice) {
+    let sc_0 = slice;
+    if (sc_0.loadUint(32) !== 252341596) { throw Error('Invalid prefix'); }
+    let _index = sc_0.loadUintBig(64);
+    return { $$type: 'ItemInitialized' as const, index: _index };
+}
+
+function loadTupleItemInitialized(source: TupleReader) {
+    let _index = source.readBigNumber();
+    return { $$type: 'ItemInitialized' as const, index: _index };
+}
+
+function loadGetterTupleItemInitialized(source: TupleReader) {
+    let _index = source.readBigNumber();
+    return { $$type: 'ItemInitialized' as const, index: _index };
+}
+
+function storeTupleItemInitialized(source: ItemInitialized) {
+    let builder = new TupleBuilder();
+    builder.writeNumber(source.index);
+    return builder.build();
+}
+
+function dictValueParserItemInitialized(): DictionaryValue<ItemInitialized> {
+    return {
+        serialize: (src, builder) => {
+            builder.storeRef(beginCell().store(storeItemInitialized(src)).endCell());
+        },
+        parse: (src) => {
+            return loadItemInitialized(src.loadRef().beginParse());
+        }
+    }
+}
+
 export type ReportStaticData = {
     $$type: 'ReportStaticData';
     query_id: bigint;
@@ -704,7 +810,7 @@ export type ReportStaticData = {
 export function storeReportStaticData(src: ReportStaticData) {
     return (builder: Builder) => {
         let b_0 = builder;
-        b_0.storeUint(2339836741, 32);
+        b_0.storeUint(2339837749, 32);
         b_0.storeUint(src.query_id, 64);
         b_0.storeUint(src.index, 256);
         b_0.storeAddress(src.collection_address);
@@ -713,7 +819,7 @@ export function storeReportStaticData(src: ReportStaticData) {
 
 export function loadReportStaticData(slice: Slice) {
     let sc_0 = slice;
-    if (sc_0.loadUint(32) !== 2339836741) { throw Error('Invalid prefix'); }
+    if (sc_0.loadUint(32) !== 2339837749) { throw Error('Invalid prefix'); }
     let _query_id = sc_0.loadUintBig(64);
     let _index = sc_0.loadUintBig(256);
     let _collection_address = sc_0.loadAddress();
@@ -756,39 +862,39 @@ function dictValueParserReportStaticData(): DictionaryValue<ReportStaticData> {
 export type Initialize = {
     $$type: 'Initialize';
     owner: Address;
-    content: Cell | null;
+    content: Cell;
     locked: boolean;
 }
 
 export function storeInitialize(src: Initialize) {
     return (builder: Builder) => {
         let b_0 = builder;
-        b_0.storeUint(1797275581, 32);
+        b_0.storeUint(4270556245, 32);
         b_0.storeAddress(src.owner);
-        if (src.content !== null && src.content !== undefined) { b_0.storeBit(true).storeRef(src.content); } else { b_0.storeBit(false); }
+        b_0.storeRef(src.content);
         b_0.storeBit(src.locked);
     };
 }
 
 export function loadInitialize(slice: Slice) {
     let sc_0 = slice;
-    if (sc_0.loadUint(32) !== 1797275581) { throw Error('Invalid prefix'); }
+    if (sc_0.loadUint(32) !== 4270556245) { throw Error('Invalid prefix'); }
     let _owner = sc_0.loadAddress();
-    let _content = sc_0.loadBit() ? sc_0.loadRef() : null;
+    let _content = sc_0.loadRef();
     let _locked = sc_0.loadBit();
     return { $$type: 'Initialize' as const, owner: _owner, content: _content, locked: _locked };
 }
 
 function loadTupleInitialize(source: TupleReader) {
     let _owner = source.readAddress();
-    let _content = source.readCellOpt();
+    let _content = source.readCell();
     let _locked = source.readBoolean();
     return { $$type: 'Initialize' as const, owner: _owner, content: _content, locked: _locked };
 }
 
 function loadGetterTupleInitialize(source: TupleReader) {
     let _owner = source.readAddress();
-    let _content = source.readCellOpt();
+    let _content = source.readCell();
     let _locked = source.readBoolean();
     return { $$type: 'Initialize' as const, owner: _owner, content: _content, locked: _locked };
 }
@@ -820,14 +926,14 @@ export type SetLocked = {
 export function storeSetLocked(src: SetLocked) {
     return (builder: Builder) => {
         let b_0 = builder;
-        b_0.storeUint(3145694553, 32);
+        b_0.storeUint(491523658, 32);
         b_0.storeBit(src.locked);
     };
 }
 
 export function loadSetLocked(slice: Slice) {
     let sc_0 = slice;
-    if (sc_0.loadUint(32) !== 3145694553) { throw Error('Invalid prefix'); }
+    if (sc_0.loadUint(32) !== 491523658) { throw Error('Invalid prefix'); }
     let _locked = sc_0.loadBit();
     return { $$type: 'SetLocked' as const, locked: _locked };
 }
@@ -861,17 +967,17 @@ function dictValueParserSetLocked(): DictionaryValue<SetLocked> {
 
 export type NftData = {
     $$type: 'NftData';
-    is_initialized: boolean;
+    init: boolean;
     index: bigint;
     collection_address: Address;
-    owner_address: Address;
+    owner_address: Address | null;
     content: Cell | null;
 }
 
 export function storeNftData(src: NftData) {
     return (builder: Builder) => {
         let b_0 = builder;
-        b_0.storeBit(src.is_initialized);
+        b_0.storeBit(src.init);
         b_0.storeInt(src.index, 257);
         b_0.storeAddress(src.collection_address);
         b_0.storeAddress(src.owner_address);
@@ -881,35 +987,35 @@ export function storeNftData(src: NftData) {
 
 export function loadNftData(slice: Slice) {
     let sc_0 = slice;
-    let _is_initialized = sc_0.loadBit();
+    let _init = sc_0.loadBit();
     let _index = sc_0.loadIntBig(257);
     let _collection_address = sc_0.loadAddress();
-    let _owner_address = sc_0.loadAddress();
+    let _owner_address = sc_0.loadMaybeAddress();
     let _content = sc_0.loadBit() ? sc_0.loadRef() : null;
-    return { $$type: 'NftData' as const, is_initialized: _is_initialized, index: _index, collection_address: _collection_address, owner_address: _owner_address, content: _content };
+    return { $$type: 'NftData' as const, init: _init, index: _index, collection_address: _collection_address, owner_address: _owner_address, content: _content };
 }
 
 function loadTupleNftData(source: TupleReader) {
-    let _is_initialized = source.readBoolean();
+    let _init = source.readBoolean();
     let _index = source.readBigNumber();
     let _collection_address = source.readAddress();
-    let _owner_address = source.readAddress();
+    let _owner_address = source.readAddressOpt();
     let _content = source.readCellOpt();
-    return { $$type: 'NftData' as const, is_initialized: _is_initialized, index: _index, collection_address: _collection_address, owner_address: _owner_address, content: _content };
+    return { $$type: 'NftData' as const, init: _init, index: _index, collection_address: _collection_address, owner_address: _owner_address, content: _content };
 }
 
 function loadGetterTupleNftData(source: TupleReader) {
-    let _is_initialized = source.readBoolean();
+    let _init = source.readBoolean();
     let _index = source.readBigNumber();
     let _collection_address = source.readAddress();
-    let _owner_address = source.readAddress();
+    let _owner_address = source.readAddressOpt();
     let _content = source.readCellOpt();
-    return { $$type: 'NftData' as const, is_initialized: _is_initialized, index: _index, collection_address: _collection_address, owner_address: _owner_address, content: _content };
+    return { $$type: 'NftData' as const, init: _init, index: _index, collection_address: _collection_address, owner_address: _owner_address, content: _content };
 }
 
 function storeTupleNftData(source: NftData) {
     let builder = new TupleBuilder();
-    builder.writeBoolean(source.is_initialized);
+    builder.writeBoolean(source.init);
     builder.writeNumber(source.index);
     builder.writeAddress(source.collection_address);
     builder.writeAddress(source.owner_address);
@@ -936,29 +1042,32 @@ export type NftItem$Data = {
     content: Cell | null;
     locked: boolean;
     initialized: boolean;
+    last_query_id: bigint;
 }
 
 export function storeNftItem$Data(src: NftItem$Data) {
     return (builder: Builder) => {
         let b_0 = builder;
         b_0.storeAddress(src.collection_address);
-        b_0.storeInt(src.index, 257);
+        b_0.storeUint(src.index, 64);
         b_0.storeAddress(src.owner);
         if (src.content !== null && src.content !== undefined) { b_0.storeBit(true).storeRef(src.content); } else { b_0.storeBit(false); }
         b_0.storeBit(src.locked);
         b_0.storeBit(src.initialized);
+        b_0.storeUint(src.last_query_id, 64);
     };
 }
 
 export function loadNftItem$Data(slice: Slice) {
     let sc_0 = slice;
     let _collection_address = sc_0.loadAddress();
-    let _index = sc_0.loadIntBig(257);
+    let _index = sc_0.loadUintBig(64);
     let _owner = sc_0.loadMaybeAddress();
     let _content = sc_0.loadBit() ? sc_0.loadRef() : null;
     let _locked = sc_0.loadBit();
     let _initialized = sc_0.loadBit();
-    return { $$type: 'NftItem$Data' as const, collection_address: _collection_address, index: _index, owner: _owner, content: _content, locked: _locked, initialized: _initialized };
+    let _last_query_id = sc_0.loadUintBig(64);
+    return { $$type: 'NftItem$Data' as const, collection_address: _collection_address, index: _index, owner: _owner, content: _content, locked: _locked, initialized: _initialized, last_query_id: _last_query_id };
 }
 
 function loadTupleNftItem$Data(source: TupleReader) {
@@ -968,7 +1077,8 @@ function loadTupleNftItem$Data(source: TupleReader) {
     let _content = source.readCellOpt();
     let _locked = source.readBoolean();
     let _initialized = source.readBoolean();
-    return { $$type: 'NftItem$Data' as const, collection_address: _collection_address, index: _index, owner: _owner, content: _content, locked: _locked, initialized: _initialized };
+    let _last_query_id = source.readBigNumber();
+    return { $$type: 'NftItem$Data' as const, collection_address: _collection_address, index: _index, owner: _owner, content: _content, locked: _locked, initialized: _initialized, last_query_id: _last_query_id };
 }
 
 function loadGetterTupleNftItem$Data(source: TupleReader) {
@@ -978,7 +1088,8 @@ function loadGetterTupleNftItem$Data(source: TupleReader) {
     let _content = source.readCellOpt();
     let _locked = source.readBoolean();
     let _initialized = source.readBoolean();
-    return { $$type: 'NftItem$Data' as const, collection_address: _collection_address, index: _index, owner: _owner, content: _content, locked: _locked, initialized: _initialized };
+    let _last_query_id = source.readBigNumber();
+    return { $$type: 'NftItem$Data' as const, collection_address: _collection_address, index: _index, owner: _owner, content: _content, locked: _locked, initialized: _initialized, last_query_id: _last_query_id };
 }
 
 function storeTupleNftItem$Data(source: NftItem$Data) {
@@ -989,6 +1100,7 @@ function storeTupleNftItem$Data(source: NftItem$Data) {
     builder.writeCell(source.content);
     builder.writeBoolean(source.locked);
     builder.writeBoolean(source.initialized);
+    builder.writeNumber(source.last_query_id);
     return builder.build();
 }
 
@@ -1006,7 +1118,7 @@ function dictValueParserNftItem$Data(): DictionaryValue<NftItem$Data> {
 export type Mint = {
     $$type: 'Mint';
     owner: Address;
-    content: Cell | null;
+    content: Cell;
 }
 
 export function storeMint(src: Mint) {
@@ -1014,7 +1126,7 @@ export function storeMint(src: Mint) {
         let b_0 = builder;
         b_0.storeUint(4118766477, 32);
         b_0.storeAddress(src.owner);
-        if (src.content !== null && src.content !== undefined) { b_0.storeBit(true).storeRef(src.content); } else { b_0.storeBit(false); }
+        b_0.storeRef(src.content);
     };
 }
 
@@ -1022,19 +1134,19 @@ export function loadMint(slice: Slice) {
     let sc_0 = slice;
     if (sc_0.loadUint(32) !== 4118766477) { throw Error('Invalid prefix'); }
     let _owner = sc_0.loadAddress();
-    let _content = sc_0.loadBit() ? sc_0.loadRef() : null;
+    let _content = sc_0.loadRef();
     return { $$type: 'Mint' as const, owner: _owner, content: _content };
 }
 
 function loadTupleMint(source: TupleReader) {
     let _owner = source.readAddress();
-    let _content = source.readCellOpt();
+    let _content = source.readCell();
     return { $$type: 'Mint' as const, owner: _owner, content: _content };
 }
 
 function loadGetterTupleMint(source: TupleReader) {
     let _owner = source.readAddress();
-    let _content = source.readCellOpt();
+    let _content = source.readCell();
     return { $$type: 'Mint' as const, owner: _owner, content: _content };
 }
 
@@ -1056,49 +1168,49 @@ function dictValueParserMint(): DictionaryValue<Mint> {
     }
 }
 
-export type ToggleTrading = {
-    $$type: 'ToggleTrading';
-    enabled: boolean;
+export type SetMintLock = {
+    $$type: 'SetMintLock';
+    locked: boolean;
 }
 
-export function storeToggleTrading(src: ToggleTrading) {
+export function storeSetMintLock(src: SetMintLock) {
     return (builder: Builder) => {
         let b_0 = builder;
-        b_0.storeUint(4051840417, 32);
-        b_0.storeBit(src.enabled);
+        b_0.storeUint(708529245, 32);
+        b_0.storeBit(src.locked);
     };
 }
 
-export function loadToggleTrading(slice: Slice) {
+export function loadSetMintLock(slice: Slice) {
     let sc_0 = slice;
-    if (sc_0.loadUint(32) !== 4051840417) { throw Error('Invalid prefix'); }
-    let _enabled = sc_0.loadBit();
-    return { $$type: 'ToggleTrading' as const, enabled: _enabled };
+    if (sc_0.loadUint(32) !== 708529245) { throw Error('Invalid prefix'); }
+    let _locked = sc_0.loadBit();
+    return { $$type: 'SetMintLock' as const, locked: _locked };
 }
 
-function loadTupleToggleTrading(source: TupleReader) {
-    let _enabled = source.readBoolean();
-    return { $$type: 'ToggleTrading' as const, enabled: _enabled };
+function loadTupleSetMintLock(source: TupleReader) {
+    let _locked = source.readBoolean();
+    return { $$type: 'SetMintLock' as const, locked: _locked };
 }
 
-function loadGetterTupleToggleTrading(source: TupleReader) {
-    let _enabled = source.readBoolean();
-    return { $$type: 'ToggleTrading' as const, enabled: _enabled };
+function loadGetterTupleSetMintLock(source: TupleReader) {
+    let _locked = source.readBoolean();
+    return { $$type: 'SetMintLock' as const, locked: _locked };
 }
 
-function storeTupleToggleTrading(source: ToggleTrading) {
+function storeTupleSetMintLock(source: SetMintLock) {
     let builder = new TupleBuilder();
-    builder.writeBoolean(source.enabled);
+    builder.writeBoolean(source.locked);
     return builder.build();
 }
 
-function dictValueParserToggleTrading(): DictionaryValue<ToggleTrading> {
+function dictValueParserSetMintLock(): DictionaryValue<SetMintLock> {
     return {
         serialize: (src, builder) => {
-            builder.storeRef(beginCell().store(storeToggleTrading(src)).endCell());
+            builder.storeRef(beginCell().store(storeSetMintLock(src)).endCell());
         },
         parse: (src) => {
-            return loadToggleTrading(src.loadRef().beginParse());
+            return loadSetMintLock(src.loadRef().beginParse());
         }
     }
 }
@@ -1113,7 +1225,7 @@ export type BroadcastLock = {
 export function storeBroadcastLock(src: BroadcastLock) {
     return (builder: Builder) => {
         let b_0 = builder;
-        b_0.storeUint(4229725070, 32);
+        b_0.storeUint(1045387883, 32);
         b_0.storeBit(src.locked);
         b_0.storeUint(src.from_index, 64);
         b_0.storeUint(src.to_index, 64);
@@ -1122,7 +1234,7 @@ export function storeBroadcastLock(src: BroadcastLock) {
 
 export function loadBroadcastLock(slice: Slice) {
     let sc_0 = slice;
-    if (sc_0.loadUint(32) !== 4229725070) { throw Error('Invalid prefix'); }
+    if (sc_0.loadUint(32) !== 1045387883) { throw Error('Invalid prefix'); }
     let _locked = sc_0.loadBit();
     let _from_index = sc_0.loadUintBig(64);
     let _to_index = sc_0.loadUintBig(64);
@@ -1162,10 +1274,181 @@ function dictValueParserBroadcastLock(): DictionaryValue<BroadcastLock> {
     }
 }
 
+export type GetRoyaltyParams = {
+    $$type: 'GetRoyaltyParams';
+    query_id: bigint;
+}
+
+export function storeGetRoyaltyParams(src: GetRoyaltyParams) {
+    return (builder: Builder) => {
+        let b_0 = builder;
+        b_0.storeUint(1765620048, 32);
+        b_0.storeUint(src.query_id, 64);
+    };
+}
+
+export function loadGetRoyaltyParams(slice: Slice) {
+    let sc_0 = slice;
+    if (sc_0.loadUint(32) !== 1765620048) { throw Error('Invalid prefix'); }
+    let _query_id = sc_0.loadUintBig(64);
+    return { $$type: 'GetRoyaltyParams' as const, query_id: _query_id };
+}
+
+function loadTupleGetRoyaltyParams(source: TupleReader) {
+    let _query_id = source.readBigNumber();
+    return { $$type: 'GetRoyaltyParams' as const, query_id: _query_id };
+}
+
+function loadGetterTupleGetRoyaltyParams(source: TupleReader) {
+    let _query_id = source.readBigNumber();
+    return { $$type: 'GetRoyaltyParams' as const, query_id: _query_id };
+}
+
+function storeTupleGetRoyaltyParams(source: GetRoyaltyParams) {
+    let builder = new TupleBuilder();
+    builder.writeNumber(source.query_id);
+    return builder.build();
+}
+
+function dictValueParserGetRoyaltyParams(): DictionaryValue<GetRoyaltyParams> {
+    return {
+        serialize: (src, builder) => {
+            builder.storeRef(beginCell().store(storeGetRoyaltyParams(src)).endCell());
+        },
+        parse: (src) => {
+            return loadGetRoyaltyParams(src.loadRef().beginParse());
+        }
+    }
+}
+
+export type ReportRoyaltyParams = {
+    $$type: 'ReportRoyaltyParams';
+    query_id: bigint;
+    numerator: bigint;
+    denominator: bigint;
+    destination: Address;
+}
+
+export function storeReportRoyaltyParams(src: ReportRoyaltyParams) {
+    return (builder: Builder) => {
+        let b_0 = builder;
+        b_0.storeUint(2831876269, 32);
+        b_0.storeUint(src.query_id, 64);
+        b_0.storeUint(src.numerator, 16);
+        b_0.storeUint(src.denominator, 16);
+        b_0.storeAddress(src.destination);
+    };
+}
+
+export function loadReportRoyaltyParams(slice: Slice) {
+    let sc_0 = slice;
+    if (sc_0.loadUint(32) !== 2831876269) { throw Error('Invalid prefix'); }
+    let _query_id = sc_0.loadUintBig(64);
+    let _numerator = sc_0.loadUintBig(16);
+    let _denominator = sc_0.loadUintBig(16);
+    let _destination = sc_0.loadAddress();
+    return { $$type: 'ReportRoyaltyParams' as const, query_id: _query_id, numerator: _numerator, denominator: _denominator, destination: _destination };
+}
+
+function loadTupleReportRoyaltyParams(source: TupleReader) {
+    let _query_id = source.readBigNumber();
+    let _numerator = source.readBigNumber();
+    let _denominator = source.readBigNumber();
+    let _destination = source.readAddress();
+    return { $$type: 'ReportRoyaltyParams' as const, query_id: _query_id, numerator: _numerator, denominator: _denominator, destination: _destination };
+}
+
+function loadGetterTupleReportRoyaltyParams(source: TupleReader) {
+    let _query_id = source.readBigNumber();
+    let _numerator = source.readBigNumber();
+    let _denominator = source.readBigNumber();
+    let _destination = source.readAddress();
+    return { $$type: 'ReportRoyaltyParams' as const, query_id: _query_id, numerator: _numerator, denominator: _denominator, destination: _destination };
+}
+
+function storeTupleReportRoyaltyParams(source: ReportRoyaltyParams) {
+    let builder = new TupleBuilder();
+    builder.writeNumber(source.query_id);
+    builder.writeNumber(source.numerator);
+    builder.writeNumber(source.denominator);
+    builder.writeAddress(source.destination);
+    return builder.build();
+}
+
+function dictValueParserReportRoyaltyParams(): DictionaryValue<ReportRoyaltyParams> {
+    return {
+        serialize: (src, builder) => {
+            builder.storeRef(beginCell().store(storeReportRoyaltyParams(src)).endCell());
+        },
+        parse: (src) => {
+            return loadReportRoyaltyParams(src.loadRef().beginParse());
+        }
+    }
+}
+
+export type UpdateRoyalty = {
+    $$type: 'UpdateRoyalty';
+    numerator: bigint;
+    denominator: bigint;
+    destination: Address;
+}
+
+export function storeUpdateRoyalty(src: UpdateRoyalty) {
+    return (builder: Builder) => {
+        let b_0 = builder;
+        b_0.storeUint(1871312355, 32);
+        b_0.storeUint(src.numerator, 16);
+        b_0.storeUint(src.denominator, 16);
+        b_0.storeAddress(src.destination);
+    };
+}
+
+export function loadUpdateRoyalty(slice: Slice) {
+    let sc_0 = slice;
+    if (sc_0.loadUint(32) !== 1871312355) { throw Error('Invalid prefix'); }
+    let _numerator = sc_0.loadUintBig(16);
+    let _denominator = sc_0.loadUintBig(16);
+    let _destination = sc_0.loadAddress();
+    return { $$type: 'UpdateRoyalty' as const, numerator: _numerator, denominator: _denominator, destination: _destination };
+}
+
+function loadTupleUpdateRoyalty(source: TupleReader) {
+    let _numerator = source.readBigNumber();
+    let _denominator = source.readBigNumber();
+    let _destination = source.readAddress();
+    return { $$type: 'UpdateRoyalty' as const, numerator: _numerator, denominator: _denominator, destination: _destination };
+}
+
+function loadGetterTupleUpdateRoyalty(source: TupleReader) {
+    let _numerator = source.readBigNumber();
+    let _denominator = source.readBigNumber();
+    let _destination = source.readAddress();
+    return { $$type: 'UpdateRoyalty' as const, numerator: _numerator, denominator: _denominator, destination: _destination };
+}
+
+function storeTupleUpdateRoyalty(source: UpdateRoyalty) {
+    let builder = new TupleBuilder();
+    builder.writeNumber(source.numerator);
+    builder.writeNumber(source.denominator);
+    builder.writeAddress(source.destination);
+    return builder.build();
+}
+
+function dictValueParserUpdateRoyalty(): DictionaryValue<UpdateRoyalty> {
+    return {
+        serialize: (src, builder) => {
+            builder.storeRef(beginCell().store(storeUpdateRoyalty(src)).endCell());
+        },
+        parse: (src) => {
+            return loadUpdateRoyalty(src.loadRef().beginParse());
+        }
+    }
+}
+
 export type CollectionData = {
     $$type: 'CollectionData';
     next_item_index: bigint;
-    content: Cell;
+    collection_content: Cell;
     owner_address: Address;
 }
 
@@ -1173,7 +1456,7 @@ export function storeCollectionData(src: CollectionData) {
     return (builder: Builder) => {
         let b_0 = builder;
         b_0.storeInt(src.next_item_index, 257);
-        b_0.storeRef(src.content);
+        b_0.storeRef(src.collection_content);
         b_0.storeAddress(src.owner_address);
     };
 }
@@ -1181,29 +1464,29 @@ export function storeCollectionData(src: CollectionData) {
 export function loadCollectionData(slice: Slice) {
     let sc_0 = slice;
     let _next_item_index = sc_0.loadIntBig(257);
-    let _content = sc_0.loadRef();
+    let _collection_content = sc_0.loadRef();
     let _owner_address = sc_0.loadAddress();
-    return { $$type: 'CollectionData' as const, next_item_index: _next_item_index, content: _content, owner_address: _owner_address };
+    return { $$type: 'CollectionData' as const, next_item_index: _next_item_index, collection_content: _collection_content, owner_address: _owner_address };
 }
 
 function loadTupleCollectionData(source: TupleReader) {
     let _next_item_index = source.readBigNumber();
-    let _content = source.readCell();
+    let _collection_content = source.readCell();
     let _owner_address = source.readAddress();
-    return { $$type: 'CollectionData' as const, next_item_index: _next_item_index, content: _content, owner_address: _owner_address };
+    return { $$type: 'CollectionData' as const, next_item_index: _next_item_index, collection_content: _collection_content, owner_address: _owner_address };
 }
 
 function loadGetterTupleCollectionData(source: TupleReader) {
     let _next_item_index = source.readBigNumber();
-    let _content = source.readCell();
+    let _collection_content = source.readCell();
     let _owner_address = source.readAddress();
-    return { $$type: 'CollectionData' as const, next_item_index: _next_item_index, content: _content, owner_address: _owner_address };
+    return { $$type: 'CollectionData' as const, next_item_index: _next_item_index, collection_content: _collection_content, owner_address: _owner_address };
 }
 
 function storeTupleCollectionData(source: CollectionData) {
     let builder = new TupleBuilder();
     builder.writeNumber(source.next_item_index);
-    builder.writeCell(source.content);
+    builder.writeCell(source.collection_content);
     builder.writeAddress(source.owner_address);
     return builder.build();
 }
@@ -1219,12 +1502,127 @@ function dictValueParserCollectionData(): DictionaryValue<CollectionData> {
     }
 }
 
+export type RoyaltyParams = {
+    $$type: 'RoyaltyParams';
+    numerator: bigint;
+    denominator: bigint;
+    destination: Address;
+}
+
+export function storeRoyaltyParams(src: RoyaltyParams) {
+    return (builder: Builder) => {
+        let b_0 = builder;
+        b_0.storeUint(src.numerator, 16);
+        b_0.storeUint(src.denominator, 16);
+        b_0.storeAddress(src.destination);
+    };
+}
+
+export function loadRoyaltyParams(slice: Slice) {
+    let sc_0 = slice;
+    let _numerator = sc_0.loadUintBig(16);
+    let _denominator = sc_0.loadUintBig(16);
+    let _destination = sc_0.loadAddress();
+    return { $$type: 'RoyaltyParams' as const, numerator: _numerator, denominator: _denominator, destination: _destination };
+}
+
+function loadTupleRoyaltyParams(source: TupleReader) {
+    let _numerator = source.readBigNumber();
+    let _denominator = source.readBigNumber();
+    let _destination = source.readAddress();
+    return { $$type: 'RoyaltyParams' as const, numerator: _numerator, denominator: _denominator, destination: _destination };
+}
+
+function loadGetterTupleRoyaltyParams(source: TupleReader) {
+    let _numerator = source.readBigNumber();
+    let _denominator = source.readBigNumber();
+    let _destination = source.readAddress();
+    return { $$type: 'RoyaltyParams' as const, numerator: _numerator, denominator: _denominator, destination: _destination };
+}
+
+function storeTupleRoyaltyParams(source: RoyaltyParams) {
+    let builder = new TupleBuilder();
+    builder.writeNumber(source.numerator);
+    builder.writeNumber(source.denominator);
+    builder.writeAddress(source.destination);
+    return builder.build();
+}
+
+function dictValueParserRoyaltyParams(): DictionaryValue<RoyaltyParams> {
+    return {
+        serialize: (src, builder) => {
+            builder.storeRef(beginCell().store(storeRoyaltyParams(src)).endCell());
+        },
+        parse: (src) => {
+            return loadRoyaltyParams(src.loadRef().beginParse());
+        }
+    }
+}
+
+export type BroadcastFailureState = {
+    $$type: 'BroadcastFailureState';
+    failure_count: bigint;
+    last_failed_address: Address | null;
+}
+
+export function storeBroadcastFailureState(src: BroadcastFailureState) {
+    return (builder: Builder) => {
+        let b_0 = builder;
+        b_0.storeInt(src.failure_count, 257);
+        b_0.storeAddress(src.last_failed_address);
+    };
+}
+
+export function loadBroadcastFailureState(slice: Slice) {
+    let sc_0 = slice;
+    let _failure_count = sc_0.loadIntBig(257);
+    let _last_failed_address = sc_0.loadMaybeAddress();
+    return { $$type: 'BroadcastFailureState' as const, failure_count: _failure_count, last_failed_address: _last_failed_address };
+}
+
+function loadTupleBroadcastFailureState(source: TupleReader) {
+    let _failure_count = source.readBigNumber();
+    let _last_failed_address = source.readAddressOpt();
+    return { $$type: 'BroadcastFailureState' as const, failure_count: _failure_count, last_failed_address: _last_failed_address };
+}
+
+function loadGetterTupleBroadcastFailureState(source: TupleReader) {
+    let _failure_count = source.readBigNumber();
+    let _last_failed_address = source.readAddressOpt();
+    return { $$type: 'BroadcastFailureState' as const, failure_count: _failure_count, last_failed_address: _last_failed_address };
+}
+
+function storeTupleBroadcastFailureState(source: BroadcastFailureState) {
+    let builder = new TupleBuilder();
+    builder.writeNumber(source.failure_count);
+    builder.writeAddress(source.last_failed_address);
+    return builder.build();
+}
+
+function dictValueParserBroadcastFailureState(): DictionaryValue<BroadcastFailureState> {
+    return {
+        serialize: (src, builder) => {
+            builder.storeRef(beginCell().store(storeBroadcastFailureState(src)).endCell());
+        },
+        parse: (src) => {
+            return loadBroadcastFailureState(src.loadRef().beginParse());
+        }
+    }
+}
+
 export type NftCollection$Data = {
     $$type: 'NftCollection$Data';
     next_item_index: bigint;
     owner: Address;
-    content: Cell;
-    trading_enabled: boolean;
+    collection_content: Cell;
+    common_content: Cell;
+    royalty_numerator: bigint;
+    royalty_denominator: bigint;
+    royalty_destination: Address;
+    mint_locked: boolean;
+    mint_in_progress: boolean;
+    lock_broadcast_failure_count: bigint;
+    last_failed_lock_address: Address | null;
 }
 
 export function storeNftCollection$Data(src: NftCollection$Data) {
@@ -1232,8 +1630,15 @@ export function storeNftCollection$Data(src: NftCollection$Data) {
         let b_0 = builder;
         b_0.storeUint(src.next_item_index, 64);
         b_0.storeAddress(src.owner);
-        b_0.storeRef(src.content);
-        b_0.storeBit(src.trading_enabled);
+        b_0.storeRef(src.collection_content);
+        b_0.storeRef(src.common_content);
+        b_0.storeUint(src.royalty_numerator, 16);
+        b_0.storeUint(src.royalty_denominator, 16);
+        b_0.storeAddress(src.royalty_destination);
+        b_0.storeBit(src.mint_locked);
+        b_0.storeBit(src.mint_in_progress);
+        b_0.storeUint(src.lock_broadcast_failure_count, 64);
+        b_0.storeAddress(src.last_failed_lock_address);
     };
 }
 
@@ -1241,33 +1646,61 @@ export function loadNftCollection$Data(slice: Slice) {
     let sc_0 = slice;
     let _next_item_index = sc_0.loadUintBig(64);
     let _owner = sc_0.loadAddress();
-    let _content = sc_0.loadRef();
-    let _trading_enabled = sc_0.loadBit();
-    return { $$type: 'NftCollection$Data' as const, next_item_index: _next_item_index, owner: _owner, content: _content, trading_enabled: _trading_enabled };
+    let _collection_content = sc_0.loadRef();
+    let _common_content = sc_0.loadRef();
+    let _royalty_numerator = sc_0.loadUintBig(16);
+    let _royalty_denominator = sc_0.loadUintBig(16);
+    let _royalty_destination = sc_0.loadAddress();
+    let _mint_locked = sc_0.loadBit();
+    let _mint_in_progress = sc_0.loadBit();
+    let _lock_broadcast_failure_count = sc_0.loadUintBig(64);
+    let _last_failed_lock_address = sc_0.loadMaybeAddress();
+    return { $$type: 'NftCollection$Data' as const, next_item_index: _next_item_index, owner: _owner, collection_content: _collection_content, common_content: _common_content, royalty_numerator: _royalty_numerator, royalty_denominator: _royalty_denominator, royalty_destination: _royalty_destination, mint_locked: _mint_locked, mint_in_progress: _mint_in_progress, lock_broadcast_failure_count: _lock_broadcast_failure_count, last_failed_lock_address: _last_failed_lock_address };
 }
 
 function loadTupleNftCollection$Data(source: TupleReader) {
     let _next_item_index = source.readBigNumber();
     let _owner = source.readAddress();
-    let _content = source.readCell();
-    let _trading_enabled = source.readBoolean();
-    return { $$type: 'NftCollection$Data' as const, next_item_index: _next_item_index, owner: _owner, content: _content, trading_enabled: _trading_enabled };
+    let _collection_content = source.readCell();
+    let _common_content = source.readCell();
+    let _royalty_numerator = source.readBigNumber();
+    let _royalty_denominator = source.readBigNumber();
+    let _royalty_destination = source.readAddress();
+    let _mint_locked = source.readBoolean();
+    let _mint_in_progress = source.readBoolean();
+    let _lock_broadcast_failure_count = source.readBigNumber();
+    let _last_failed_lock_address = source.readAddressOpt();
+    return { $$type: 'NftCollection$Data' as const, next_item_index: _next_item_index, owner: _owner, collection_content: _collection_content, common_content: _common_content, royalty_numerator: _royalty_numerator, royalty_denominator: _royalty_denominator, royalty_destination: _royalty_destination, mint_locked: _mint_locked, mint_in_progress: _mint_in_progress, lock_broadcast_failure_count: _lock_broadcast_failure_count, last_failed_lock_address: _last_failed_lock_address };
 }
 
 function loadGetterTupleNftCollection$Data(source: TupleReader) {
     let _next_item_index = source.readBigNumber();
     let _owner = source.readAddress();
-    let _content = source.readCell();
-    let _trading_enabled = source.readBoolean();
-    return { $$type: 'NftCollection$Data' as const, next_item_index: _next_item_index, owner: _owner, content: _content, trading_enabled: _trading_enabled };
+    let _collection_content = source.readCell();
+    let _common_content = source.readCell();
+    let _royalty_numerator = source.readBigNumber();
+    let _royalty_denominator = source.readBigNumber();
+    let _royalty_destination = source.readAddress();
+    let _mint_locked = source.readBoolean();
+    let _mint_in_progress = source.readBoolean();
+    let _lock_broadcast_failure_count = source.readBigNumber();
+    let _last_failed_lock_address = source.readAddressOpt();
+    return { $$type: 'NftCollection$Data' as const, next_item_index: _next_item_index, owner: _owner, collection_content: _collection_content, common_content: _common_content, royalty_numerator: _royalty_numerator, royalty_denominator: _royalty_denominator, royalty_destination: _royalty_destination, mint_locked: _mint_locked, mint_in_progress: _mint_in_progress, lock_broadcast_failure_count: _lock_broadcast_failure_count, last_failed_lock_address: _last_failed_lock_address };
 }
 
 function storeTupleNftCollection$Data(source: NftCollection$Data) {
     let builder = new TupleBuilder();
     builder.writeNumber(source.next_item_index);
     builder.writeAddress(source.owner);
-    builder.writeCell(source.content);
-    builder.writeBoolean(source.trading_enabled);
+    builder.writeCell(source.collection_content);
+    builder.writeCell(source.common_content);
+    builder.writeNumber(source.royalty_numerator);
+    builder.writeNumber(source.royalty_denominator);
+    builder.writeAddress(source.royalty_destination);
+    builder.writeBoolean(source.mint_locked);
+    builder.writeBoolean(source.mint_in_progress);
+    builder.writeNumber(source.lock_broadcast_failure_count);
+    builder.writeAddress(source.last_failed_lock_address);
     return builder.build();
 }
 
@@ -1285,24 +1718,34 @@ function dictValueParserNftCollection$Data(): DictionaryValue<NftCollection$Data
  type NftCollection_init_args = {
     $$type: 'NftCollection_init_args';
     owner: Address;
-    content: Cell;
+    collection_content: Cell;
+    common_content: Cell;
+    royalty_numerator: bigint;
+    royalty_denominator: bigint;
+    royalty_destination: Address;
 }
 
 function initNftCollection_init_args(src: NftCollection_init_args) {
     return (builder: Builder) => {
         let b_0 = builder;
         b_0.storeAddress(src.owner);
-        b_0.storeRef(src.content);
+        b_0.storeRef(src.collection_content);
+        let b_1 = new Builder();
+        b_1.storeRef(src.common_content);
+        b_1.storeInt(src.royalty_numerator, 257);
+        b_1.storeInt(src.royalty_denominator, 257);
+        b_1.storeAddress(src.royalty_destination);
+        b_0.storeRef(b_1.endCell());
     };
 }
 
-async function NftCollection_init(owner: Address, content: Cell) {
-    const __code = Cell.fromBase64('te6ccgECGgEABKUAART/APSkE/S88sgLAQIBYgIDAuLQAdDTAwFxsKMB+kABINdJgQELuvLgiCDXCwoggQT/uvLQiYMJuvLgiFRQUwNvBPhhAvhi2zxVE9s88uCCyPhDAcx/AcoAVTBQNMs/ASDXSYEBC7ry4Igg1wsKIIEE/7ry0ImDCbry4IjPFszKAMntVBcEAgEgDQ4E9AGSMH/gcCHXScIflTAg1wsf3iCCEPV/Y426jskw0x8BghD1f2ONuvLggfpAASDXSYEBC7ry4Igg1wsKIIEE/7ry0ImDCbry4IgB0gABkdSSbQHiWWwSggDg6/hCUmDHBfL02zx/4CCCEPGCLaG64wIgghD8HHuOuuMCBQYHCAKqJQQQNUBW2zxccFnIcAHLAXMBywFwAcsAEszMyfkAyHIBywFwAcsAEsoHy//J0CDXSYEBC7ry4Igg1wsKIIEE/7ry0ImDCbry4IiCCvrwgHJwJrNMsBMJAD4w0x8BghDxgi2huvLggdIAATExgRTc+EJSQMcF8vR/Ar4w0x8BghD8HHuOuvLggdIA0z/TP1UgbBOCANMd+EJScMcF8vRTBrySMCXekly5jysQNkVGJNs8ggkxLQByKMgBghC7f31ZWMsfygDJf1UwbW3bPDAEpBA2RQQD6F8DfxILAWaCEJRqmLa6jqfTHwGCEJRqmLa68uCB0z8BMcgBghCv+Q9XWMsfyz/J+EIBcG3bPH/gMHAKAabIVSCCEGsgP71QBMsfWCDXSYEBC7ry4Igg1wsKIIEE/7ry0ImDCbry4IjPFiFus5V/AcoAzJRwMsoA4soAyUZQEEoQOUCpEDYQNRA02zwwAaRQIwsBPG1tIm6zmVsgbvLQgG8iAZEy4hAkcAMEgEJQI9s8MAsByshxAcoBUAcBygBwAcoCUAUg10mBAQu68uCIINcLCiCBBP+68tCJgwm68uCIzxZQA/oCcAHKaCNus5F/kyRus+KXMzMBcAHKAOMNIW6znH8BygABIG7y0IABzJUxcAHKAOLJAfsIDACYfwHKAMhwAcoAcAHKACRus51/AcoABCBu8tCAUATMljQDcAHKAOIkbrOdfwHKAAQgbvLQgFAEzJY0A3ABygDicAHKAAJ/AcoAAslYzAIBWA8QAgEgFRYCEbR9u2ebZ42IMBcRAhW09HtniqB7Z42IMBcSAAIgAYbbPHBZyHABywFzAcsBcAHLABLMzMn5AMhyAcsBcAHLABLKB8v/ydAg10mBAQu68uCIINcLCiCBBP+68tCJgwm68uCIEwEO+EP4KFjbPBQAogLQ9AQwbQGBeeoBgBD0D2+h8uCHAYF56iICgBD0F8gByPQAyQHMcAHKAEADWSDXSYEBC7ry4Igg1wsKIIEE/7ry0ImDCbry4IjPFoEBAc8AyQIRuQW9s82zxsQ4FxgAEbgr7tRNDSAAGAHQ7UTQ1AH4Y9IAAY4p0z/6QAEg10mBAQu68uCIINcLCiCBBP+68tCJgwm68uCIAdTSAFUwbBTg+CjXCwqDCbry4In6QAEg10mBAQu68uCIINcLCiCBBP+68tCJgwm68uCIAdRZAtEB2zwZAAZUcxIABnBZcA==');
-    const __system = Cell.fromBase64('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');
+async function NftCollection_init(owner: Address, collection_content: Cell, common_content: Cell, royalty_numerator: bigint, royalty_denominator: bigint, royalty_destination: Address) {
+    const __code = Cell.fromBase64('te6ccgECMAEACOkAART/APSkE/S88sgLAQIBYgIDA5rQAdDTAwFxsKMB+kABINdJgQELuvLgiCDXCwoggQT/uvLQiYMJuvLgiFRQUwNvBPhhAvhi2zxVGts88uCCyPhDAcx/AcoAVaDbPMntVCoEBQIBIBYXBNoB4wJwIddJwh+VMCDXCx/eIMAAItdJwSGwklt/4CCCEPV/Y4264wIgghAqO0xduo4pMNMfAYIQKjtMXbry4IHSAAEx+EFvJFsBkVucNSqCAPO/BscFFfL04n/gIIIQPk9aa7rjAiCCEA8KbVy6BgcICQGmUKvLP1AIINdJgQELuvLgiCDXCwoggQT/uvLQiYMJuvLgiM8WFswUzBLLD8sPASDXSYEBC7ry4Igg1wsKIIEE/7ry0ImDCbry4IjPFsoAygDLPwEVAfKAINchcCHXScIflTAg1wsf3iCCEB1MDkq6jh8w0x8BghAdTA5KuvLggdIAATFb+EFvJBAjXwMBpAF/4IIQ/ouEVbqOstMfAYIQ/ouEVbry4IFtMTD4QW8kECNfAyOOiitVoAzbPFAMxwWUMFWQcOKScDLeVQl/4DB/HwG0MNMfAYIQ9X9jjbry4IH6QAEg10mBAQu68uCIINcLCiCBBP+68tCJgwm68uCIAdRZbBL4QW8kWwGSXwOOmyyCAODrAscF8vSCAK3YBbMV8vR/VDTFQzDbPOJ/CgHEMNMfAYIQPk9aa7ry4IHSANM/0z9VIGwT+EFvJFsBkl8Ejr00LIIA0x0FxwUU8vSCAJ6hLcIA8vSCAJ1aUxO78vSCAO2OUz278vSCAKOYUzGhgQD6u/L0bZNTE7mK6Gwx4n8MBPSO2zDTHwGCEA8KbVy68uCB0z8BMfhBbyRbAZFbjr2CAOmYJfL0gUtyUy268vQQrF44EHsQbBBbEEwQO0y8gQ/XDNs8M1AsxwUa8vRwCKQKEHkQaBBXEEYQNUQw4n/gIIIQaT05ULrjAiCCEG+J9eO64wIgghA6TX6Ruh8NDg8CqFWy2zxccFnIcAHLAXMBywFwAcsAEszMyfkAyHIBywFwAcsAEsoHy//J0CDXSYEBC7ry4Igg1wsKIIEE/7ry0ImDCbry4IiCEAQsHYAREXEREX8RESALAZjIVSCCEP6LhFVQBMsfWCDXSYEBC7ry4Igg1wsKIIEE/7ry0ImDCbry4IjPFszKAMkWBRERBQQREAQQP1DyEDYQNRA02zwwEHoQaVUlEwKQEK0QnBCLEH0QbBBbEE0QPEvQLds8ggkxLQB/cS/IAYIQHUwOSljLH8oAyRAkECNtbds8MA2kEK0QnBCLEHoQaRBYEEcQNkUEHxMBzDDTHwGCEGk9OVC68uCB0z8BMfhBbyRbAZFbjshwgEBwVDS6K8hVMIIQqMsArVAFyx8Tyz/LD8sPASDXSYEBC7ry4Igg1wsKIIEE/7ry0ImDCbry4IjPFskQNEEwFEMwbW3bPDDifxMAyDDTHwGCEG+J9eO68uCB0w/TD/pAASDXSYEBC7ry4Igg1wsKIIEE/7ry0ImDCbry4IhDMGwT+EFvJFsBkl8EjiI4ODgqgRFEB8cFFvL0gTmoJ8IA8vSCANOZU1e78vQQRhBF4n8Cwo7TMNMfAYIQOk1+kbry4IHTP/pAASDXSYEBC7ry4Igg1wsKIIEE/7ry0ImDCbry4IgB+kABINdJgQELuvLgiCDXCwoggQT/uvLQiYMJuvLgiEMwbBPgghCUapi2uuMCMHAQEQFwW/hBbyRbAZFbjquCAOg5Uy258vQQrF44EHsQbBBbEEwQO0y8ggCcwQzbPFANxwUb8vQQilUX4n8fAU7THwGCEJRqmLa68uCB0z8BMcgBghCv+Q9XWMsfyz/J+EIBcG3bPH8SATxtbSJus5lbIG7y0IBvIgGRMuIQJHADBIBCUCPbPDATAcrIcQHKAVAHAcoAcAHKAlAFINdJgQELuvLgiCDXCwoggQT/uvLQiYMJuvLgiM8WUAP6AnABymgjbrORf5MkbrPilzMzAXABygDjDSFus5x/AcoAASBu8tCAAcyVMXABygDiyQH7CBQAmH8BygDIcAHKAHABygAkbrOdfwHKAAQgbvLQgFAEzJY0A3ABygDiJG6znX8BygAEIG7y0IBQBMyWNANwAcoA4nABygACfwHKAALJWMwAUiBulTBwAcsBjh4g10mBAQu68uCIINcLCiCBBP+68tCJgwm68uCIzxbiAgEgGBkCASAiIwIVuLXds8VRrbPGyxgqGgIBIBwdAQoxUoDbPBsAGMhxAcsHAtASzxbMyQIRtdr7Z5tnjZZwKh4CFbT0e2eKoVtnjZYwKh8ABlR2VAGG2zxwWchwAcsBcwHLAXABywASzMzJ+QDIcgHLAXABywASygfL/8nQINdJgQELuvLgiCDXCwoggQT/uvLQiYMJuvLgiCABDvhD+ChY2zwhAKIC0PQEMG0BgXnqAYAQ9A9vofLghwGBeeoiAoAQ9BfIAcj0AMkBzHABygBAA1kg10mBAQu68uCIINcLCiCBBP+68tCJgwm68uCIzxaBAQHPAMkCEbkFvbPNs8bLOCokAgEgJSYABlR6iQIBICcoAhG2Nrtnm2eNllAqKwARsK+7UTQ0gABgAhGx+zbPNs8bLGAqKQACIwNI7UTQ1AH4Y9IAAY6E2zxsG+D4KNcLCoMJuvLgids8BtFVBNs8LC0uAAJcAfbTP/pAASDXSYEBC7ry4Igg1wsKIIEE/7ry0ImDCbry4IgB1NTTD9MP+kABINdJgQELuvLgiCDXCwoggQT/uvLQiYMJuvLgiAHSANIA0z8g1wsBwwCOH/pAASDXSYEBC7ry4Igg1wsKIIEE/7ry0ImDCbry4IiUctchbeIvAKb6QAEg10mBAQu68uCIINcLCiCBBP+68tCJgwm68uCIAdTUAdDUgQEB1wCBAQHXAPpAASDXSYEBC7ry4Igg1wsKIIEE/7ry0ImDCbry4IgxEEYQRQBEcH9wIm2BOagnwgDy9IIA05lTh7vy9BBKEEkQSBBHEEYQRQAUGxoZGBcWFRRDMA==');
+    const __system = Cell.fromBase64('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');
     let builder = beginCell();
     builder.storeRef(__system);
     builder.storeUint(0, 1);
-    initNftCollection_init_args({ $$type: 'NftCollection_init_args', owner, content })(builder);
+    initNftCollection_init_args({ $$type: 'NftCollection_init_args', owner, collection_content, common_content, royalty_numerator, royalty_denominator, royalty_destination })(builder);
     const __data = builder.endCell();
     return { code: __code, data: __data };
 }
@@ -1345,14 +1788,30 @@ const NftCollection_errors: { [key: number]: { message: string } } = {
     136: { message: `Invalid address` },
     137: { message: `Masterchain support is not enabled for this contract` },
     2977: { message: `Already initialized` },
-    5340: { message: `Only owner can toggle trading` },
+    4055: { message: `Only item can confirm mint` },
+    4420: { message: `Only owner can update royalty` },
     7657: { message: `Not initialized` },
+    8291: { message: `Transfer query_id must be increasing` },
     12308: { message: `Only collection can initialize` },
+    14760: { message: `Invalid royalty denominator` },
+    19314: { message: `Unexpected mint index` },
     27983: { message: `Trading is locked for this item` },
     36952: { message: `Only owner can transfer` },
+    40129: { message: `Only item can notify ownership change` },
+    40282: { message: `Invalid range` },
+    40609: { message: `No minted items to broadcast` },
+    41880: { message: `Range too large` },
+    42377: { message: `Insufficient value for transfer` },
+    44504: { message: `Mint already in progress` },
     47098: { message: `Only collection can change lock status` },
     54045: { message: `Only owner can broadcast` },
+    54169: { message: `Invalid royalty ratio` },
+    55650: { message: `Only basechain addresses supported` },
     57579: { message: `Only owner can mint` },
+    59449: { message: `Invalid item index` },
+    59800: { message: `No mint in progress` },
+    60814: { message: `Range exceeds minted items` },
+    62399: { message: `Only owner can set mint lock` },
 }
 
 const NftCollection_types: ABIType[] = [
@@ -1368,45 +1827,63 @@ const NftCollection_types: ABIType[] = [
     {"name":"OwnershipAssigned","header":85167505,"fields":[{"name":"query_id","type":{"kind":"simple","type":"uint","optional":false,"format":64}},{"name":"prev_owner","type":{"kind":"simple","type":"address","optional":false}},{"name":"forward_payload","type":{"kind":"simple","type":"slice","optional":false,"format":"remainder"}}]},
     {"name":"Excesses","header":3576854235,"fields":[{"name":"query_id","type":{"kind":"simple","type":"uint","optional":false,"format":64}}]},
     {"name":"GetStaticData","header":801842850,"fields":[{"name":"query_id","type":{"kind":"simple","type":"uint","optional":false,"format":64}}]},
-    {"name":"ReportStaticData","header":2339836741,"fields":[{"name":"query_id","type":{"kind":"simple","type":"uint","optional":false,"format":64}},{"name":"index","type":{"kind":"simple","type":"uint","optional":false,"format":256}},{"name":"collection_address","type":{"kind":"simple","type":"address","optional":false}}]},
-    {"name":"Initialize","header":1797275581,"fields":[{"name":"owner","type":{"kind":"simple","type":"address","optional":false}},{"name":"content","type":{"kind":"simple","type":"cell","optional":true}},{"name":"locked","type":{"kind":"simple","type":"bool","optional":false}}]},
-    {"name":"SetLocked","header":3145694553,"fields":[{"name":"locked","type":{"kind":"simple","type":"bool","optional":false}}]},
-    {"name":"NftData","header":null,"fields":[{"name":"is_initialized","type":{"kind":"simple","type":"bool","optional":false}},{"name":"index","type":{"kind":"simple","type":"int","optional":false,"format":257}},{"name":"collection_address","type":{"kind":"simple","type":"address","optional":false}},{"name":"owner_address","type":{"kind":"simple","type":"address","optional":false}},{"name":"content","type":{"kind":"simple","type":"cell","optional":true}}]},
-    {"name":"NftItem$Data","header":null,"fields":[{"name":"collection_address","type":{"kind":"simple","type":"address","optional":false}},{"name":"index","type":{"kind":"simple","type":"int","optional":false,"format":257}},{"name":"owner","type":{"kind":"simple","type":"address","optional":true}},{"name":"content","type":{"kind":"simple","type":"cell","optional":true}},{"name":"locked","type":{"kind":"simple","type":"bool","optional":false}},{"name":"initialized","type":{"kind":"simple","type":"bool","optional":false}}]},
-    {"name":"Mint","header":4118766477,"fields":[{"name":"owner","type":{"kind":"simple","type":"address","optional":false}},{"name":"content","type":{"kind":"simple","type":"cell","optional":true}}]},
-    {"name":"ToggleTrading","header":4051840417,"fields":[{"name":"enabled","type":{"kind":"simple","type":"bool","optional":false}}]},
-    {"name":"BroadcastLock","header":4229725070,"fields":[{"name":"locked","type":{"kind":"simple","type":"bool","optional":false}},{"name":"from_index","type":{"kind":"simple","type":"uint","optional":false,"format":64}},{"name":"to_index","type":{"kind":"simple","type":"uint","optional":false,"format":64}}]},
-    {"name":"CollectionData","header":null,"fields":[{"name":"next_item_index","type":{"kind":"simple","type":"int","optional":false,"format":257}},{"name":"content","type":{"kind":"simple","type":"cell","optional":false}},{"name":"owner_address","type":{"kind":"simple","type":"address","optional":false}}]},
-    {"name":"NftCollection$Data","header":null,"fields":[{"name":"next_item_index","type":{"kind":"simple","type":"uint","optional":false,"format":64}},{"name":"owner","type":{"kind":"simple","type":"address","optional":false}},{"name":"content","type":{"kind":"simple","type":"cell","optional":false}},{"name":"trading_enabled","type":{"kind":"simple","type":"bool","optional":false}}]},
+    {"name":"OwnershipChanged","header":978157201,"fields":[{"name":"index","type":{"kind":"simple","type":"uint","optional":false,"format":64}},{"name":"prev_owner","type":{"kind":"simple","type":"address","optional":false}},{"name":"new_owner","type":{"kind":"simple","type":"address","optional":false}}]},
+    {"name":"ItemInitialized","header":252341596,"fields":[{"name":"index","type":{"kind":"simple","type":"uint","optional":false,"format":64}}]},
+    {"name":"ReportStaticData","header":2339837749,"fields":[{"name":"query_id","type":{"kind":"simple","type":"uint","optional":false,"format":64}},{"name":"index","type":{"kind":"simple","type":"uint","optional":false,"format":256}},{"name":"collection_address","type":{"kind":"simple","type":"address","optional":false}}]},
+    {"name":"Initialize","header":4270556245,"fields":[{"name":"owner","type":{"kind":"simple","type":"address","optional":false}},{"name":"content","type":{"kind":"simple","type":"cell","optional":false}},{"name":"locked","type":{"kind":"simple","type":"bool","optional":false}}]},
+    {"name":"SetLocked","header":491523658,"fields":[{"name":"locked","type":{"kind":"simple","type":"bool","optional":false}}]},
+    {"name":"NftData","header":null,"fields":[{"name":"init","type":{"kind":"simple","type":"bool","optional":false}},{"name":"index","type":{"kind":"simple","type":"int","optional":false,"format":257}},{"name":"collection_address","type":{"kind":"simple","type":"address","optional":false}},{"name":"owner_address","type":{"kind":"simple","type":"address","optional":true}},{"name":"content","type":{"kind":"simple","type":"cell","optional":true}}]},
+    {"name":"NftItem$Data","header":null,"fields":[{"name":"collection_address","type":{"kind":"simple","type":"address","optional":false}},{"name":"index","type":{"kind":"simple","type":"uint","optional":false,"format":64}},{"name":"owner","type":{"kind":"simple","type":"address","optional":true}},{"name":"content","type":{"kind":"simple","type":"cell","optional":true}},{"name":"locked","type":{"kind":"simple","type":"bool","optional":false}},{"name":"initialized","type":{"kind":"simple","type":"bool","optional":false}},{"name":"last_query_id","type":{"kind":"simple","type":"uint","optional":false,"format":64}}]},
+    {"name":"Mint","header":4118766477,"fields":[{"name":"owner","type":{"kind":"simple","type":"address","optional":false}},{"name":"content","type":{"kind":"simple","type":"cell","optional":false}}]},
+    {"name":"SetMintLock","header":708529245,"fields":[{"name":"locked","type":{"kind":"simple","type":"bool","optional":false}}]},
+    {"name":"BroadcastLock","header":1045387883,"fields":[{"name":"locked","type":{"kind":"simple","type":"bool","optional":false}},{"name":"from_index","type":{"kind":"simple","type":"uint","optional":false,"format":64}},{"name":"to_index","type":{"kind":"simple","type":"uint","optional":false,"format":64}}]},
+    {"name":"GetRoyaltyParams","header":1765620048,"fields":[{"name":"query_id","type":{"kind":"simple","type":"uint","optional":false,"format":64}}]},
+    {"name":"ReportRoyaltyParams","header":2831876269,"fields":[{"name":"query_id","type":{"kind":"simple","type":"uint","optional":false,"format":64}},{"name":"numerator","type":{"kind":"simple","type":"uint","optional":false,"format":16}},{"name":"denominator","type":{"kind":"simple","type":"uint","optional":false,"format":16}},{"name":"destination","type":{"kind":"simple","type":"address","optional":false}}]},
+    {"name":"UpdateRoyalty","header":1871312355,"fields":[{"name":"numerator","type":{"kind":"simple","type":"uint","optional":false,"format":16}},{"name":"denominator","type":{"kind":"simple","type":"uint","optional":false,"format":16}},{"name":"destination","type":{"kind":"simple","type":"address","optional":false}}]},
+    {"name":"CollectionData","header":null,"fields":[{"name":"next_item_index","type":{"kind":"simple","type":"int","optional":false,"format":257}},{"name":"collection_content","type":{"kind":"simple","type":"cell","optional":false}},{"name":"owner_address","type":{"kind":"simple","type":"address","optional":false}}]},
+    {"name":"RoyaltyParams","header":null,"fields":[{"name":"numerator","type":{"kind":"simple","type":"uint","optional":false,"format":16}},{"name":"denominator","type":{"kind":"simple","type":"uint","optional":false,"format":16}},{"name":"destination","type":{"kind":"simple","type":"address","optional":false}}]},
+    {"name":"BroadcastFailureState","header":null,"fields":[{"name":"failure_count","type":{"kind":"simple","type":"int","optional":false,"format":257}},{"name":"last_failed_address","type":{"kind":"simple","type":"address","optional":true}}]},
+    {"name":"NftCollection$Data","header":null,"fields":[{"name":"next_item_index","type":{"kind":"simple","type":"uint","optional":false,"format":64}},{"name":"owner","type":{"kind":"simple","type":"address","optional":false}},{"name":"collection_content","type":{"kind":"simple","type":"cell","optional":false}},{"name":"common_content","type":{"kind":"simple","type":"cell","optional":false}},{"name":"royalty_numerator","type":{"kind":"simple","type":"uint","optional":false,"format":16}},{"name":"royalty_denominator","type":{"kind":"simple","type":"uint","optional":false,"format":16}},{"name":"royalty_destination","type":{"kind":"simple","type":"address","optional":false}},{"name":"mint_locked","type":{"kind":"simple","type":"bool","optional":false}},{"name":"mint_in_progress","type":{"kind":"simple","type":"bool","optional":false}},{"name":"lock_broadcast_failure_count","type":{"kind":"simple","type":"uint","optional":false,"format":64}},{"name":"last_failed_lock_address","type":{"kind":"simple","type":"address","optional":true}}]},
 ]
 
 const NftCollection_getters: ABIGetter[] = [
     {"name":"get_collection_data","arguments":[],"returnType":{"kind":"simple","type":"CollectionData","optional":false}},
     {"name":"get_nft_address_by_index","arguments":[{"name":"index","type":{"kind":"simple","type":"int","optional":false,"format":257}}],"returnType":{"kind":"simple","type":"address","optional":false}},
-    {"name":"is_trading_enabled","arguments":[],"returnType":{"kind":"simple","type":"bool","optional":false}},
+    {"name":"royalty_params","arguments":[],"returnType":{"kind":"simple","type":"RoyaltyParams","optional":false}},
+    {"name":"get_broadcast_failure_state","arguments":[],"returnType":{"kind":"simple","type":"BroadcastFailureState","optional":false}},
+    {"name":"get_nft_content","arguments":[{"name":"index","type":{"kind":"simple","type":"int","optional":false,"format":257}},{"name":"individual_content","type":{"kind":"simple","type":"cell","optional":false}}],"returnType":{"kind":"simple","type":"cell","optional":false}},
+    {"name":"is_mint_locked","arguments":[],"returnType":{"kind":"simple","type":"bool","optional":false}},
 ]
 
 export const NftCollection_getterMapping: { [key: string]: string } = {
     'get_collection_data': 'getGetCollectionData',
     'get_nft_address_by_index': 'getGetNftAddressByIndex',
-    'is_trading_enabled': 'getIsTradingEnabled',
+    'royalty_params': 'getRoyaltyParams',
+    'get_broadcast_failure_state': 'getGetBroadcastFailureState',
+    'get_nft_content': 'getGetNftContent',
+    'is_mint_locked': 'getIsMintLocked',
 }
 
 const NftCollection_receivers: ABIReceiver[] = [
+    {"receiver":"internal","message":{"kind":"empty"}},
     {"receiver":"internal","message":{"kind":"typed","type":"Mint"}},
-    {"receiver":"internal","message":{"kind":"typed","type":"ToggleTrading"}},
+    {"receiver":"internal","message":{"kind":"typed","type":"SetMintLock"}},
     {"receiver":"internal","message":{"kind":"typed","type":"BroadcastLock"}},
+    {"receiver":"internal","message":{"kind":"typed","type":"ItemInitialized"}},
+    {"receiver":"internal","message":{"kind":"typed","type":"GetRoyaltyParams"}},
+    {"receiver":"internal","message":{"kind":"typed","type":"UpdateRoyalty"}},
+    {"receiver":"internal","message":{"kind":"typed","type":"OwnershipChanged"}},
     {"receiver":"internal","message":{"kind":"typed","type":"Deploy"}},
 ]
 
 export class NftCollection implements Contract {
     
-    static async init(owner: Address, content: Cell) {
-        return await NftCollection_init(owner, content);
+    static async init(owner: Address, collection_content: Cell, common_content: Cell, royalty_numerator: bigint, royalty_denominator: bigint, royalty_destination: Address) {
+        return await NftCollection_init(owner, collection_content, common_content, royalty_numerator, royalty_denominator, royalty_destination);
     }
     
-    static async fromInit(owner: Address, content: Cell) {
-        const init = await NftCollection_init(owner, content);
+    static async fromInit(owner: Address, collection_content: Cell, common_content: Cell, royalty_numerator: bigint, royalty_denominator: bigint, royalty_destination: Address) {
+        const init = await NftCollection_init(owner, collection_content, common_content, royalty_numerator, royalty_denominator, royalty_destination);
         const address = contractAddress(0, init);
         return new NftCollection(address, init);
     }
@@ -1429,17 +1906,32 @@ export class NftCollection implements Contract {
         this.init = init;
     }
     
-    async send(provider: ContractProvider, via: Sender, args: { value: bigint, bounce?: boolean| null | undefined }, message: Mint | ToggleTrading | BroadcastLock | Deploy) {
+    async send(provider: ContractProvider, via: Sender, args: { value: bigint, bounce?: boolean| null | undefined }, message: null | Mint | SetMintLock | BroadcastLock | ItemInitialized | GetRoyaltyParams | UpdateRoyalty | OwnershipChanged | Deploy) {
         
         let body: Cell | null = null;
+        if (message === null) {
+            body = new Cell();
+        }
         if (message && typeof message === 'object' && !(message instanceof Slice) && message.$$type === 'Mint') {
             body = beginCell().store(storeMint(message)).endCell();
         }
-        if (message && typeof message === 'object' && !(message instanceof Slice) && message.$$type === 'ToggleTrading') {
-            body = beginCell().store(storeToggleTrading(message)).endCell();
+        if (message && typeof message === 'object' && !(message instanceof Slice) && message.$$type === 'SetMintLock') {
+            body = beginCell().store(storeSetMintLock(message)).endCell();
         }
         if (message && typeof message === 'object' && !(message instanceof Slice) && message.$$type === 'BroadcastLock') {
             body = beginCell().store(storeBroadcastLock(message)).endCell();
+        }
+        if (message && typeof message === 'object' && !(message instanceof Slice) && message.$$type === 'ItemInitialized') {
+            body = beginCell().store(storeItemInitialized(message)).endCell();
+        }
+        if (message && typeof message === 'object' && !(message instanceof Slice) && message.$$type === 'GetRoyaltyParams') {
+            body = beginCell().store(storeGetRoyaltyParams(message)).endCell();
+        }
+        if (message && typeof message === 'object' && !(message instanceof Slice) && message.$$type === 'UpdateRoyalty') {
+            body = beginCell().store(storeUpdateRoyalty(message)).endCell();
+        }
+        if (message && typeof message === 'object' && !(message instanceof Slice) && message.$$type === 'OwnershipChanged') {
+            body = beginCell().store(storeOwnershipChanged(message)).endCell();
         }
         if (message && typeof message === 'object' && !(message instanceof Slice) && message.$$type === 'Deploy') {
             body = beginCell().store(storeDeploy(message)).endCell();
@@ -1465,9 +1957,32 @@ export class NftCollection implements Contract {
         return result;
     }
     
-    async getIsTradingEnabled(provider: ContractProvider) {
+    async getRoyaltyParams(provider: ContractProvider) {
         let builder = new TupleBuilder();
-        let source = (await provider.get('is_trading_enabled', builder.build())).stack;
+        let source = (await provider.get('royalty_params', builder.build())).stack;
+        const result = loadGetterTupleRoyaltyParams(source);
+        return result;
+    }
+    
+    async getGetBroadcastFailureState(provider: ContractProvider) {
+        let builder = new TupleBuilder();
+        let source = (await provider.get('get_broadcast_failure_state', builder.build())).stack;
+        const result = loadGetterTupleBroadcastFailureState(source);
+        return result;
+    }
+    
+    async getGetNftContent(provider: ContractProvider, index: bigint, individual_content: Cell) {
+        let builder = new TupleBuilder();
+        builder.writeNumber(index);
+        builder.writeCell(individual_content);
+        let source = (await provider.get('get_nft_content', builder.build())).stack;
+        let result = source.readCell();
+        return result;
+    }
+    
+    async getIsMintLocked(provider: ContractProvider) {
+        let builder = new TupleBuilder();
+        let source = (await provider.get('is_mint_locked', builder.build())).stack;
         let result = source.readBoolean();
         return result;
     }
