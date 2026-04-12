@@ -6,6 +6,7 @@ This document covers how to deploy the custom NFT collection contract from `apps
 
 - [scripts/deployNftCollection.ts](/Users/lake/work/tbook/ton-nft-getgems/apps/contracts/scripts/deployNftCollection.ts): deployment entrypoint
 - [scripts/batchMintFromManifest.ts](/Users/lake/work/tbook/ton-nft-getgems/apps/contracts/scripts/batchMintFromManifest.ts): sequential batch mint entrypoint
+- [scripts/unlockTrading.ts](/Users/lake/work/tbook/ton-nft-getgems/apps/contracts/scripts/unlockTrading.ts): unlock trading entrypoint
 - [scripts/updateRoyalty.ts](/Users/lake/work/tbook/ton-nft-getgems/apps/contracts/scripts/updateRoyalty.ts): owner-only royalty update entrypoint
 - [scripts/withdrawCollectionTon.ts](/Users/lake/work/tbook/ton-nft-getgems/apps/contracts/scripts/withdrawCollectionTon.ts): owner-only TON withdrawal entrypoint
 - [.env.example](/Users/lake/work/tbook/ton-nft-getgems/apps/contracts/.env.example): environment template
@@ -251,6 +252,79 @@ Using mnemonic wallet:
 npm run update-royalty:mainnet -- --mnemonic
 ```
 
+## Unlock Trading Script
+
+[unlockTrading.ts](/Users/lake/work/tbook/ton-nft-getgems/apps/contracts/scripts/unlockTrading.ts) is an operator helper for the milestone release step.
+It performs the standard two-stage unlock flow already used by the contracts:
+
+1. Sends `SetMintLock { locked: false }` so future mints are unlocked
+2. Sends `BroadcastLock { locked: false, from_index: 0, to_index: next_item_index }` so already minted NFTs are unlocked
+
+This script is meant for a one-shot "open trading" operation after your milestone is reached.
+It does not change contract architecture and does not batch mint; it only coordinates the existing owner-only unlock messages.
+
+### Current Behavior
+
+The script reads the collection address from environment variables:
+
+- `TESTNET_COLLECTION_ADDRESS`
+- `MAINNET_COLLECTION_ADDRESS`
+
+If those are not set, it falls back to the generic `COLLECTION_ADDRESS`.
+
+### What It Calculates
+
+The script reads `next_item_index` from the collection and estimates the broadcast cost as:
+
+- `next_item_index * 0.02 TON`
+- plus an extra `0.05 TON` buffer
+
+It also waits 5 seconds between `SetMintLock` and `BroadcastLock` so the two steps do not race too tightly in normal operator usage.
+
+### How To Run
+
+From [apps/contracts](/Users/lake/work/tbook/ton-nft-getgems/apps/contracts):
+
+Make sure `TESTNET_COLLECTION_ADDRESS` or `MAINNET_COLLECTION_ADDRESS` is set before running it.
+
+Using TON Connect:
+
+```bash
+npx blueprint run unlockTrading --testnet --tonconnect
+```
+
+Using mnemonic wallet:
+
+```bash
+npx blueprint run unlockTrading --testnet --mnemonic
+```
+
+For mainnet:
+
+```bash
+npx blueprint run unlockTrading --mainnet --tonconnect
+```
+
+or
+
+```bash
+npx blueprint run unlockTrading --mainnet --mnemonic
+```
+
+### When To Use It
+
+Use this script when:
+
+- you have already minted NFTs
+- trading is still locked
+- you want both future mints and historical NFTs to become transferable
+
+Do not use it if you only want to unlock future mints.
+In that case, send only `SetMintLock`.
+
+Do not use it if you want to unlock only part of the collection.
+In that case, send a custom `BroadcastLock` range instead of the full-range helper script.
+
 ## Collection Withdrawal Commands
 
 The collection owner can withdraw excess TON after deployment by sending `WithdrawTon`.
@@ -333,6 +407,14 @@ The batch mint script:
 3. Loads the selected manifest rows
 4. Converts each row's `fileName` into item `individual_content`
 5. Sends one `Mint` message per row with the configured `ownerAddress`
+
+The unlock trading script:
+
+1. Opens the configured collection address
+2. Reads `next_item_index`
+3. Sends `SetMintLock { locked: false }`
+4. Waits briefly
+5. Sends a full-range `BroadcastLock { locked: false, from_index: 0, to_index: next_item_index }`
 
 The withdraw script:
 
